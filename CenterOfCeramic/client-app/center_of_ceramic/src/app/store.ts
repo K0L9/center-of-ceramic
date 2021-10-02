@@ -1,12 +1,17 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import RootReducer from '../Reducers/RootReducer';
-import CategoryReducer from '../Reducers/CategoryReducer';
+import { CategoryReducer } from './category/reducer';
+import { CategoryState } from './category/types';
 
 export const store = configureStore({
   reducer: {
-    RootReducer
+    CategoryReducer
   },
 });
+
+export interface ApplicationState {
+  category: CategoryState;
+}
+
 
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;
