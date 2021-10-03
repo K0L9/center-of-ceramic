@@ -54,7 +54,6 @@ class CategoryService implements IService {
             body: JSON.stringify(category)
         });
     }
-
 }
 
 let categoryService = new CategoryService;

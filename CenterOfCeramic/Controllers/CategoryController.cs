@@ -1,4 +1,5 @@
-﻿using CenterOfCeramic.Services;
+﻿using CenterOfCeramic.Models.ViewModels;
+using CenterOfCeramic.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -22,6 +23,45 @@ namespace CenterOfCeramic.Controllers
         public IActionResult GetAllCategories()
         {
             return Ok(_service.GetAllCategories());
+        }
+        [HttpPost("add-category")]
+        public IActionResult AddCategory([FromBody] CategoryViewModel categoryVm)
+        {
+            try
+            {
+                var newCateg = _service.AddCategory(categoryVm);
+                return Ok(newCateg);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpDelete("delete-category/{id}")]
+        public IActionResult DeleteCategory(int id)
+        {
+            try
+            {
+                _service.DeleteCategory(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut("edit-category/{id}")]
+        public IActionResult DeleteCategory(int id, [FromBody] CategoryViewModel categoryVm)
+        {
+            try
+            {
+                var category = _service.EditCategory(id, categoryVm);
+                return Ok(category);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
