@@ -3,11 +3,11 @@ import React from "react";
 import { connect } from "react-redux";
 import { useEffect } from "react";
 
-import { Category } from "../../../app/category/types";
-import CategoryService from "../../../Services/CategoryService";
+import { Category } from "../../../redux/types/categoryTypes";
+import categoryService from "../../../services/categoryService";
 
-import { ApplicationState } from "../../../app/store";
-import { fetchRequest } from "../../../app/category/action";
+import { ApplicationState } from "../../../redux/store";
+import { fetchRequest } from "../../../redux/actions/categoryAction";
 import { ThunkDispatch } from "redux-thunk";
 import { AnyAction } from "redux";
 
@@ -21,8 +21,7 @@ type AllProps = PropsFromState & propsFromDispatch;
 
 const ProductList: React.FC<AllProps> = ({ data, fetchRequest }) => {
     useEffect(() => {
-        var service = new CategoryService();
-        service.GetCategories().then(data => {
+        categoryService.GetCategories().then(data => {
             console.log("HELLO from prodList: ", data.List)
             fetchRequest(data.List);
         })

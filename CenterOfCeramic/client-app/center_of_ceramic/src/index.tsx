@@ -6,7 +6,7 @@ import * as serviceWorker from './serviceWorker';
 
 import './index.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import configureStore from './app/configureStore';
+import configureStore from './redux/configureStore';
 
 const initialState: any = {};
 const store = configureStore(initialState);
