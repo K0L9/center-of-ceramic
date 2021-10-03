@@ -1,6 +1,6 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import { CategoryReducer } from './category/reducer';
-import { CategoryState } from './category/types';
+import { CategoryReducer } from './reducers/categoryReducer';
+import { CategoryState } from './types/categoryTypes';
 
 import { combineReducers } from 'redux';
 

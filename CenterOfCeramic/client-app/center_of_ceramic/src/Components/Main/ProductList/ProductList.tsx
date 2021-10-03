@@ -3,11 +3,11 @@ import React from "react";
 import { connect } from "react-redux";
 import { useEffect } from "react";
 
-import { Category } from "../../../app/category/types";
+import { Category } from "../../../redux/types/categoryTypes";
 import CategoryService from "../../../Services/CategoryService";
 
-import { ApplicationState } from "../../../app/store";
-import { fetchRequest } from "../../../app/category/action";
+import { ApplicationState } from "../../../redux/store";
+import { fetchRequest } from "../../../redux/actions/categoryAction";
 import { ThunkDispatch } from "redux-thunk";
 import { AnyAction } from "redux";
 

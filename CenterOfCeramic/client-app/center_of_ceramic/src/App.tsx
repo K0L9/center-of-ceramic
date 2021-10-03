@@ -4,7 +4,7 @@ import Main from "./Components/Main/Main"
 
 import { Store } from "redux"
 
-import { ApplicationState, store } from './app/store';
+import { ApplicationState } from './redux/store';
 import { Provider } from 'react-redux';
 
 

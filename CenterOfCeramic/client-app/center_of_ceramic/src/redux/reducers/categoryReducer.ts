@@ -1,5 +1,5 @@
 import { Reducer } from "redux";
-import { CategoryActionTypes, CategoryState } from "./types";
+import { CategoryActionTypes, CategoryState } from "../types/categoryTypes";
 
 export const initialState: CategoryState = {
     data: [],
