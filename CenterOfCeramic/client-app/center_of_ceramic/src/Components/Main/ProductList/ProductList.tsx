@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { useEffect } from "react";
 
 import { Category } from "../../../redux/types/categoryTypes";
-import categoryService from "../../../services/categoryService";
+import categoryService from "../../../services/CategoryService";
 
 import { ApplicationState } from "../../../redux/store";
 import { fetchRequest } from "../../../redux/actions/categoryAction";
