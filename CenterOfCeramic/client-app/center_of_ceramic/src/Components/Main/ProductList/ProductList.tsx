@@ -3,7 +3,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { useEffect } from "react";
 
-import { Category } from "../../../Models/Category";
+import { Category } from "../../../app/category/types";
 import CategoryService from "../../../Services/CategoryService";
 
 import { ApplicationState } from "../../../app/store";
@@ -19,10 +19,11 @@ interface propsFromDispatch {
 }
 type AllProps = PropsFromState & propsFromDispatch;
 
-const ProductList: React.FC<AllProps> = ({ data, fetchRequest }: { data: Category[], fetchRequest: (list: Category[]) => void }) => {
+const ProductList: React.FC<AllProps> = ({ data, fetchRequest }) => {
     useEffect(() => {
         var service = new CategoryService();
         service.GetCategories().then(data => {
+            console.log("HELLO from prodList: ", data.List)
             fetchRequest(data.List);
         })
     }, [])
@@ -41,7 +42,7 @@ const mapStateToProps = ({ category }: ApplicationState) => ({
 const mapDispatchToProps = (dispatch: ThunkDispatch<any, any, AnyAction>) => {
     return {
         fetchRequest: (list: Category[]) => {
-            dispatch(fetchRequest());
+            dispatch(fetchRequest(list));
         }
     };
 };

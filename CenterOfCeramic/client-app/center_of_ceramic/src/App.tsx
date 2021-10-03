@@ -2,12 +2,24 @@ import React from 'react';
 import './App.css';
 import Main from "./Components/Main/Main"
 
-function App() {
+import { Store } from "redux"
+
+import { ApplicationState, store } from './app/store';
+import { Provider } from 'react-redux';
+
+
+interface MainProps {
+  store: Store<ApplicationState>;
+}
+
+const App: React.FC<MainProps> = ({ store }) => {
   return (
-    <div className="App">
-      <div className="btn btn-primary"> HELLO WORLD </div>
-      <Main></Main>
-    </div>
+    <Provider store={store}>
+      <div className="App">
+        <div className="btn btn-primary"> HELLO WORLD </div>
+        <Main></Main>
+      </div>
+    </Provider>
   );
 }
 

@@ -1,17 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import { store } from './app/store';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 
 import './index.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import configureStore from './app/configureStore';
+
+const initialState: any = {};
+const store = configureStore(initialState);
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <App store={store} />
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')

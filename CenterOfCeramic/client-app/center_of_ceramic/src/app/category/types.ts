@@ -1,6 +1,7 @@
 export interface Category {
-    Id: number
-    Title: string
+    id: number
+    name: string
+    products: any
 }
 
 export enum CategoryActionTypes {

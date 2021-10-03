@@ -6,9 +6,14 @@ export const initialState: CategoryState = {
 };
 
 const reducer: Reducer<CategoryState> = (state = initialState, action) => {
+    console.log("HELLO FROM REDUCER: ", action.payload)
     switch (action.type) {
         case CategoryActionTypes.Get: {
-            return { ...state, loading: true };
+            return {
+                ...state,
+                data: action.payload,
+                loading: true
+            };
         }
         default: {
             return state;

@@ -1,6 +1,6 @@
 import { stringify } from "querystring";
 import { getHeapCodeStatistics } from "v8";
-import { Category } from "../Models/Category";
+import { Category } from "../app/category/types";
 
 import IService from "./IService";
 
