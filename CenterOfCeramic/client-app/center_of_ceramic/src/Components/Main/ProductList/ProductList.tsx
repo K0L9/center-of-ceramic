@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { useEffect } from "react";
 
 import { Category } from "../../../redux/types/categoryTypes";
-import CategoryService from "../../../Services/CategoryService";
+import categoryService from "../../../services/categoryService";
 
 import { ApplicationState } from "../../../redux/store";
 import { fetchRequest } from "../../../redux/actions/categoryAction";
@@ -21,8 +21,7 @@ type AllProps = PropsFromState & propsFromDispatch;
 
 const ProductList: React.FC<AllProps> = ({ data, fetchRequest }) => {
     useEffect(() => {
-        var service = new CategoryService();
-        service.GetCategories().then(data => {
+        categoryService.GetCategories().then(data => {
             console.log("HELLO from prodList: ", data.List)
             fetchRequest(data.List);
         })

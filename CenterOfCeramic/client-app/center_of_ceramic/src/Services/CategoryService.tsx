@@ -4,7 +4,7 @@ import { Category } from "../redux/types/categoryTypes";
 
 import IService from "./IService";
 
-export default class CategoryService implements IService {
+class CategoryService implements IService {
     URL_GET: string = "/api/Category/get-all-categories"
     URL_POST: string = "/api/Category/add-category";
     URL_PUT: string = "/api/Category/edit-category";
@@ -56,3 +56,6 @@ export default class CategoryService implements IService {
     }
 
 }
+
+let categoryService = new CategoryService;
+export default categoryService;
