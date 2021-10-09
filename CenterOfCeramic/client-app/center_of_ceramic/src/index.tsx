@@ -8,6 +8,9 @@ import './index.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import configureStore from './redux/configureStore';
 
+//import components
+import CategoryList from './Components/admin/category/categoryList';
+
 const initialState: any = {};
 const store = configureStore(initialState);
 

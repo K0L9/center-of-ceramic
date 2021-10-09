@@ -6,7 +6,12 @@ import { Store } from "redux"
 
 import { ApplicationState } from './redux/store';
 import { Provider } from 'react-redux';
+import Header from './Components/header/header';
 
+import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom"
+
+//import components
+import CategoryList from "./Components/admin/category/categoryList";
 
 interface MainProps {
   store: Store<ApplicationState>;
@@ -14,12 +19,16 @@ interface MainProps {
 
 const App: React.FC<MainProps> = ({ store }) => {
   return (
-    <Provider store={store}>
-      <div className="App">
-        <div className="btn btn-primary"> HELLO WORLD </div>
-        <Main></Main>
-      </div>
-    </Provider>
+    <Router>
+
+      <Provider store={store}>
+        <Header></Header>
+        <Switch>
+          <Route path="/" exact render={() => (<Main />)} />
+          <Route path="/category-list" exact render={() => (<CategoryList />)} />
+        </Switch>
+      </Provider>
+    </Router>
   );
 }
 
