@@ -11,6 +11,8 @@ import { fetchRequest } from "../../../redux/actions/categoryAction";
 import { ThunkDispatch } from "redux-thunk";
 import { AnyAction } from "redux";
 
+import { Link } from "react-router-dom"
+
 interface PropsFromState {
     data: Category[]
 }
@@ -27,14 +29,32 @@ const CategoryList: React.FC<AllProps> = ({ data, fetchRequest }) => {
         })
     }, [])
 
-    const dataList = data.map((d) => <h1>{d.name}</h1>)
-
-    console.log("DATA LISTL :", dataList);
+    const dataList = data.map((d) =>
+        <tr key={d.id}>
+            <td scope="row">{d.id}</td>
+            <td>{d.name}</td>
+            <td><i className="fas fa-edit"></i></td>
+        </tr>)
 
     return (
+
         <div>
-            <h1>{dataList}</h1>
+            <Link to="add-category" className="btn btn-success">Добавити категорію</Link>
+
+            <table className="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Ід</th>
+                        <th scope="col">Назва</th>
+                        <th scope="col">Дії</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {dataList}
+                </tbody>
+            </table>
         </div>
+
     )
 }
 const mapStateToProps = ({ category }: ApplicationState) => ({

@@ -11,6 +11,8 @@ import configureStore from './redux/configureStore';
 //import components
 import CategoryList from './Components/admin/category/categoryList';
 
+import '../node_modules/font-awesome/css/font-awesome.min.css';
+
 const initialState: any = {};
 const store = configureStore(initialState);
 
