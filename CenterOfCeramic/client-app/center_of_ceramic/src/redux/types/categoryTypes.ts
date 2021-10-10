@@ -6,8 +6,10 @@ export interface Category {
 
 export enum CategoryActionTypes {
     Get = "CategoryGet",
+    Add = "CategoryAdd",
 }
 
 export interface CategoryState {
     readonly data: Category[];
+    readonly currentCategory: Category;
 }

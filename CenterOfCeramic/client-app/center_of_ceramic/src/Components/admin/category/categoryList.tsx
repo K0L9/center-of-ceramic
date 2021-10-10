@@ -34,6 +34,7 @@ const CategoryList: React.FC<AllProps> = ({ data, fetchRequest }) => {
             <td scope="row">{d.id}</td>
             <td>{d.name}</td>
             <td><i className="fas fa-edit"></i></td>
+            <td><i className="fas fa-remove"></i></td>
         </tr>)
 
     return (

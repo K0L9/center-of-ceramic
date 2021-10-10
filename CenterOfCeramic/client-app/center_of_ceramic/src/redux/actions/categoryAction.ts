@@ -6,6 +6,8 @@ import { ThunkAction } from "redux-thunk";
 import { ApplicationState } from "../store";
 import { Category } from "../types/categoryTypes";
 
+import categoryService from "../../services/CategoryService";
+
 export type AppThunk = ActionCreator<
     ThunkAction<void, ApplicationState, null, Action<string>>
 >;
@@ -19,3 +21,13 @@ export const fetchRequest: AppThunk = (list: Category[]) => {
         });
     };
 };
+
+export const addCategoryRequest: AppThunk = (category: Category) => {
+    categoryService.AddCategory(category);
+    return (dispatch: Dispatch): Action => {
+        return dispatch({
+            type: CategoryActionTypes.Add,
+            payload: category
+        });
+    };
+}

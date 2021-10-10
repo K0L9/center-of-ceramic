@@ -22,7 +22,6 @@ type AllProps = PropsFromState & propsFromDispatch;
 const ProductList: React.FC<AllProps> = ({ data, fetchRequest }) => {
     useEffect(() => {
         categoryService.GetCategories().then(data => {
-            console.log("HELLO from prodList: ", data.List)
             fetchRequest(data.List);
         })
     }, [])

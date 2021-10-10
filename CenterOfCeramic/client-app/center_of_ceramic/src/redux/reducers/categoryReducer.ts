@@ -3,6 +3,11 @@ import { CategoryActionTypes, CategoryState } from "../types/categoryTypes";
 
 export const initialState: CategoryState = {
     data: [],
+    currentCategory: {
+        id: 0,
+        name: "",
+        products: "",
+    },
 };
 
 const reducer: Reducer<CategoryState> = (state = initialState, action) => {
@@ -12,7 +17,13 @@ const reducer: Reducer<CategoryState> = (state = initialState, action) => {
             return {
                 ...state,
                 data: action.payload,
-                loading: true
+            };
+        }
+        case CategoryActionTypes.Add: {
+            console.log("FROM ADD ACTION: ", action.payload);
+            return {
+                ...state,
+                data: state.data.push(action.payload),
             };
         }
         default: {
