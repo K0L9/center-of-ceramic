@@ -14,6 +14,7 @@ import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-d
 //import category components
 import CategoryList from "./Components/admin/category/categoryList";
 import AddCategory from "./Components/admin/category/addCategory"
+import EditCategory from "./Components/admin/category/editCategory"
 
 interface MainProps {
   store: Store<ApplicationState>;
@@ -29,6 +30,7 @@ const App: React.FC<MainProps> = ({ store }) => {
           <Route path="/" exact render={() => (<Main />)} />
           <Route path="/category-list" exact render={() => (<CategoryList />)} />
           <Route path="/add-category" exact render={() => (<AddCategory />)} />
+          <Route path="/edit-category" exact render={() => (<EditCategory />)} />
         </Switch>
       </Provider>
     </Router>

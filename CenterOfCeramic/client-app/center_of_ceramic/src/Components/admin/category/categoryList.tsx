@@ -1,7 +1,7 @@
 import React from "react";
 
 import { connect } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { Category } from "../../../redux/types/categoryTypes";
 import categoryService from "../../../services/CategoryService";
@@ -11,9 +11,9 @@ import { ThunkDispatch } from "redux-thunk";
 import { AnyAction } from "redux";
 
 //import actions
-import { fetchRequest, deleteCategoryRequest } from "../../../redux/actions/categoryAction";
+import { fetchRequest, deleteCategoryRequest, setCurrentCategory } from "../../../redux/actions/categoryAction";
 
-import { Link } from "react-router-dom"
+import { Link, Redirect } from "react-router-dom"
 
 interface PropsFromState {
     data: Category[]
@@ -21,10 +21,14 @@ interface PropsFromState {
 interface propsFromDispatch {
     fetchRequest: (list: Category[]) => any;
     deleteCategoryRequest: (id: number) => any;
+    setCurrentCategory: (category: Category) => any;
 }
 type AllProps = PropsFromState & propsFromDispatch;
 
-const CategoryList: React.FC<AllProps> = ({ data, fetchRequest, deleteCategoryRequest }) => {
+const CategoryList: React.FC<AllProps> = ({ data, fetchRequest, deleteCategoryRequest, setCurrentCategory }) => {
+
+    const [isRedirect, setIsRedirect] = useState(false);
+
     useEffect(() => {
         categoryService.GetCategories().then(data => {
             fetchRequest(data.List);
@@ -35,6 +39,16 @@ const CategoryList: React.FC<AllProps> = ({ data, fetchRequest, deleteCategoryRe
         deleteCategoryRequest(id);
         categoryService.DeleteCategory(categId);
     }
+    const onEditClick = (category: Category) => {
+        setCurrentCategory(category);
+        setIsRedirect(true);
+    }
+
+    if (isRedirect == true) {
+        return (
+            <Redirect to="/edit-category" />
+        )
+    }
 
     const dataList = data.map((d, index) =>
         <tr key={d.id}>
@@ -42,11 +56,13 @@ const CategoryList: React.FC<AllProps> = ({ data, fetchRequest, deleteCategoryRe
             <td>{d.name}</td>
             <td>
                 <i onClick={() => onRemoveClick(index, d.id)} className="fas fa-remove"></i>
-                <i className="fas fa-edit"></i>
+                <i onClick={() => onEditClick(d)} className="fas fa-edit"></i>
             </td>
         </tr>)
 
+
     return (
+
 
         <div>
             <Link to="add-category" className="btn btn-success">Добавити категорію</Link>
@@ -78,6 +94,9 @@ const mapDispatchToProps = (dispatch: ThunkDispatch<any, any, AnyAction>) => {
         },
         deleteCategoryRequest: (id: number) => {
             dispatch(deleteCategoryRequest(id))
+        },
+        setCurrentCategory: (category: Category) => {
+            dispatch(setCurrentCategory(category))
         }
     };
 };

@@ -13,8 +13,6 @@ import { AnyAction } from "redux";
 
 import { addCategoryRequest } from "../../../redux/actions/categoryAction"
 
-import CategoryList from "./categoryList"
-
 interface propsFromDispatch {
     addCategoryRequest: (category: Category) => any;
 }

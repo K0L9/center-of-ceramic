@@ -46,7 +46,7 @@ class CategoryService implements IService {
         });
     }
     async EditCategory(id: number, category: Category) {
-        fetch(this.URL_PUT + "/" + { id }, {
+        fetch(this.URL_PUT + "/" + id, {
             headers: {
                 "Content-Type": "application/json"
             },

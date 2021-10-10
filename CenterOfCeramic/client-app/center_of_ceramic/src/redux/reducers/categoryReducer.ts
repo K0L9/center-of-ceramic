@@ -1,3 +1,4 @@
+import { timeLog } from "console";
 import { Reducer } from "redux";
 import { CategoryActionTypes, CategoryState } from "../types/categoryTypes";
 
@@ -30,6 +31,20 @@ const reducer: Reducer<CategoryState> = (state = initialState, action) => {
             return {
                 ...state,
                 data: tmp,
+            }
+        }
+        case CategoryActionTypes.Edit: {
+            let tmp = state.data.slice();
+            tmp.filter(x => x.id == action.payload.id)[0] = action.payload.category;
+            return {
+                ...state,
+                data: tmp,
+            }
+        }
+        case CategoryActionTypes.SetCurrent: {
+            return {
+                ...state,
+                currentCategory: action.payload
             }
         }
         default: {

@@ -51,7 +51,7 @@ namespace CenterOfCeramic.Controllers
             }
         }
         [HttpPut("edit-category/{id}")]
-        public IActionResult DeleteCategory(int id, [FromBody] CategoryViewModel categoryVm)
+        public IActionResult EditCategory(int id, [FromBody] CategoryViewModel categoryVm)
         {
             try
             {

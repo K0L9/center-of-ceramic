@@ -39,3 +39,20 @@ export const deleteCategoryRequest: AppThunk = (id: number) => {
         });
     };
 }
+
+export const editCategoryRequest: AppThunk = (id: number, category: Category) => {
+    return (dispatch: Dispatch): Action => {
+        return dispatch({
+            type: CategoryActionTypes.Edit,
+            payload: { category, id }
+        });
+    };
+}
+export const setCurrentCategory: AppThunk = (category: Category) => {
+    return (dispatch: Dispatch): Action => {
+        return dispatch({
+            type: CategoryActionTypes.SetCurrent,
+            payload: category
+        });
+    };
+}
