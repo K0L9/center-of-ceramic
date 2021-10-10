@@ -7,9 +7,11 @@ import { Category } from "../../../redux/types/categoryTypes";
 import categoryService from "../../../services/CategoryService";
 
 import { ApplicationState } from "../../../redux/store";
-import { fetchRequest } from "../../../redux/actions/categoryAction";
 import { ThunkDispatch } from "redux-thunk";
 import { AnyAction } from "redux";
+
+//import actions
+import { fetchRequest, deleteCategoryRequest } from "../../../redux/actions/categoryAction";
 
 import { Link } from "react-router-dom"
 
@@ -18,23 +20,30 @@ interface PropsFromState {
 }
 interface propsFromDispatch {
     fetchRequest: (list: Category[]) => any;
+    deleteCategoryRequest: (id: number) => any;
 }
 type AllProps = PropsFromState & propsFromDispatch;
 
-const CategoryList: React.FC<AllProps> = ({ data, fetchRequest }) => {
+const CategoryList: React.FC<AllProps> = ({ data, fetchRequest, deleteCategoryRequest }) => {
     useEffect(() => {
         categoryService.GetCategories().then(data => {
-            console.log("HELLO from prodList: ", data.List)
             fetchRequest(data.List);
         })
     }, [])
 
-    const dataList = data.map((d) =>
+    const onRemoveClick = (id: number, categId: number) => {
+        deleteCategoryRequest(id);
+        categoryService.DeleteCategory(categId);
+    }
+
+    const dataList = data.map((d, index) =>
         <tr key={d.id}>
             <td scope="row">{d.id}</td>
             <td>{d.name}</td>
-            <td><i className="fas fa-edit"></i></td>
-            <td><i className="fas fa-remove"></i></td>
+            <td>
+                <i onClick={() => onRemoveClick(index, d.id)} className="fas fa-remove"></i>
+                <i className="fas fa-edit"></i>
+            </td>
         </tr>)
 
     return (
@@ -66,6 +75,9 @@ const mapDispatchToProps = (dispatch: ThunkDispatch<any, any, AnyAction>) => {
     return {
         fetchRequest: (list: Category[]) => {
             dispatch(fetchRequest(list));
+        },
+        deleteCategoryRequest: (id: number) => {
+            dispatch(deleteCategoryRequest(id))
         }
     };
 };

@@ -26,8 +26,6 @@ const ProductList: React.FC<AllProps> = ({ data, fetchRequest }) => {
         })
     }, [])
 
-    console.log("CATEROGRIES: ", data)
-
     return (
         <h2>HELLO</h2>
     )

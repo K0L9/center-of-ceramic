@@ -11,7 +11,6 @@ export const initialState: CategoryState = {
 };
 
 const reducer: Reducer<CategoryState> = (state = initialState, action) => {
-    console.log("HELLO FROM REDUCER: ", action.payload)
     switch (action.type) {
         case CategoryActionTypes.Get: {
             return {
@@ -20,11 +19,18 @@ const reducer: Reducer<CategoryState> = (state = initialState, action) => {
             };
         }
         case CategoryActionTypes.Add: {
-            console.log("FROM ADD ACTION: ", action.payload);
             return {
                 ...state,
                 data: state.data.push(action.payload),
             };
+        }
+        case CategoryActionTypes.Delete: {
+            let tmp = state.data.slice();
+            tmp.splice(action.payload, 1);
+            return {
+                ...state,
+                data: tmp,
+            }
         }
         default: {
             return state;

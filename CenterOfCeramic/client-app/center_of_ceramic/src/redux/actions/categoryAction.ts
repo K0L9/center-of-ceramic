@@ -13,7 +13,6 @@ export type AppThunk = ActionCreator<
 >;
 
 export const fetchRequest: AppThunk = (list: Category[]) => {
-    console.log("HELLO FROM ACTION: ", list);
     return (dispatch: Dispatch): Action => {
         return dispatch({
             type: CategoryActionTypes.Get,
@@ -28,6 +27,15 @@ export const addCategoryRequest: AppThunk = (category: Category) => {
         return dispatch({
             type: CategoryActionTypes.Add,
             payload: category
+        });
+    };
+}
+
+export const deleteCategoryRequest: AppThunk = (id: number) => {
+    return (dispatch: Dispatch): Action => {
+        return dispatch({
+            type: CategoryActionTypes.Delete,
+            payload: id
         });
     };
 }

@@ -37,11 +37,11 @@ class CategoryService implements IService {
         });
     }
     async DeleteCategory(id: number) {
-        fetch(this.URL_DELETE + "/" + { id }, {
+        fetch(this.URL_DELETE + "/" + id, {
             headers: {
                 "Content-Type": "application/json"
             },
-            method: "POST",
+            method: "DELETE",
             body: ""
         });
     }
@@ -50,7 +50,7 @@ class CategoryService implements IService {
             headers: {
                 "Content-Type": "application/json"
             },
-            method: "POST",
+            method: "PUT",
             body: JSON.stringify(category)
         });
     }

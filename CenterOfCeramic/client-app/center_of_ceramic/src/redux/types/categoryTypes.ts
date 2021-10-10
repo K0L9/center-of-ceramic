@@ -7,6 +7,7 @@ export interface Category {
 export enum CategoryActionTypes {
     Get = "CategoryGet",
     Add = "CategoryAdd",
+    Delete = "CategoryDelete"
 }
 
 export interface CategoryState {

@@ -16,11 +16,11 @@ import { addCategoryRequest } from "../../../redux/actions/categoryAction"
 import CategoryList from "./categoryList"
 
 interface propsFromDispatch {
-    // fetchRequest: (list: Category[]) => any;
+    addCategoryRequest: (category: Category) => any;
 }
 type AllProps = propsFromDispatch;
 
-const AddCategory: React.FC<AllProps> = () => {
+const AddCategory: React.FC<AllProps> = ({ addCategoryRequest }) => {
 
     const [name, setName] = useState('');
     const [isRedirect, setIsRedirect] = useState(false);
@@ -30,10 +30,8 @@ const AddCategory: React.FC<AllProps> = () => {
     const onSavePostClicked = async () => {
         addCategoryRequest({ id: 0, name: name, products: "" });
         setIsRedirect(true);
-        console.log("IS REDIRECT on save: ", isRedirect);
     }
 
-    console.log("IS REDIRECT before return: ", isRedirect);
     if (isRedirect == true) {
         return (<Redirect to="/category-list"></Redirect>)
     }
