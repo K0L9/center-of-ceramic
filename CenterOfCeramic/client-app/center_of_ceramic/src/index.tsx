@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import "./index.scss";
-import App from "./components/app";
+import App from "./App";
 // import PerfectScrollbar from "react-perfect-scrollbar";
 
 // Components
@@ -47,63 +47,74 @@ import Digital_add_pro from "./components/admin/products/digital/digital-add-pro
 // import Datatable from "./components/common/datatable";
 // import Login from "./components/auth/login";
 
+//import redux components
+import configureStore from './redux/configureStore';
+import { Provider } from 'react-redux';
+import * as serviceWorker from './serviceWorker';
+
+const initialState: any = {};
+const store = configureStore(initialState);
+
 const Root = () => {
   return (
-    <BrowserRouter basename={"/"}>
-      {/* <PerfectScrollbar> */}
-      <Switch>
-        {/* <Route exact path={`${process.env.PUBLIC_URL}/`} component={Login} />
+    <React.StrictMode>
+      <BrowserRouter basename={"/"}>
+
+        <Provider store={store}>
+          {/* <PerfectScrollbar> */}
+          <Switch>
+            {/* <Route exact path={`${process.env.PUBLIC_URL}/`} component={Login} />
 					<Route
 						exact
 						path={`${process.env.PUBLIC_URL}/auth/login`}
 						component={Login}
 					/> */}
 
-        <App>
-          {/* <Route
+            <App store={store}>
+              {/* <Route
               path={`${process.env.PUBLIC_URL}/dashboard`}
               component={Dashboard}
             /> */}
 
-          <Route
-            path={`${process.env.PUBLIC_URL}/products/physical/category`}
-            component={Category}
-          />
-          <Route
-            path={`${process.env.PUBLIC_URL}/products/physical/sub-category`}
-            component={Sub_category}
-          />
-          <Route
-            path={`${process.env.PUBLIC_URL}/products/physical/product-list`}
-            component={Product_list}
-          />
-          <Route
-            path={`${process.env.PUBLIC_URL}/products/physical/product-detail`}
-            component={Product_detail}
-          />
-          <Route
-            path={`${process.env.PUBLIC_URL}/products/physical/add-product`}
-            component={Add_product}
-          />
+              <Route
+                path={`${process.env.PUBLIC_URL}/products/physical/category`}
+                component={Category}
+              />
+              <Route
+                path={`${process.env.PUBLIC_URL}/products/physical/sub-category`}
+                component={Sub_category}
+              />
+              <Route
+                path={`${process.env.PUBLIC_URL}/products/physical/product-list`}
+                component={Product_list}
+              />
+              <Route
+                path={`${process.env.PUBLIC_URL}/products/physical/product-detail`}
+                component={Product_detail}
+              />
+              <Route
+                path={`${process.env.PUBLIC_URL}/products/physical/add-product`}
+                component={Add_product}
+              />
 
-          <Route
-            path={`${process.env.PUBLIC_URL}/products/digital/digital-category`}
-            component={Digital_category}
-          />
-          <Route
-            path={`${process.env.PUBLIC_URL}/products/digital/digital-sub-category`}
-            component={Digital_sub_category}
-          />
-          <Route
-            path={`${process.env.PUBLIC_URL}/products/digital/digital-product-list`}
-            component={Digital_pro_list}
-          />
-          <Route
-            path={`${process.env.PUBLIC_URL}/products/digital/digital-add-product`}
-            component={Digital_add_pro}
-          />
+              <Route
+                path={`${process.env.PUBLIC_URL}/products/digital/digital-category`}
+                component={Digital_category}
+              />
+              <Route
+                path={`${process.env.PUBLIC_URL}/products/digital/digital-sub-category`}
+                component={Digital_sub_category}
+              />
+              <Route
+                path={`${process.env.PUBLIC_URL}/products/digital/digital-product-list`}
+                component={Digital_pro_list}
+              />
+              <Route
+                path={`${process.env.PUBLIC_URL}/products/digital/digital-add-product`}
+                component={Digital_add_pro}
+              />
 
-          {/* <Route
+              {/* <Route
               path={`${process.env.PUBLIC_URL}/sales/orders`}
               component={Orders}
             />
@@ -191,10 +202,13 @@ const Root = () => {
               path={`${process.env.PUBLIC_URL}/data-table`}
               component={Datatable}
             /> */}
-        </App>
-      </Switch>
-      {/* </PerfectScrollbar> */}
-    </BrowserRouter>
+            </App>
+          </Switch>
+          {/* </PerfectScrollbar> */}
+        </Provider>
+      </BrowserRouter>
+    </React.StrictMode>
+
   );
 };
 
@@ -203,6 +217,8 @@ ReactDOM.render(<Root />, document.getElementById("root"));
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 // reportWebVitals();
+
+serviceWorker.unregister();
 
 
 
