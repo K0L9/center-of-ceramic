@@ -47,7 +47,6 @@ import Invoice from "./components/invoice";
 import Datatable from "./components/common/datatable";
 import Login from "./components/auth/login";
 
-//import redux components
 import { Provider } from "react-redux"
 import store from "./app/store"
 
@@ -62,8 +61,8 @@ const Root = () => {
 						path={`${process.env.PUBLIC_URL}/auth/login`}
 						component={Login}
 					/> */}
-					<Provider store={store}>
-						<App>
+					<App>
+						<Provider store={store}>
 							<Route
 								path={`${process.env.PUBLIC_URL}/dashboard`}
 								component={Dashboard}
@@ -195,8 +194,8 @@ const Root = () => {
 								path={`${process.env.PUBLIC_URL}/data-table`}
 								component={Datatable}
 							/>
-						</App>
-					</Provider>
+						</Provider>
+					</App>
 				</Switch>
 			</PerfectScrollbar>
 		</BrowserRouter>

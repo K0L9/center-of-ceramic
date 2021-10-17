@@ -4,17 +4,7 @@ import data from "../../../assets/data/physical_list";
 import { Edit, Trash2 } from "react-feather";
 import { Button, Card, CardBody, Col, Container, Row } from "reactstrap";
 
-import { useEffect } from "react";
-import categoryService from "../../../app/services/categoryService"
-
 const Product_list = () => {
-
-	useEffect(() => {
-		categoryService.getCategoryList().then(data => {
-			console.log(data);
-		}, []);
-	})
-
 	return (
 		<Fragment>
 			<Breadcrumb title="Product List" parent="Physical" />
