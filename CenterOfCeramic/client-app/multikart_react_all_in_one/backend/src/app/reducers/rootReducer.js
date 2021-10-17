@@ -1,6 +1,6 @@
-import categorytReducer from "./categoryReducer"
+import categoryReducer from "./categoryReducer"
 import { combineReducers } from "redux"
 
 export default combineReducers({
-    categorytReducer
+    categoryReducer
 })

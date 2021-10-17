@@ -4,7 +4,18 @@ import data from "../../../assets/data/physical_list";
 import { Edit, Trash2 } from "react-feather";
 import { Button, Card, CardBody, Col, Container, Row } from "reactstrap";
 
-const Product_list = () => {
+import { useEffect } from "react";
+import { connect } from "react-redux";
+import categoryService from "../../../app/services/categoryService"
+import { getAllCategories } from "../../../app/actions/categoryActions"
+
+const Product_list = ({ List, getAllCategories }) => {
+	useEffect(() => {
+		categoryService.getCategoryList().then(data => {
+			getAllCategories(data.List);
+		});
+	}, [])
+
 	return (
 		<Fragment>
 			<Breadcrumb title="Product List" parent="Physical" />
@@ -86,4 +97,13 @@ const Product_list = () => {
 	);
 };
 
-export default Product_list;
+const mapStateToProps = ({ categoryReducer }) => {
+	const { List } = categoryReducer;
+	return { List };
+}
+
+const mapDispatchToProps = {
+	getAllCategories
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Product_list);

@@ -35,7 +35,7 @@ namespace CenterOfCeramic
             services.AddControllers();
             services.AddSpaStaticFiles(configuration =>
             {
-                configuration.RootPath = "client-app/center_of_ceramic";
+                configuration.RootPath = "client-app/multikart_react_all_in_one/backend";
             });
             services.AddSwaggerGen(c =>
             {
@@ -70,7 +70,7 @@ namespace CenterOfCeramic
 
             app.UseSpa(spa =>
             {
-                spa.Options.SourcePath = "client-app/center_of_ceramic";
+                spa.Options.SourcePath = "client-app/multikart_react_all_in_one/backend";
                 if (env.IsDevelopment())
                     spa.UseReactDevelopmentServer(npmScript: "start");
             });
