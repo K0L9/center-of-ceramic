@@ -1,5 +1,8 @@
 class catService {
     URL_GET = "/api/Category/get-all-categories"
+    URL_ADD = "/api/Category/add-category"
+    URL_DELETE = "/api/Category/delete-category"
+    URL_EDIT = "/api/Category/edit-category"
 
     async getCategoryList() {
         const List = await fetch(this.URL_GET, {
@@ -23,7 +26,33 @@ class catService {
             })
         return List
     }
+    async addCategory(newCateg) {
+        fetch(this.URL_ADD, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify(newCateg)
+        })
+    }
+    async deleteCategory(index) {
+        fetch(this.URL_DELETE + "/" + index, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            method: "DELETE",
+        })
+    }
+    async editCategory(category) {
+        fetch(this.URL_EDIT + "/" + category.id, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            method: "PUT",
+            body: JSON.stringify(category)
+        })
+    }
 }
 
-let categoryService = new catService;
+let categoryService = new catService();
 export default categoryService;

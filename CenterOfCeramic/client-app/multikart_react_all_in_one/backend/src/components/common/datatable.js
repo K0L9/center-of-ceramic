@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -13,11 +13,19 @@ import {
 	ModalFooter,
 	ModalHeader,
 } from "reactstrap";
+import { Category } from "../../app/models/categoty";
 
-const Datatable = ({ myData, myClass, multiSelectOption, pagination }) => {
+const Datatable = ({ myData, myClass, multiSelectOption, pagination, handleDelete, handleEdit }) => {
 	const [open, setOpen] = useState(false);
 	const [checkedValues, setCheckedValues] = useState([]);
 	const [data, setData] = useState(myData);
+	const [name, setName] = useState('');
+	const [editedRow, setEditedRow] = useState({});
+
+	useEffect(() => {
+		setData(myData);
+	});
+
 	const selectRow = (e, i) => {
 		if (!e.target.checked) {
 			setCheckedValues(checkedValues.filter((item, j) => i !== item));
@@ -26,14 +34,17 @@ const Datatable = ({ myData, myClass, multiSelectOption, pagination }) => {
 			setCheckedValues(checkedValues);
 		}
 	};
-	
+
+	const onNameChange = (event) => {
+		setName(event.target.value);
+	}
+
 
 	const handleRemoveRow = () => {
 		const updatedData = myData.filter(function (el) {
 			return checkedValues.indexOf(el.id) < 0;
 		});
 		setData([...updatedData]);
-		toast.success("Successfully Deleted !");
 	};
 
 	const renderEditable = (cellInfo) => {
@@ -53,19 +64,24 @@ const Datatable = ({ myData, myClass, multiSelectOption, pagination }) => {
 		);
 	};
 
-	const handleDelete = (index) => {
-		if (window.confirm("Are you sure you wish to delete this item?")) {
-			const del = data;
-			del.splice(index, 1);
-			setData([...del]);
-		}
-		toast.success("Successfully Deleted !");
-	};
-	const onOpenModal = () => {
+	// const handleDelete = (index) => {
+	// 	if (window.confirm("Are you sure you wish to delete this item?")) {
+	// 		const del = data;
+	// 		del.splice(index, 1);
+	// 		setData([...del]);
+	// 	}
+	// 	toast.success("Successfully Deleted !");
+	// };
+	const onOpenModal = (row) => {
+		setEditedRow(row);
 		setOpen(true);
 	};
 
 	const onCloseModal = () => {
+		if (name !== '') {
+			var categ = new Category(editedRow.id, name, editedRow.products);
+			handleEdit(categ);
+		}
 		setOpen(false);
 	};
 
@@ -156,7 +172,7 @@ const Datatable = ({ myData, myClass, multiSelectOption, pagination }) => {
 
 					<span>
 						<i
-							onClick={onOpenModal}
+							onClick={() => onOpenModal(row)}
 							className="fa fa-pencil"
 							style={{
 								width: 35,
@@ -171,9 +187,9 @@ const Datatable = ({ myData, myClass, multiSelectOption, pagination }) => {
 							style={{ overlay: { opacity: 0.1 } }}
 						>
 							<ModalHeader toggle={onCloseModal}>
-								<h5 className="modal-title f-w-600" id="exampleModalLabel2">
+								<p className="modal-title f-w-600 h5" id="exampleModalLabel2">
 									Edit Product
-								</h5>
+								</p>
 							</ModalHeader>
 							<ModalBody>
 								<Form>
@@ -181,9 +197,9 @@ const Datatable = ({ myData, myClass, multiSelectOption, pagination }) => {
 										<Label htmlFor="recipient-name" className="col-form-label">
 											Category Name :
 										</Label>
-										<Input type="text" className="form-control" />
+										<Input type="text" className="form-control" onChange={onNameChange} value={row.name} />
 									</FormGroup>
-									<FormGroup>
+									{/* <FormGroup>
 										<Label htmlFor="message-text" className="col-form-label">
 											Category Image :
 										</Label>
@@ -192,7 +208,7 @@ const Datatable = ({ myData, myClass, multiSelectOption, pagination }) => {
 											id="validationCustom02"
 											type="file"
 										/>
-									</FormGroup>
+									</FormGroup> */}
 								</Form>
 							</ModalBody>
 							<ModalFooter>

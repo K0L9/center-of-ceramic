@@ -3,7 +3,7 @@ import { Home } from "react-feather";
 import { Link } from "react-router-dom";
 import { Col, Container, Row } from "reactstrap";
 
-const Breadcrumb = ({title,parent}) => {
+const Breadcrumb = ({ title, parent }) => {
 	return (
 		<Container fluid={true}>
 			<div className="page-header">
@@ -12,7 +12,7 @@ const Breadcrumb = ({title,parent}) => {
 						<div className="page-header-left">
 							<h3>
 								{title}
-								<small>Multikart Admin panel</small>
+								{/* <small>Multikart Admin panel</small> */}
 							</h3>
 						</div>
 					</Col>

@@ -14,6 +14,8 @@ const Product_list = ({ List, getAllCategories }) => {
 		categoryService.getCategoryList().then(data => {
 			getAllCategories(data.List);
 		});
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	return (
