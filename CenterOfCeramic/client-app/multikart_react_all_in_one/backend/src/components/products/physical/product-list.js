@@ -6,24 +6,26 @@ import { Button, Card, CardBody, Col, Container, Row } from "reactstrap";
 
 import { useEffect } from "react";
 import { connect } from "react-redux";
-import categoryService from "../../../app/services/categoryService"
-import { getAllCategories } from "../../../app/actions/categoryActions"
+import productService from "../../../app/services/productService"
+import { getAllProducts } from "../../../app/actions/productAction"
 
-const Product_list = ({ List, getAllCategories }) => {
+const Product_list = ({ List, getAllProducts }) => {
 	useEffect(() => {
-		categoryService.getCategoryList().then(data => {
-			getAllCategories(data.List);
+		productService.getProductList().then(data => {
+			getAllProducts(data.List);
 		});
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
+
+	console.log("IS PRODUCTS: ", List);
 
 	return (
 		<Fragment>
 			<Breadcrumb title="Product List" parent="Physical" />
 			<Container fluid={true}>
 				<Row className="products-admin ratio_asos">
-					{data.map((myData, i) => {
+					{List.map((myData, i) => {
 						return (
 							<Col xl="3" sm="6" key={i}>
 								<Card>
@@ -99,13 +101,13 @@ const Product_list = ({ List, getAllCategories }) => {
 	);
 };
 
-const mapStateToProps = ({ categoryReducer }) => {
-	const { List } = categoryReducer;
+const mapStateToProps = ({ productReducer }) => {
+	const { List } = productReducer;
 	return { List };
 }
 
 const mapDispatchToProps = {
-	getAllCategories
+	getAllProducts
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Product_list);

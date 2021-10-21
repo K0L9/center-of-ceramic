@@ -9,7 +9,7 @@ import {
     UserPlus,
     Users,
     Chrome,
-    BarChart,Settings,Archive, LogIn
+    BarChart, Settings, Archive, LogIn
 } from 'react-feather';
 
 export const MENUITEMS = [
@@ -18,23 +18,23 @@ export const MENUITEMS = [
     },
     {
         title: 'Products', icon: Box, type: 'sub', active: false, children: [
-            {
-                title: 'Physical', type: 'sub', active: false, children: [
-                    { path: '/products/physical/category', title: 'Category', type: 'link' },
-                    { path: '/products/physical/sub-category', title: 'Sub Category', type: 'link' },
-                    { path: '/products/physical/product-list', title: 'Product List', type: 'link' },
-                    { path: '/products/physical/product-detail', title: 'Product Detail', type: 'link' },
-                    { path: '/products/physical/add-product', title: 'Add Product', type: 'link' },
-                ]
-            },
-            {
-                title: 'digital', type: 'sub', active: false, children: [
-                    { path: '/products/digital/digital-category', title: 'Category', type: 'link' },
-                    { path: '/products/digital/digital-sub-category', title: 'Sub Category', type: 'link' },
-                    { path: '/products/digital/digital-product-list', title: 'Product List', type: 'link' },
-                    { path: '/products/digital/digital-add-product', title: 'Add Product', type: 'link' },
-                ]
-            },
+            // {
+            // title: 'Physical', type: 'sub', active: false, children: [
+            { path: '/products/physical/category', title: 'Категорії', type: 'link' },
+            // { path: '/products/physical/sub-category', title: 'Sub Category', type: 'link' },
+            { path: '/products/physical/product-list', title: 'Product List', type: 'link' },
+            { path: '/products/physical/product-detail', title: 'Product Detail', type: 'link' },
+            { path: '/products/physical/add-product', title: 'Add Product', type: 'link' },
+            // ]
+            // },
+            // {
+            //     title: 'digital', type: 'sub', active: false, children: [
+            //         { path: '/products/digital/digital-category', title: 'Category', type: 'link' },
+            //         { path: '/products/digital/digital-sub-category', title: 'Sub Category', type: 'link' },
+            //         { path: '/products/digital/digital-product-list', title: 'Product List', type: 'link' },
+            //         { path: '/products/digital/digital-add-product', title: 'Add Product', type: 'link' },
+            //     ]
+            // },
         ]
     },
     {
@@ -50,7 +50,7 @@ export const MENUITEMS = [
         ]
     },
     {
-        title: 'Pages', icon: Clipboard , type: 'sub', active: false, children: [
+        title: 'Pages', icon: Clipboard, type: 'sub', active: false, children: [
             { path: '/pages/list-page', title: 'List Page', type: 'link' },
             { path: '/pages/create-page', title: 'Create Page', type: 'link' },
         ]
@@ -84,7 +84,7 @@ export const MENUITEMS = [
         ]
     },
     {
-        title: 'Reports',path:'/reports/report', icon: BarChart, type: 'link', active: false
+        title: 'Reports', path: '/reports/report', icon: BarChart, type: 'link', active: false
     },
     {
         title: 'Settings', icon: Settings, type: 'sub', children: [
@@ -92,9 +92,9 @@ export const MENUITEMS = [
         ]
     },
     {
-        title: 'Invoice',path:'/invoice', icon: Archive, type: 'link', active: false
+        title: 'Invoice', path: '/invoice', icon: Archive, type: 'link', active: false
     },
     {
-        title: 'Login',path:'/auth/login', icon: LogIn, type: 'link', active: false
+        title: 'Login', path: '/auth/login', icon: LogIn, type: 'link', active: false
     }
 ]
