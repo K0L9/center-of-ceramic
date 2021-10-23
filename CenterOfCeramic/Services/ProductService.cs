@@ -5,6 +5,7 @@ using CenterOfCeramic.Models.DTO;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,9 +19,8 @@ namespace CenterOfCeramic.Services
         {
             var config = new MapperConfiguration(cfg => 
             {
-                cfg.CreateMap<ProductDTO, Product>();
+                cfg.CreateMap<ProductDTO, Product>().ForMember(x => x.Photos, opt => opt.Ignore());
                 cfg.CreateMap<Product, ProductDTO>();
-                cfg.CreateMap<string, Photo>().ForMember(nameof(Photo.URL), opt => opt.MapFrom(x => x.ToString()));
             });
             mapper = new Mapper(config);
 
@@ -31,7 +31,23 @@ namespace CenterOfCeramic.Services
         {
             try
             {
+                var photos = new List<Photo>();
+                foreach (var el in productDTO.Images)
+                {
+                    if (el.Base64Str == String.Empty)
+                        break;
+
+                    var bytes = Convert.FromBase64String(el.Base64Str);
+                    using (var imageFile = new FileStream(@"C:\Users\Kolya\Desktop\" + el.Filename, FileMode.Create))
+                    {
+                        imageFile.Write(bytes, 0, bytes.Length);
+                        imageFile.Flush();
+                    }
+                    photos.Add(new Photo() { URL = @"C:\Users\Kolya\Desktop\" + el.Filename });
+                }
+
                 var product = mapper.Map<Product>(productDTO);
+                product.Photos = photos;
                 var addedProd = await _db.Products.AddAsync(product);
                 _db.SaveChanges();
                 return addedProd.Entity;
