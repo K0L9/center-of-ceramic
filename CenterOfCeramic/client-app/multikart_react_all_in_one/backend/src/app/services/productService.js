@@ -27,13 +27,17 @@ class prodService {
         return List
     }
     async addProduct(newProduct) {
-        fetch(this.URL_ADD, {
+        let isOk = await fetch(this.URL_ADD, {
             headers: {
                 "Content-Type": "application/json"
             },
             method: "POST",
             body: JSON.stringify(newProduct)
+        }).then(responce => {
+            return responce.status === 200;
         })
+
+        return isOk;
     }
     async deleteProduct(index) {
         fetch(this.URL_DELETE + "/" + index, {

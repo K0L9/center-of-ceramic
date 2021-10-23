@@ -27,6 +27,7 @@ import categoryService from "../../../app/services/categoryService"
 import productService from "../../../app/services/productService";
 
 import Select from 'react-select';
+import { ToastContainer, toast } from "react-toastify";
 
 const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List }) => {
 	useEffect(() => {
@@ -34,7 +35,6 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List }) => {
 
 		categoryService.getCategoryList().then(data => {
 			data.List.forEach(element => {
-				console.log("ELEMTT:", element)
 				tmpList.push({ value: element.id, label: element.name });
 			});
 			setCategoryList(tmpList);
@@ -121,8 +121,6 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List }) => {
 		setCategoryId(e.value);
 	}
 
-	//	image upload
-
 	const handleValidSubmit = (e) => {
 		e.preventDefault();
 
@@ -134,9 +132,24 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List }) => {
 		product.categoryId = categoryId;
 		product.images = imgsBase64;
 
-		productService.addProduct(product);
-		// addProduct(product);
+		productService.addProduct(product).then(isOk => {
+			console.log("IS OK: ", isOk);
+			if (isOk === true) {
+				toast.success("Категорія успішно створена!")
+			}
+			else {
+				toast.error("Виникли проблеми. Перевірте дані та спробуйте ще раз")
+			}
+		});
 	};
+	const Discard = () => {
+		toast.success("WORKS");
+		// setTitle("");
+		// setPrice(0);
+		// setDescription("");
+		// setCategoryId(0);
+		// setQuantity(0);
+	}
 	return (
 		<Fragment>
 			<Breadcrumb title="Add Product" parent="Physical" />
@@ -193,7 +206,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List }) => {
 											<div className="form form-label-center">
 												<FormGroup className="form-group mb-3 row">
 													<Label className="col-xl-3 col-sm-4 mb-0">
-														Product Name :
+														Product Name:
 													</Label>
 													<div className="col-xl-8 col-sm-7">
 														<Input
@@ -209,7 +222,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List }) => {
 												</FormGroup>
 												<FormGroup className="form-group mb-3 row">
 													<Label className="col-xl-3 col-sm-4 mb-0">
-														Price :
+														Price:
 													</Label>
 													<div className="col-xl-8 col-sm-7">
 														<Input
@@ -223,46 +236,12 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List }) => {
 													</div>
 													<div className="valid-feedback">Looks good!</div>
 												</FormGroup>
-												<FormGroup className="form-group mb-3 row">
-													<Label className="col-xl-3 col-sm-4 mb-0">
-														Product Code :
-													</Label>
-													<div className="col-xl-8 col-sm-7">
-														<Input
-															className="form-control "
-															name="product_code"
-															id="validationCustomUsername"
-															type="number"
-															required
-														/>
-													</div>
-													<div className="invalid-feedback offset-sm-4 offset-xl-3">
-														Please choose Valid Code.
-													</div>
-												</FormGroup>
 											</div>
-											{/* <Form> */}
 											<FormGroup className="form-group row">
 												<Label className="col-xl-3 col-sm-4 mb-0">
-													Select Size :
+													Total Products:
 												</Label>
-												<div className="col-xl-8 col-sm-7">
-													<select
-														className="form-control digits"
-														id="exampleFormControlSelect1"
-													>
-														<option>Small</option>
-														<option>Medium</option>
-														<option>Large</option>
-														<option>Extra Large</option>
-													</select>
-												</div>
-											</FormGroup>
-											<FormGroup className="form-group row">
-												<Label className="col-xl-3 col-sm-4 mb-0">
-													Total Products :
-												</Label>
-												<fieldset className="qty-box ml-0">
+												<fieldset className="ml-0">
 													<div className="input-group bootstrap-touchspin">
 														<div className="input-group-prepend">
 															<Button
@@ -299,7 +278,22 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List }) => {
 											</FormGroup>
 											<FormGroup className="form-group row">
 												<Label className="col-xl-3 col-sm-4">
-													Add Description :
+													Category:
+												</Label>
+												<div className="col-xl-8 col-sm-7 category-sm">
+													<Select
+														className="basic-single"
+														classNamePrefix="select"
+														defaultValue="Оберіть категорію"
+														name="categoryId"
+														onChange={SetCategory}
+														options={categoryList}
+													/>
+												</div>
+											</FormGroup>
+											<FormGroup className="form-group row">
+												<Label className="col-xl-3 col-sm-4">
+													Add Description:
 												</Label>
 												<div className="col-xl-8 col-sm-7 description-sm">
 													{/* <CKEditors
@@ -316,27 +310,12 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List }) => {
 													<textarea onChange={SetDescription} className="p10" />
 												</div>
 											</FormGroup>
-											<FormGroup className="form-group row">
-												<Label className="col-xl-3 col-sm-4">
-													Category:
-												</Label>
-												<div className="col-xl-8 col-sm-7 category-sm">
-													<Select
-														className="basic-single"
-														classNamePrefix="select"
-														defaultValue="Оберіть категорію"
-														name="categoryId"
-														onChange={SetCategory}
-														options={categoryList}
-													/>
-												</div>
-											</FormGroup>
 											{/* </Form> */}
 											<div className="offset-xl-3 offset-sm-4">
 												<Button type="submit" color="primary">
 													Add
 												</Button>
-												<Button type="button" color="light">
+												<Button type="button" color="light" onClick={Discard}>
 													Discard
 												</Button>
 											</div>
@@ -348,6 +327,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List }) => {
 					</Col>
 				</Row>
 			</Container>
+			<ToastContainer pauseOnHover={false}></ToastContainer>
 		</Fragment>
 	);
 };
