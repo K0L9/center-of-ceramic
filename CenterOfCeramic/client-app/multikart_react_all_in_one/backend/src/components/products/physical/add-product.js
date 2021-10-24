@@ -17,7 +17,7 @@ import {
 import one from "../../../assets/images/pro3/1.jpg";
 import user from "../../../assets/images/user.png";
 import { Product } from "../../../app/models/product"
-import { contextType } from "react-fontawesome";
+import FontAwesome, { contextType, FontAwesomeIcon } from "react-fontawesome";
 
 import { connect } from "react-redux"
 import { useEffect } from "react"
@@ -29,7 +29,11 @@ import productService from "../../../app/services/productService";
 import Select from 'react-select';
 import { ToastContainer, toast } from "react-toastify";
 
-const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List }) => {
+//import css
+import "./add-product.css"
+import { getDefaultNormalizer } from "@testing-library/dom";
+
+const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List, onSearchTermChange }) => {
 	useEffect(() => {
 		let tmpList = [];
 
@@ -43,16 +47,32 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List }) => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
+	let defaultBase64StateValues = [
+		{ base64Str: '', fileName: "" },
+		{ base64Str: '', fileName: "" },
+		{ base64Str: '', fileName: "" },
+		{ base64Str: '', fileName: "" },
+		{ base64Str: '', fileName: "" },
+		{ base64Str: '', fileName: "" },
+	]
+	let defaultDummyImgs = [
+		{ img: one },
+		{ img: one },
+		{ img: one },
+		{ img: one },
+		{ img: one },
+		{ img: one },
+	]
+
 	const [file, setFile] = useState();
 	const [dummyimgs, setDummyimgs] = useState([
-		{ img: user },
-		{ img: user },
-		{ img: user },
-		{ img: user },
-		{ img: user },
-		{ img: user },
+		{ img: one },
+		{ img: one },
+		{ img: one },
+		{ img: one },
+		{ img: one },
+		{ img: one },
 	]);
-
 	const [imgsBase64, setImgsBase64] = useState([
 		{ base64Str: '', fileName: "" },
 		{ base64Str: '', fileName: "" },
@@ -68,21 +88,26 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List }) => {
 	const [quantity, setQuantity] = useState(1);
 	const [categoryList, setCategoryList] = useState([]);
 
-	const _handleImgChange = (e, i) => {
+	const [currentImageSrc, setCurrentImageSrc] = useState(one);
+	const [indSmallImgActive, setIndSmallImgActive] = useState(0);
+
+	const _handleImgChange = (e) => {
 		let base64Str;
 		e.preventDefault();
 		let reader = new FileReader();
 		const image = e.target.files[0];
 		reader.onload = () => {
-			dummyimgs[i].img = reader.result;
+			dummyimgs[indSmallImgActive].img = reader.result;
 			setFile({ file: file });
 			setDummyimgs(dummyimgs);
 
 			base64Str = reader.result.replace("data:", "")
 				.replace(/^.+,/, "");
 
-			imgsBase64[i].base64Str = base64Str;
-			imgsBase64[i].fileName = image.name;
+			imgsBase64[indSmallImgActive].base64Str = base64Str;
+			imgsBase64[indSmallImgActive].fileName = image.name;
+
+			setCurrentImageSrc(reader.result);
 		};
 		reader.readAsDataURL(image);
 	};
@@ -143,12 +168,29 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List }) => {
 		});
 	};
 	const Discard = () => {
-		toast.success("WORKS");
-		// setTitle("");
-		// setPrice(0);
-		// setDescription("");
-		// setCategoryId(0);
-		// setQuantity(0);
+		setTitle("");
+		setPrice(0);
+		setDescription("");
+		setCategoryId(0);
+		setQuantity(1);
+
+		setDummyimgs(defaultDummyImgs);
+		setImgsBase64(defaultBase64StateValues);
+	}
+
+	const SetImageToBig = (src, i) => {
+		setCurrentImageSrc(src);
+		setIndSmallImgActive(i);
+	}
+	const CheckActiveSmallImg = (ind) => {
+		if (indSmallImgActive === ind)
+			return "activeSmImg";
+		return "";
+	}
+	const DeletePhoto = () => {
+		dummyimgs[indSmallImgActive] = { img: one };
+		imgsBase64[indSmallImgActive] = { base64Str: '', fileName: "" };
+		setCurrentImageSrc(one);
 	}
 	return (
 		<Fragment>
@@ -167,23 +209,40 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List }) => {
 										<div className="add-product">
 											<Row>
 												<Col xl="9 xl-50" sm="6 col-9">
-													<img
-														src={one}
-														alt=""
-														className="img-fluid image_zoom_1 blur-up lazyloaded"
-													/>
+													<div className="big-curr-img">
+														<img
+															src={currentImageSrc}
+															alt=""
+															className="img-fluid image_zoom_1 blur-up lazyloaded"
+														/>
+														<div className="btnGroup">
+
+															<button className="iconOverBtn" onClick={() => (document.getElementById("uploadFileInput").click())}>
+																<Input
+																	className="upload"
+																	type="file"
+																	hidden
+																	id="uploadFileInput"
+																	accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*"
+																	onChange={(e) => _handleImgChange(e)}
+																/>
+																Загрузити</button>
+
+															<button className="iconOverBtn" onClick={DeletePhoto}>Видалити</button>
+														</div>
+													</div>
 												</Col>
 												<Col xl="3 xl-50" sm="6 col-3">
 													<ul className="file-upload-product">
 														{dummyimgs.map((res, i) => {
 															return (
 																<li key={i}>
-																	<div className="box-input-file">
-																		<Input
+																	<div className={`box-input-file smallImgs ${CheckActiveSmallImg(i)}`} onClick={() => SetImageToBig(res.img, i)}>
+																		{/* <Input
 																			className="upload"
 																			type="file"
 																			onChange={(e) => _handleImgChange(e, i)}
-																		/>
+																		/> */}
 																		<img
 																			alt=""
 																			src={res.img}
@@ -215,6 +274,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List }) => {
 															id="validationCustom01"
 															type="text"
 															onChange={SetTitle}
+															value={title}
 															required
 														/>
 													</div>
@@ -231,6 +291,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List }) => {
 															id="validationCustom02"
 															type="number"
 															onChange={SetPrice}
+															value={price}
 															required
 														/>
 													</div>
@@ -282,6 +343,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List }) => {
 												</Label>
 												<div className="col-xl-8 col-sm-7 category-sm">
 													<Select
+														id="selectCategory"
 														className="basic-single"
 														classNamePrefix="select"
 														defaultValue="Оберіть категорію"
@@ -307,7 +369,10 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List }) => {
 
 													// onChange={SetDescription}
 													/> */}
-													<textarea onChange={SetDescription} className="p10" />
+													<textarea
+														className="p10"
+														value={description}
+														onChange={SetDescription} />
 												</div>
 											</FormGroup>
 											{/* </Form> */}
