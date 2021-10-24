@@ -42,6 +42,10 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List, onSearchT
 				tmpList.push({ value: element.id, label: element.name });
 			});
 			setCategoryList(tmpList);
+
+			if (tmpList.length === 0) {
+				toast.error("Немає жодної категорії для товару. Добавте категорію")
+			}
 		});
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -158,9 +162,9 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List, onSearchT
 		product.images = imgsBase64;
 
 		productService.addProduct(product).then(isOk => {
-			console.log("IS OK: ", isOk);
 			if (isOk === true) {
-				toast.success("Категорія успішно створена!")
+				toast.success("Товар успішно доданий")
+				Discard();
 			}
 			else {
 				toast.error("Виникли проблеми. Перевірте дані та спробуйте ще раз")
@@ -176,6 +180,8 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List, onSearchT
 
 		setDummyimgs(defaultDummyImgs);
 		setImgsBase64(defaultBase64StateValues);
+		setCurrentImageSrc(one);
+		setIndSmallImgActive(0);
 	}
 
 	const SetImageToBig = (src, i) => {
@@ -201,7 +207,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List, onSearchT
 					<Col sm="12">
 						<Card>
 							<CardHeader>
-								<h5>Add Product</h5>
+								<h5>Добавлення товару</h5>
 							</CardHeader>
 							<CardBody>
 								<Row className="product-adding">
@@ -226,7 +232,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List, onSearchT
 																	accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*"
 																	onChange={(e) => _handleImgChange(e)}
 																/>
-																Загрузити</button>
+																Завантажити</button>
 
 															<button className="iconOverBtn" onClick={DeletePhoto}>Видалити</button>
 														</div>
@@ -265,7 +271,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List, onSearchT
 											<div className="form form-label-center">
 												<FormGroup className="form-group mb-3 row">
 													<Label className="col-xl-3 col-sm-4 mb-0">
-														Product Name:
+														Назва:
 													</Label>
 													<div className="col-xl-8 col-sm-7">
 														<Input
@@ -282,7 +288,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List, onSearchT
 												</FormGroup>
 												<FormGroup className="form-group mb-3 row">
 													<Label className="col-xl-3 col-sm-4 mb-0">
-														Price:
+														Ціна:
 													</Label>
 													<div className="col-xl-8 col-sm-7">
 														<Input
@@ -300,7 +306,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List, onSearchT
 											</div>
 											<FormGroup className="form-group row">
 												<Label className="col-xl-3 col-sm-4 mb-0">
-													Total Products:
+													К-сть на складі:
 												</Label>
 												<fieldset className="ml-0">
 													<div className="input-group bootstrap-touchspin">
@@ -339,7 +345,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List, onSearchT
 											</FormGroup>
 											<FormGroup className="form-group row">
 												<Label className="col-xl-3 col-sm-4">
-													Category:
+													Категорія товару:
 												</Label>
 												<div className="col-xl-8 col-sm-7 category-sm">
 													<Select
@@ -347,6 +353,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List, onSearchT
 														className="basic-single"
 														classNamePrefix="select"
 														defaultValue="Оберіть категорію"
+														lang="ua"
 														name="categoryId"
 														onChange={SetCategory}
 														options={categoryList}
@@ -355,7 +362,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List, onSearchT
 											</FormGroup>
 											<FormGroup className="form-group row">
 												<Label className="col-xl-3 col-sm-4">
-													Add Description:
+													Опис:
 												</Label>
 												<div className="col-xl-8 col-sm-7 description-sm">
 													{/* <CKEditors
@@ -378,10 +385,10 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List, onSearchT
 											{/* </Form> */}
 											<div className="offset-xl-3 offset-sm-4">
 												<Button type="submit" color="primary">
-													Add
+													Підтвердити
 												</Button>
 												<Button type="button" color="light" onClick={Discard}>
-													Discard
+													Очистити
 												</Button>
 											</div>
 										</Form>

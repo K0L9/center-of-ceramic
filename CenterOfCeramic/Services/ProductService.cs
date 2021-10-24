@@ -17,7 +17,7 @@ namespace CenterOfCeramic.Services
         Mapper mapper;
         public ProductService(AppDbContext db)
         {
-            var config = new MapperConfiguration(cfg => 
+            var config = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<ProductDTO, Product>().ForMember(x => x.Photos, opt => opt.Ignore());
                 cfg.CreateMap<Product, ProductDTO>();
@@ -35,7 +35,7 @@ namespace CenterOfCeramic.Services
                 foreach (var el in productDTO.Images)
                 {
                     if (el.Base64Str == String.Empty)
-                        break;
+                        continue;
 
                     var bytes = Convert.FromBase64String(el.Base64Str);
                     using (var imageFile = new FileStream(@"C:\Users\Kolya\Desktop\" + el.Filename, FileMode.Create))
@@ -43,7 +43,7 @@ namespace CenterOfCeramic.Services
                         imageFile.Write(bytes, 0, bytes.Length);
                         imageFile.Flush();
                     }
-                    photos.Add(new Photo() { URL = @"C:\Users\Kolya\Desktop\" + el.Filename });
+                    photos.Add(new Photo() { URL = @"http://127.0.0.1:5002/" + el.Filename });
                 }
 
                 var product = mapper.Map<Product>(productDTO);

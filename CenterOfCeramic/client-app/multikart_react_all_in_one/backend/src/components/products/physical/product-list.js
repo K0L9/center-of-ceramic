@@ -12,13 +12,12 @@ import { getAllProducts } from "../../../app/actions/productAction"
 const Product_list = ({ List, getAllProducts }) => {
 	useEffect(() => {
 		productService.getProductList().then(data => {
+			console.log("DATA: ", data.List)
 			getAllProducts(data.List);
 		});
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
-
-	console.log("IS PRODUCTS: ", List);
 
 	return (
 		<Fragment>
@@ -49,7 +48,7 @@ const Product_list = ({ List, getAllProducts }) => {
 														<img
 															alt=""
 															className="img-fluid blur-up bg-img lazyloaded"
-															src={myData.image}
+															src={myData.photos[0].url}
 														/>
 													</a>
 													<div className="product-hover">
