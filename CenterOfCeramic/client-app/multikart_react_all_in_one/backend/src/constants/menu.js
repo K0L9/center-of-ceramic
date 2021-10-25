@@ -17,12 +17,12 @@ export const MENUITEMS = [
         path: '/dashboard', title: 'Dashboard', icon: Home, type: 'link', badgeType: 'primary', active: false
     },
     {
-        title: 'Products', icon: Box, type: 'sub', active: false, children: [
+        title: 'Товари', icon: Box, type: 'sub', active: false, children: [
             // {
             // title: 'Physical', type: 'sub', active: false, children: [
             { path: '/products/physical/category', title: 'Категорії', type: 'link' },
             // { path: '/products/physical/sub-category', title: 'Sub Category', type: 'link' },
-            { path: '/products/physical/product-list', title: 'Product List', type: 'link' },
+            { path: '/products/physical/product-list', title: 'Товари', type: 'link' },
             { path: '/products/physical/product-detail', title: 'Product Detail', type: 'link' },
             { path: '/products/physical/add-product', title: 'Добавлення товару', type: 'link' },
             // ]

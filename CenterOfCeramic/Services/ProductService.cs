@@ -65,6 +65,9 @@ namespace CenterOfCeramic.Services
                 if (product == null)
                     throw new Exception($"Product with id {id} is not found");
 
+                foreach (var ph in product.Photos)
+                    _db.Photos.Remove(ph);
+
                 _db.Products.Remove(product);
                 _db.SaveChanges();
             }

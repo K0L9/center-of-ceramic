@@ -40,12 +40,16 @@ class prodService {
         return isOk;
     }
     async deleteProduct(index) {
-        fetch(this.URL_DELETE + "/" + index, {
+        let isOk = await fetch(this.URL_DELETE + "/" + index, {
             headers: {
                 "Content-Type": "application/json"
             },
             method: "DELETE",
-        })
+        }).then(responce => {
+            return responce.status === 200;
+        });
+
+        return isOk;
     }
     async editProduct(product) {
         fetch(this.URL_EDIT + "/" + product.id, {

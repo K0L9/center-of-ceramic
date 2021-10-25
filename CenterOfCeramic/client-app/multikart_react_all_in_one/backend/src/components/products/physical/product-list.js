@@ -7,17 +7,28 @@ import { Button, Card, CardBody, Col, Container, Row } from "reactstrap";
 import { useEffect } from "react";
 import { connect } from "react-redux";
 import productService from "../../../app/services/productService"
-import { getAllProducts } from "../../../app/actions/productAction"
+import { deleteProduct, getAllProducts } from "../../../app/actions/productAction"
+import { toast, ToastContainer } from "react-toastify";
 
-const Product_list = ({ List, getAllProducts }) => {
+const Product_list = ({ List, getAllProducts, deleteProduct }) => {
 	useEffect(() => {
 		productService.getProductList().then(data => {
-			console.log("DATA: ", data.List)
 			getAllProducts(data.List);
 		});
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
+
+	const DeleteProduct = (indInDb, indInArr) => {
+		deleteProduct(indInArr);
+		productService.deleteProduct(indInDb).then(isOk => {
+			console.log("IS OK: ", isOk);
+			if (isOk == true)
+				toast.success("Товар успішно видалений");
+			else
+				toast.error("Виникли помилки. Оновіть сторінку та спробуйте ще раз");
+		});
+	}
 
 	return (
 		<Fragment>
@@ -60,7 +71,7 @@ const Product_list = ({ List, getAllProducts }) => {
 															</li>
 															<li>
 																<Button color="btn" type="button">
-																	<Trash2 className="deleteBtn" />
+																	<Trash2 className="deleteBtn" onClick={() => DeleteProduct(myData.id, i)} />
 																</Button>
 															</li>
 														</ul>
@@ -96,6 +107,7 @@ const Product_list = ({ List, getAllProducts }) => {
 					})}
 				</Row>
 			</Container>
+			<ToastContainer pauseOnHover={false}></ToastContainer>
 		</Fragment>
 	);
 };
@@ -106,7 +118,7 @@ const mapStateToProps = ({ productReducer }) => {
 }
 
 const mapDispatchToProps = {
-	getAllProducts
+	getAllProducts, deleteProduct
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Product_list);
