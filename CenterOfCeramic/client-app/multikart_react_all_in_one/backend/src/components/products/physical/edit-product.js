@@ -33,7 +33,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "./add-product.css"
 import { getDefaultNormalizer } from "@testing-library/dom";
 
-const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List, onSearchTermChange }) => {
+const Edit_product = ({ currProduct }) => {
     useEffect(() => {
         let tmpList = [];
 
@@ -43,9 +43,8 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List, onSearchT
             });
             setCategoryList(tmpList);
 
-            if (tmpList.length === 0) {
-                toast.error("Немає жодної категорії для товару. Добавте категорію")
-            }
+            console.log("CURR PRODUCT: ", currProduct);
+
         });
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -85,6 +84,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List, onSearchT
         { base64Str: '', fileName: "" },
         { base64Str: '', fileName: "" },
     ]);
+
     const [title, setTitle] = useState('');
     const [price, setPrice] = useState(0);
     const [description, setDescription] = useState('');
@@ -414,5 +414,4 @@ const mapDispatchToProps = {
     addProduct
 }
 
-
-export default connect(mapStateToProps, mapDispatchToProps)(Add_product);
+export default connect(mapStateToProps, mapDispatchToProps)(Edit_product);

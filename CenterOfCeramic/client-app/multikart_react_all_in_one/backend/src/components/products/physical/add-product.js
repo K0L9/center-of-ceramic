@@ -15,14 +15,10 @@ import {
 	Button,
 } from "reactstrap";
 import one from "../../../assets/images/pro3/1.jpg";
-import user from "../../../assets/images/user.png";
 import { Product } from "../../../app/models/product"
-import FontAwesome, { contextType, FontAwesomeIcon } from "react-fontawesome";
 
-import { connect } from "react-redux"
 import { useEffect } from "react"
 
-import { addProduct } from "../../../app/actions/productAction";
 import categoryService from "../../../app/services/categoryService"
 import productService from "../../../app/services/productService";
 
@@ -31,9 +27,8 @@ import { ToastContainer, toast } from "react-toastify";
 
 //import css
 import "./add-product.css"
-import { getDefaultNormalizer } from "@testing-library/dom";
 
-const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List, onSearchTermChange }) => {
+const Add_product = ({ afterPaste, onBlur, onChange }) => {
 	useEffect(() => {
 		let tmpList = [];
 
@@ -404,15 +399,4 @@ const Add_product = ({ afterPaste, onBlur, onChange, addProduct, List, onSearchT
 	);
 };
 
-
-const mapStateToProps = ({ categoryReducer }) => {
-	const { List } = categoryReducer;
-	return { List };
-}
-
-const mapDispatchToProps = {
-	addProduct
-}
-
-
-export default connect(mapStateToProps, mapDispatchToProps)(Add_product);
+export default Add_product;

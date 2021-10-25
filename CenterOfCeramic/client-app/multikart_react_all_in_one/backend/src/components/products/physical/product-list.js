@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import Breadcrumb from "../../common/breadcrumb";
 import data from "../../../assets/data/physical_list";
 import { Edit, Trash2 } from "react-feather";
@@ -7,10 +7,15 @@ import { Button, Card, CardBody, Col, Container, Row } from "reactstrap";
 import { useEffect } from "react";
 import { connect } from "react-redux";
 import productService from "../../../app/services/productService"
-import { deleteProduct, getAllProducts } from "../../../app/actions/productAction"
+import { deleteProduct, getAllProducts, setCurrProduct } from "../../../app/actions/productAction"
 import { toast, ToastContainer } from "react-toastify";
+import { Link, Redirect } from "react-router-dom";
 
-const Product_list = ({ List, getAllProducts, deleteProduct }) => {
+const Product_list = ({ ProductList, getAllProducts, deleteProduct, setCurrProduct }) => {
+
+	const [currProduct, setCurrProduct] = useState({});
+	const [isEdit, setIsEdit] = useState(false);
+
 	useEffect(() => {
 		productService.getProductList().then(data => {
 			getAllProducts(data.List);
@@ -22,20 +27,28 @@ const Product_list = ({ List, getAllProducts, deleteProduct }) => {
 	const DeleteProduct = (indInDb, indInArr) => {
 		deleteProduct(indInArr);
 		productService.deleteProduct(indInDb).then(isOk => {
-			console.log("IS OK: ", isOk);
 			if (isOk == true)
 				toast.success("Товар успішно видалений");
 			else
 				toast.error("Виникли помилки. Оновіть сторінку та спробуйте ще раз");
 		});
 	}
+	const HandleEdit = (myData) => {
+		setIsEdit(true);
+		setCurrProduct(myData);
+	}
+
+	if (isEdit === true)
+		return (
+			<Redirect to="edit-product" />
+		)
 
 	return (
 		<Fragment>
 			<Breadcrumb title="Product List" parent="Physical" />
 			<Container fluid={true}>
 				<Row className="products-admin ratio_asos">
-					{List.map((myData, i) => {
+					{ProductList.map((myData, i) => {
 						return (
 							<Col xl="3" sm="6" key={i}>
 								<Card>
@@ -65,8 +78,9 @@ const Product_list = ({ List, getAllProducts, deleteProduct }) => {
 													<div className="product-hover">
 														<ul>
 															<li>
+																<Link to="products/physical/product-list/edit-product" />
 																<Button color="btn" type="button">
-																	<Edit className="editBtn" />
+																	<Edit className="editBtn" onClick={() => HandleEdit(myData)} />
 																</Button>
 															</li>
 															<li>
@@ -113,12 +127,12 @@ const Product_list = ({ List, getAllProducts, deleteProduct }) => {
 };
 
 const mapStateToProps = ({ productReducer }) => {
-	const { List } = productReducer;
-	return { List };
+	const { ProductList } = productReducer;
+	return { ProductList };
 }
 
 const mapDispatchToProps = {
-	getAllProducts, deleteProduct
+	getAllProducts, deleteProduct, setCurrProduct
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Product_list);

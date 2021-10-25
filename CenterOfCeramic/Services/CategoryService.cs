@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using CenterOfCeramic.Data;
 using CenterOfCeramic.Models;
+using CenterOfCeramic.Models.DTO;
 using CenterOfCeramic.Models.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,17 +17,25 @@ namespace CenterOfCeramic.Services
         Mapper mapper;
         public CategoryService(AppDbContext db)
         {
-            var config = new MapperConfiguration(cfg => cfg.CreateMap<CategoryViewModel, Category>());
+            var config = new MapperConfiguration(cfg => 
+            {
+                cfg.CreateMap<SimpleCategoryDTO, Category>();
+                cfg.CreateMap<Category, CategoryDTO>().ForMember(nameof(CategoryDTO.ProductCount), opt => opt.MapFrom(x => x.Products.Count));
+            });
             mapper = new Mapper(config);
 
             _db = db;
         }
-        public IEnumerable<Category> GetAllCategories() => _db.Categories;
-        public async Task<Category> AddCategory(CategoryViewModel categoryVm)
+        public IEnumerable<CategoryDTO> GetAllCategories()
+        {
+            var categories = _db.Categories.Include(x => x.Products);
+            return mapper.Map<IEnumerable<CategoryDTO>>(categories);
+        }
+        public async Task<Category> AddCategory(SimpleCategoryDTO categoryDTO)
         {
             try
             {
-                var category = mapper.Map<Category>(categoryVm);
+                var category = mapper.Map<Category>(categoryDTO);
                 var addedCateg = await _db.Categories.AddAsync(category);
                 _db.SaveChanges();
                 return addedCateg.Entity;
@@ -51,7 +61,7 @@ namespace CenterOfCeramic.Services
                 throw new Exception("Error with delete category. Try again");
             }
         }
-        public Category EditCategory(int id, CategoryViewModel categoryVm)
+        public Category EditCategory(int id, SimpleCategoryDTO categoryDTO)
         {
             try
             {
@@ -59,7 +69,7 @@ namespace CenterOfCeramic.Services
                 if (category == null)
                     throw new Exception($"Category with id {id} is not found");
 
-                category.Name = categoryVm.Name;
+                category.Name = categoryDTO.Name;
                 _db.SaveChanges();
 
                 return category;

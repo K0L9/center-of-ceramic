@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace CenterOfCeramic.Models.ViewModels
 {
-    public class CategoryViewModel
+    public class SimpleCategoryDTO
     {
         public string Name { get; set; }
     }
-    public class CategoryWithProductsViewModel
+    public class CategoryWithProductsDTO
     {
         public string Name { get; set; }
         public List<string> Products { get; set; }

@@ -1,36 +1,37 @@
+import categoryTypes from "../types/category-type";
+import categoryType from "../types/category-type";
 const initialState = {
-    List: []
+    CategoryList: []
 }
 
 const categoryReducer = (state = initialState, action) => {
     switch (action.type) {
-        case "LOADED":
+        case categoryType.get:
             return {
                 ...state,
-                List: action.payload
+                CategoryList: action.payload
             }
-        case "ADD":
-            var addList = state.List.slice();
+        case categoryType.add:
+            var addList = state.CategoryList.slice();
             addList.push(action.payload);
             return {
                 ...state,
-                List: addList
+                CategoryList: addList
             }
-        case "DELETE":
-            var deletedList = state.List.slice();
+        case categoryType.delete:
+            var deletedList = state.CategoryList.slice();
             deletedList.splice(action.payload, 1);
             return {
                 ...state,
-                List: deletedList
+                CategoryList: deletedList
             }
-        case "EDIT":
-            var editedList = state.List.slice();
+        case categoryType.edit:
+            var editedList = state.CategoryList.slice();
             editedList[editedList.indexOf(editedList.find(x => x.id == action.payload.id))] = action.payload;
             return {
                 ...state,
-                List: editedList
+                CategoryList: editedList
             }
-
         default:
             return state;
     }

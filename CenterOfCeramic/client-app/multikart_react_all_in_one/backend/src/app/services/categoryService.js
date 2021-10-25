@@ -36,12 +36,16 @@ class catService {
         })
     }
     async deleteCategory(index) {
-        fetch(this.URL_DELETE + "/" + index, {
+        let isOk = await fetch(this.URL_DELETE + "/" + index, {
             headers: {
                 "Content-Type": "application/json"
             },
             method: "DELETE",
+        }).then(responce => {
+            return responce.status === 200;
         })
+
+        return isOk;
     }
     async editCategory(category) {
         fetch(this.URL_EDIT + "/" + category.id, {

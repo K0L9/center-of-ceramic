@@ -1,27 +1,29 @@
+import categoryType from "../types/category-type"
+
 export const getAllCategories = (list) => {
     return {
-        type: "LOADED",
+        type: categoryType.get,
         payload: list
     }
 }
 
 export const addCategory = (category) => {
     return {
-        type: "ADD",
+        type: categoryType.add,
         payload: category
     }
 }
 
 export const deleteCategory = (index) => {
     return {
-        type: "DELETE",
+        type: categoryType.delete,
         payload: index
     }
 }
 
 export const editCategory = (category) => {
     return {
-        type: "EDIT",
+        type: categoryType.edit,
         payload: category
     }
 }

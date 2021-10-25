@@ -72,15 +72,21 @@ const Datatable = ({ myData, myClass, multiSelectOption, pagination, handleDelet
 	// 	}
 	// 	toast.success("Successfully Deleted !");
 	// };
+
+	const [oldName, setOldName] = useState('');
 	const onOpenModal = (row) => {
+		setName(row.name);
+		setOldName(row.name);
 		setEditedRow(row);
 		setOpen(true);
 	};
 
-	const onCloseModal = () => {
-		if (name !== '') {
-			var categ = new Category(editedRow.id, name, editedRow.products);
-			handleEdit(categ);
+	const onCloseModal = (status) => {
+		if (status === "OK") {
+			if (name !== oldName) {
+				var categ = new Category(editedRow.id, name, editedRow.products);
+				handleEdit(categ);
+			}
 		}
 		setOpen(false);
 	};
@@ -183,21 +189,21 @@ const Datatable = ({ myData, myClass, multiSelectOption, pagination, handleDelet
 						></i>
 						<Modal
 							isOpen={open}
-							toggle={onCloseModal}
+							toggle={() => onCloseModal("CLOSE")}
 							style={{ overlay: { opacity: 0.1 } }}
 						>
-							<ModalHeader toggle={onCloseModal}>
+							<ModalHeader toggle={() => onCloseModal("CLOSE")}>
 								<p className="modal-title f-w-600 h5" id="exampleModalLabel2">
-									Edit Product
+									Редагування категорії
 								</p>
 							</ModalHeader>
 							<ModalBody>
 								<Form>
 									<FormGroup>
 										<Label htmlFor="recipient-name" className="col-form-label">
-											Category Name :
+											Назва:
 										</Label>
-										<Input type="text" className="form-control" onChange={onNameChange} value={row.name} />
+										<Input type="text" className="form-control" onChange={onNameChange} value={name} />
 									</FormGroup>
 									{/* <FormGroup>
 										<Label htmlFor="message-text" className="col-form-label">
@@ -215,16 +221,16 @@ const Datatable = ({ myData, myClass, multiSelectOption, pagination, handleDelet
 								<Button
 									type="button"
 									color="primary"
-									onClick={() => onCloseModal("VaryingMdo")}
+									onClick={() => onCloseModal("OK")}
 								>
-									Update
+									Зберегти
 								</Button>
 								<Button
 									type="button"
 									color="secondary"
-									onClick={() => onCloseModal("VaryingMdo")}
+									onClick={() => onCloseModal("CLOSE")}
 								>
-									Close
+									Відміна
 								</Button>
 							</ModalFooter>
 						</Modal>

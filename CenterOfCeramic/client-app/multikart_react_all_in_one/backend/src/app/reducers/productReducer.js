@@ -1,34 +1,41 @@
+import productTypes from "../types/product-types"
 const initialState = {
-    List: []
+    ProductList: [],
+    CurrentProduct: {}
 }
 
 const productReducer = (state = initialState, action) => {
     switch (action.type) {
-        case "LOADED":
+        case productTypes.get:
             return {
                 ...state,
-                List: action.payload
+                ProductList: action.payload
             }
-        case "ADD":
-            var addList = state.List.slice();
+        case productTypes.add:
+            var addList = state.ProductList.slice();
             addList.push(action.payload);
             return {
                 ...state,
-                List: addList
+                ProductList: addList
             }
-        case "DELETE":
-            var deletedList = state.List.slice();
+        case productTypes.delete:
+            var deletedList = state.ProductList.slice();
             deletedList.splice(action.payload, 1);
             return {
                 ...state,
-                List: deletedList
+                ProductList: deletedList
             }
-        case "EDIT":
-            var editedList = state.List.slice();
+        case productTypes.edit:
+            var editedList = state.ProductList.slice();
             editedList[editedList.indexOf(editedList.find(x => x.id == action.payload.id))] = action.payload;
             return {
                 ...state,
-                List: editedList
+                ProductList: editedList
+            }
+        case productTypes.setCurrProd:
+            return {
+                ...state,
+                CurrentProduct: action.payload
             }
 
         default:

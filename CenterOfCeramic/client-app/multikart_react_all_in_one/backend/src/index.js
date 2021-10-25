@@ -14,6 +14,7 @@ import Sub_category from "./components/products/physical/sub-category";
 import Product_list from "./components/products/physical/product-list";
 import Add_product from "./components/products/physical/add-product";
 import Product_detail from "./components/products/physical/product-detail";
+import Edit_product from "./components/products/physical/edit-product";
 
 //Product Digital
 import Digital_category from "./components/products/digital/digital-category";
@@ -87,6 +88,10 @@ const Root = () => {
 							<Route
 								path={`${process.env.PUBLIC_URL}/products/physical/add-product`}
 								component={Add_product}
+							/>
+							<Route
+								path={`${process.env.PUBLIC_URL}/products/physical/edit-product`}
+								component={Edit_product}
 							/>
 
 							<Route

@@ -25,7 +25,7 @@ namespace CenterOfCeramic.Controllers
             return Ok(_service.GetAllCategories());
         }
         [HttpPost("add-category")]
-        public IActionResult AddCategory([FromBody] CategoryViewModel categoryVm)
+        public IActionResult AddCategory([FromBody] SimpleCategoryDTO categoryVm)
         {
             try
             {
@@ -51,7 +51,7 @@ namespace CenterOfCeramic.Controllers
             }
         }
         [HttpPut("edit-category/{id}")]
-        public IActionResult EditCategory(int id, [FromBody] CategoryViewModel categoryVm)
+        public IActionResult EditCategory(int id, [FromBody] SimpleCategoryDTO categoryVm)
         {
             try
             {

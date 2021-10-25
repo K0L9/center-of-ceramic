@@ -1,8 +1,8 @@
 export class Category {
-    constructor(id, name, products) {
+    constructor(id, name, productCount) {
         this.id = id;
         this.name = name;
-        this.products = products;
+        this.productCount = productCount;
     }
 
 }

@@ -28,9 +28,10 @@ import { getAllCategories, addCategory, deleteCategory, editCategory } from "../
 import { Category as Categ } from "../../../app/models/categoty"
 import { ToastContainer, toast } from "react-toastify";
 
-const Category = ({ List, getAllCategories, addCategory, deleteCategory, editCategory }) => {
+const Category = ({ CategoryList, getAllCategories, addCategory, deleteCategory, editCategory }) => {
 	useEffect(() => {
 		categoryService.getCategoryList().then(data => {
+			console.log("DATA: ", data.List);
 			getAllCategories(data.List);
 		});
 
@@ -44,28 +45,35 @@ const Category = ({ List, getAllCategories, addCategory, deleteCategory, editCat
 		setOpen(true);
 	};
 
-	const onCloseModal = () => {
-		if (name !== '') {
-			var categ = new Categ();
-			categ.name = name;
+	const onCloseModal = (status) => {
+		if (status === "OK") {
+			if (name !== '') {
+				var categ = new Categ();
+				categ.name = name;
 
-			addCategory(categ);
-			categoryService.addCategory(categ);
-			toast.success("Категорія успішно додана");
+				addCategory(categ);
+				categoryService.addCategory(categ);
+				toast.success("Категорія успішно додана");
+			}
 		}
 		setOpen(false);
-
 	};
 	const onNameChange = (event) => {
 		setName(event.target.value);
 	}
 
 	const handleDelete = (index) => {
-		var indInDB = List[index].id;
-		categoryService.deleteCategory(indInDB);
+		var indInDB = CategoryList[index].id;
 		deleteCategory(index);
+		categoryService.deleteCategory(indInDB).then(isOk => {
+			if (isOk == true) {
+				toast.success("Категорія успішно видалена");
+			}
+			else {
+				toast.success("Виникли помилки при видаленні категорії. Спробуйте ще раз");
+			}
+		});
 
-		toast.success("Категорія успішно видалена");
 	}
 	const handleEdit = (category) => {
 		categoryService.editCategory(category);
@@ -143,7 +151,7 @@ const Category = ({ List, getAllCategories, addCategory, deleteCategory, editCat
 											<Button
 												type="button"
 												color="secondary"
-												onClick={() => onCloseModal("VaryingMdo")}
+												onClick={() => onCloseModal("OK")}
 											>
 												Зберегти
 											</Button>
@@ -153,7 +161,7 @@ const Category = ({ List, getAllCategories, addCategory, deleteCategory, editCat
 								<div className="clearfix"></div>
 								<div id="basicScenario" className="product-physical">
 									<Datatable
-										myData={List}
+										myData={CategoryList}
 										multiSelectOption={false}
 										pageSize={10}
 										pagination={true}
@@ -168,13 +176,14 @@ const Category = ({ List, getAllCategories, addCategory, deleteCategory, editCat
 				</Row>
 			</Container>
 			{/* <!-- Container-fluid Ends--> */}
+			<ToastContainer pauseOnHover={false}></ToastContainer>
 		</Fragment>
 	);
 };
 
 const mapStateToProps = ({ categoryReducer }) => {
-	const { List } = categoryReducer;
-	return { List };
+	const { CategoryList } = categoryReducer;
+	return { CategoryList };
 }
 
 const mapDispatchToProps = {
