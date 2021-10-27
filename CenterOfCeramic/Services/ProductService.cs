@@ -38,7 +38,7 @@ namespace CenterOfCeramic.Services
                         continue;
 
                     var bytes = Convert.FromBase64String(el.Base64Str);
-                    using (var imageFile = new FileStream(@"C:\Users\Kolya\Desktop\" + el.Filename, FileMode.Create))
+                    using (var imageFile = new FileStream(@"E:\borya plutkas\ready\" + el.Filename, FileMode.Create))
                     {
                         imageFile.Write(bytes, 0, bytes.Length);
                         imageFile.Flush();
@@ -80,7 +80,7 @@ namespace CenterOfCeramic.Services
         {
             try
             {
-                var product = _db.Products.Find(id);
+                var product = _db.Products.Include(x => x.Photos).SingleOrDefault(x => x.Id == id);
                 if (product == null)
                     throw new Exception($"Product with id {id} is not found");
 
@@ -88,6 +88,34 @@ namespace CenterOfCeramic.Services
 
                 mapper.Map<ProductDTO, Product>(productDTO, product);
                 product.Id = oldId;
+
+                var photos = new List<Photo>(product.Photos);
+
+                for (int i = 0; i < productDTO.Images.Count; i++)
+                {
+                    if(productDTO.Images.ElementAt(i).IsDeleted)
+                    {
+                        photos.RemoveAt(i);
+                    }
+                    else if (productDTO.Images.ElementAt(i).Base64Str != String.Empty) // it is edit photo
+                    {
+                        var bytes = Convert.FromBase64String(productDTO.Images.ElementAt(i).Base64Str);
+                        using (var imageFile = new FileStream(@"E:\borya plutkas\ready\" + productDTO.Images.ElementAt(i).Filename, FileMode.Create))
+                        {
+                            imageFile.Write(bytes, 0, bytes.Length);
+                            imageFile.Flush();
+                        }
+                        Photo newPhoto = new Photo() { URL = @"http://127.0.0.1:5002/" + productDTO.Images.ElementAt(i).Filename };
+
+                        if (photos.Count <= i)
+                            photos.Add(newPhoto);
+                        else
+                            photos[i] = newPhoto;
+                    }
+                }
+
+                product.Photos = photos;
+
                 _db.SaveChanges();
 
                 return product;

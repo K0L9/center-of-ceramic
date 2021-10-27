@@ -32,8 +32,11 @@ import { ToastContainer, toast } from "react-toastify";
 //import css
 import "./add-product.css"
 import { getDefaultNormalizer } from "@testing-library/dom";
+import { Redirect } from "react-router-dom";
 
-const Edit_product = ({ currProduct }) => {
+
+const Edit_product = ({ CurrentProduct }) => {
+
     useEffect(() => {
         let tmpList = [];
 
@@ -43,57 +46,60 @@ const Edit_product = ({ currProduct }) => {
             });
             setCategoryList(tmpList);
 
-            console.log("CURR PRODUCT: ", currProduct);
-
+            if (tmpList.length === 0) {
+                toast.error("Немає жодної категорії для товару. Добавте категорію")
+            }
         });
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     let defaultBase64StateValues = [
-        { base64Str: '', fileName: "" },
-        { base64Str: '', fileName: "" },
-        { base64Str: '', fileName: "" },
-        { base64Str: '', fileName: "" },
-        { base64Str: '', fileName: "" },
-        { base64Str: '', fileName: "" },
+        { base64Str: '', fileName: "", isDeleted: false },
+        { base64Str: '', fileName: "", isDeleted: false },
+        { base64Str: '', fileName: "", isDeleted: false },
+        { base64Str: '', fileName: "", isDeleted: false },
+        { base64Str: '', fileName: "", isDeleted: false },
+        { base64Str: '', fileName: "", isDeleted: false },
     ]
     let defaultDummyImgs = [
-        { img: one },
-        { img: one },
-        { img: one },
-        { img: one },
-        { img: one },
-        { img: one },
+        { img: CurrentProduct.photos === undefined || CurrentProduct.photos[0] === undefined ? one : CurrentProduct.photos[0].url },
+        { img: CurrentProduct.photos === undefined || CurrentProduct.photos[1] === undefined ? one : CurrentProduct.photos[1].url },
+        { img: CurrentProduct.photos === undefined || CurrentProduct.photos[2] === undefined ? one : CurrentProduct.photos[2].url },
+        { img: CurrentProduct.photos === undefined || CurrentProduct.photos[3] === undefined ? one : CurrentProduct.photos[3].url },
+        { img: CurrentProduct.photos === undefined || CurrentProduct.photos[4] === undefined ? one : CurrentProduct.photos[4].url },
+        { img: CurrentProduct.photos === undefined || CurrentProduct.photos[5] === undefined ? one : CurrentProduct.photos[5].url },
     ]
 
     const [file, setFile] = useState();
     const [dummyimgs, setDummyimgs] = useState([
-        { img: one },
-        { img: one },
-        { img: one },
-        { img: one },
-        { img: one },
-        { img: one },
+        { img: CurrentProduct.photos === undefined || CurrentProduct.photos[0] === undefined ? one : CurrentProduct.photos[0].url },
+        { img: CurrentProduct.photos === undefined || CurrentProduct.photos[1] === undefined ? one : CurrentProduct.photos[1].url },
+        { img: CurrentProduct.photos === undefined || CurrentProduct.photos[2] === undefined ? one : CurrentProduct.photos[2].url },
+        { img: CurrentProduct.photos === undefined || CurrentProduct.photos[3] === undefined ? one : CurrentProduct.photos[3].url },
+        { img: CurrentProduct.photos === undefined || CurrentProduct.photos[4] === undefined ? one : CurrentProduct.photos[4].url },
+        { img: CurrentProduct.photos === undefined || CurrentProduct.photos[5] === undefined ? one : CurrentProduct.photos[5].url },
     ]);
     const [imgsBase64, setImgsBase64] = useState([
-        { base64Str: '', fileName: "" },
-        { base64Str: '', fileName: "" },
-        { base64Str: '', fileName: "" },
-        { base64Str: '', fileName: "" },
-        { base64Str: '', fileName: "" },
-        { base64Str: '', fileName: "" },
+        { base64Str: '', fileName: "", isDeleted: false },
+        { base64Str: '', fileName: "", isDeleted: false },
+        { base64Str: '', fileName: "", isDeleted: false },
+        { base64Str: '', fileName: "", isDeleted: false },
+        { base64Str: '', fileName: "", isDeleted: false },
+        { base64Str: '', fileName: "", isDeleted: false },
     ]);
 
-    const [title, setTitle] = useState('');
-    const [price, setPrice] = useState(0);
-    const [description, setDescription] = useState('');
-    const [categoryId, setCategoryId] = useState(43);
-    const [quantity, setQuantity] = useState(1);
+    const [title, setTitle] = useState(CurrentProduct.title);
+    const [price, setPrice] = useState(CurrentProduct.price);
+    const [description, setDescription] = useState(CurrentProduct.description);
+    const [categoryId, setCategoryId] = useState(CurrentProduct.categoryId);
+    const [quantity, setQuantity] = useState(CurrentProduct.quantity);
     const [categoryList, setCategoryList] = useState([]);
 
-    const [currentImageSrc, setCurrentImageSrc] = useState(one);
+    const [currentImageSrc, setCurrentImageSrc] = useState(dummyimgs[0].img);
     const [indSmallImgActive, setIndSmallImgActive] = useState(0);
+
+    const [isRedirect, setIsRedirect] = useState(false);
 
     const _handleImgChange = (e) => {
         let base64Str;
@@ -110,6 +116,7 @@ const Edit_product = ({ currProduct }) => {
 
             imgsBase64[indSmallImgActive].base64Str = base64Str;
             imgsBase64[indSmallImgActive].fileName = image.name;
+            imgsBase64[indSmallImgActive].isDeleted = false;
 
             setCurrentImageSrc(reader.result);
         };
@@ -117,11 +124,7 @@ const Edit_product = ({ currProduct }) => {
     };
 
     const IncrementItem = () => {
-        if (quantity < 9) {
-            setQuantity(quantity + 1);
-        } else {
-            return null;
-        }
+        setQuantity(quantity + 1);
     };
     const DecreaseItem = () => {
         if (quantity > 0) {
@@ -138,9 +141,6 @@ const Edit_product = ({ currProduct }) => {
         setTitle(e.target.value);
     }
     const SetDescription = (e) => {
-        // console.log("EDITOR GETDATA: ", e.editor.getData())
-        // setDescription(e.editor.getData());
-
         setDescription(e.target.value);
     }
     const SetPrice = (e) => {
@@ -154,6 +154,7 @@ const Edit_product = ({ currProduct }) => {
         e.preventDefault();
 
         var product = new Product();
+        product.id = CurrentProduct.id;
         product.title = title;
         product.price = price;
         product.description = description;
@@ -161,26 +162,26 @@ const Edit_product = ({ currProduct }) => {
         product.categoryId = categoryId;
         product.images = imgsBase64;
 
-        productService.addProduct(product).then(isOk => {
+        productService.editProduct(product).then(isOk => {
             if (isOk === true) {
-                toast.success("Товар успішно доданий")
-                Discard();
+                setIsRedirect(true);
+                toast.success("Товар успішно відредагований");
             }
             else {
-                toast.error("Виникли проблеми. Перевірте дані та спробуйте ще раз")
+                toast.error("Виникли помилки. Перевірте дані та спробуйте ще раз");
             }
         });
     };
     const Discard = () => {
-        setTitle("");
-        setPrice(0);
-        setDescription("");
-        setCategoryId(0);
-        setQuantity(1);
+        setTitle(CurrentProduct.title);
+        setPrice(CurrentProduct.price);
+        setDescription(CurrentProduct.description);
+        setCategoryId(CurrentProduct.categoryId);
+        setQuantity(CurrentProduct.quantity);
 
         setDummyimgs(defaultDummyImgs);
         setImgsBase64(defaultBase64StateValues);
-        setCurrentImageSrc(one);
+        setCurrentImageSrc(defaultDummyImgs[0].img);
         setIndSmallImgActive(0);
     }
 
@@ -195,9 +196,16 @@ const Edit_product = ({ currProduct }) => {
     }
     const DeletePhoto = () => {
         dummyimgs[indSmallImgActive] = { img: one };
-        imgsBase64[indSmallImgActive] = { base64Str: '', fileName: "" };
+        imgsBase64[indSmallImgActive] = { base64Str: '', fileName: "", isDeleted: true };
         setCurrentImageSrc(one);
     }
+
+    if (isRedirect === true) {
+        return (
+            <Redirect to="/products/physical/product-list" />
+        )
+    }
+
     return (
         <Fragment>
             <Breadcrumb title="Add Product" parent="Physical" />
@@ -357,6 +365,7 @@ const Edit_product = ({ currProduct }) => {
                                                         name="categoryId"
                                                         onChange={SetCategory}
                                                         options={categoryList}
+                                                        value={categoryList.filter(option => option.value === categoryId)}
                                                     />
                                                 </div>
                                             </FormGroup>
@@ -388,7 +397,7 @@ const Edit_product = ({ currProduct }) => {
                                                     Підтвердити
                                                 </Button>
                                                 <Button type="button" color="light" onClick={Discard}>
-                                                    Очистити
+                                                    Відмінити зміни
                                                 </Button>
                                             </div>
                                         </Form>
@@ -405,9 +414,9 @@ const Edit_product = ({ currProduct }) => {
 };
 
 
-const mapStateToProps = ({ categoryReducer }) => {
-    const { List } = categoryReducer;
-    return { List };
+const mapStateToProps = ({ productReducer }) => {
+    const { CurrentProduct } = productReducer;
+    return { CurrentProduct };
 }
 
 const mapDispatchToProps = {

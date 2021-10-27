@@ -20,5 +20,6 @@ namespace CenterOfCeramic.Models.DTO
     {
         public string Filename { get; set; }
         public string Base64Str { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

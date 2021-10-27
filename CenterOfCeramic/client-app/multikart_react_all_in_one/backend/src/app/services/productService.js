@@ -52,13 +52,17 @@ class prodService {
         return isOk;
     }
     async editProduct(product) {
-        fetch(this.URL_EDIT + "/" + product.id, {
+        let isOk = await fetch(this.URL_EDIT + "/" + product.id, {
             headers: {
                 "Content-Type": "application/json"
             },
             method: "PUT",
             body: JSON.stringify(product)
-        })
+        }).then(responce => {
+            return responce.status === 200;
+        });
+
+        return isOk;
     }
 }
 

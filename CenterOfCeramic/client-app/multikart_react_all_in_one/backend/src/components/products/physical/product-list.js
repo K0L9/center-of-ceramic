@@ -10,10 +10,10 @@ import productService from "../../../app/services/productService"
 import { deleteProduct, getAllProducts, setCurrProduct } from "../../../app/actions/productAction"
 import { toast, ToastContainer } from "react-toastify";
 import { Link, Redirect } from "react-router-dom";
+import one from "../../../assets/images/pro3/1.jpg";
 
 const Product_list = ({ ProductList, getAllProducts, deleteProduct, setCurrProduct }) => {
 
-	const [currProduct, setCurrProduct] = useState({});
 	const [isEdit, setIsEdit] = useState(false);
 
 	useEffect(() => {
@@ -40,7 +40,7 @@ const Product_list = ({ ProductList, getAllProducts, deleteProduct, setCurrProdu
 
 	if (isEdit === true)
 		return (
-			<Redirect to="edit-product" />
+			<Redirect push to="edit-product" />
 		)
 
 	return (
@@ -72,7 +72,7 @@ const Product_list = ({ ProductList, getAllProducts, deleteProduct, setCurrProdu
 														<img
 															alt=""
 															className="img-fluid blur-up bg-img lazyloaded"
-															src={myData.photos[0].url}
+															src={myData.photos.length === 0 ? one : myData.photos[0].url}
 														/>
 													</a>
 													<div className="product-hover">

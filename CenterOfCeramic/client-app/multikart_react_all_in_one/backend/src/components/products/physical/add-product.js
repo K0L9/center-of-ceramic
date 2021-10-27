@@ -112,11 +112,7 @@ const Add_product = ({ afterPaste, onBlur, onChange }) => {
 	};
 
 	const IncrementItem = () => {
-		if (quantity < 9) {
-			setQuantity(quantity + 1);
-		} else {
-			return null;
-		}
+		setQuantity(quantity + 1);
 	};
 	const DecreaseItem = () => {
 		if (quantity > 0) {
@@ -133,9 +129,6 @@ const Add_product = ({ afterPaste, onBlur, onChange }) => {
 		setTitle(e.target.value);
 	}
 	const SetDescription = (e) => {
-		// console.log("EDITOR GETDATA: ", e.editor.getData())
-		// setDescription(e.editor.getData());
-
 		setDescription(e.target.value);
 	}
 	const SetPrice = (e) => {

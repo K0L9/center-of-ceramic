@@ -31,7 +31,6 @@ import { ToastContainer, toast } from "react-toastify";
 const Category = ({ CategoryList, getAllCategories, addCategory, deleteCategory, editCategory }) => {
 	useEffect(() => {
 		categoryService.getCategoryList().then(data => {
-			console.log("DATA: ", data.List);
 			getAllCategories(data.List);
 		});
 
