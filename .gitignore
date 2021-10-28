@@ -3,7 +3,10 @@
 .vs/CenterOfCeramic/v16/.suo
 node_modules
 .next
+<<<<<<< HEAD
 frontend
+=======
+>>>>>>> e3d689d7605d07a3e0cee9ae41d22141ef8d1945
 CenterOfCeramic/obj/CenterOfCeramic.csproj.nuget.dgspec.json
 CenterOfCeramic/obj/CenterOfCeramic.csproj.nuget.g.props
 CenterOfCeramic/obj/CenterOfCeramic.csproj.nuget.g.targets
