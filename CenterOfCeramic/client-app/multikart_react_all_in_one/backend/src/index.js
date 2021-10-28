@@ -10,6 +10,7 @@ import Dashboard from "./components/dashboard";
 
 // Products physical
 import Category from "./components/products/physical/category";
+import Country from "./components/products/physical/countries";
 import Sub_category from "./components/products/physical/sub-category";
 import Product_list from "./components/products/physical/product-list";
 import Add_product from "./components/products/physical/add-product";
@@ -72,6 +73,10 @@ const Root = () => {
 							<Route
 								path={`${process.env.PUBLIC_URL}/products/physical/category`}
 								component={Category}
+							/>
+							<Route
+								path={`${process.env.PUBLIC_URL}/products/physical/country`}
+								component={Country}
 							/>
 							<Route
 								path={`${process.env.PUBLIC_URL}/products/physical/sub-category`}

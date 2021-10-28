@@ -44,6 +44,7 @@ namespace CenterOfCeramic
 
             services.AddTransient<CategoryService>();
             services.AddTransient<ProductService>();
+            services.AddTransient<CountryService>();
 
             services.AddControllersWithViews()
                 .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);

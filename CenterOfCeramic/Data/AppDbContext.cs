@@ -12,7 +12,9 @@ namespace CenterOfCeramic.Data
         public AppDbContext(DbContextOptions options) : base(options) { }
 
         public virtual DbSet<Category> Categories { get; set; }
-        public virtual DbSet<Product> Products{ get; set; }
-        public virtual DbSet<Photo> Photos{ get; set; }
+        public virtual DbSet<Product> Products { get; set; }
+        public virtual DbSet<Photo> Photos { get; set; }
+        public virtual DbSet<Country> Countries { get; set; }
+        public virtual DbSet<Review> Reviews { get; set; }
     }
 }
