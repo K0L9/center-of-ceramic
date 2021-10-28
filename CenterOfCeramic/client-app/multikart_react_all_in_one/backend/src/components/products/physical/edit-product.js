@@ -24,6 +24,7 @@ import { useEffect } from "react"
 
 import { addProduct } from "../../../app/actions/productAction";
 import categoryService from "../../../app/services/categoryService"
+import countryService from "../../../app/services/countryService"
 import productService from "../../../app/services/productService";
 
 import Select from 'react-select';
@@ -38,15 +39,26 @@ import { Redirect } from "react-router-dom";
 const Edit_product = ({ CurrentProduct }) => {
 
     useEffect(() => {
-        let tmpList = [];
+        let tmpListCateg = [];
+        let tmpListCountry = [];
 
         categoryService.getCategoryList().then(data => {
             data.List.forEach(element => {
-                tmpList.push({ value: element.id, label: element.name });
+                tmpListCateg.push({ value: element.id, label: element.name });
             });
-            setCategoryList(tmpList);
+            setCategoryList(tmpListCateg);
 
-            if (tmpList.length === 0) {
+            if (tmpListCateg.length === 0) {
+                toast.error("Немає жодної категорії для товару. Добавте категорію")
+            }
+        });
+        countryService.getCountryList().then(data => {
+            data.List.forEach(element => {
+                tmpListCountry.push({ value: element.id, label: element.name });
+            });
+            setCountryList(tmpListCountry);
+
+            if (tmpListCountry.length === 0) {
                 toast.error("Немає жодної категорії для товару. Добавте категорію")
             }
         });
@@ -93,8 +105,10 @@ const Edit_product = ({ CurrentProduct }) => {
     const [price, setPrice] = useState(CurrentProduct.price);
     const [description, setDescription] = useState(CurrentProduct.description);
     const [categoryId, setCategoryId] = useState(CurrentProduct.categoryId);
+    const [countryId, setCountryId] = useState(CurrentProduct.countryId);
     const [quantity, setQuantity] = useState(CurrentProduct.quantity);
     const [categoryList, setCategoryList] = useState([]);
+    const [countryList, setCountryList] = useState([]);
 
     const [currentImageSrc, setCurrentImageSrc] = useState(dummyimgs[0].img);
     const [indSmallImgActive, setIndSmallImgActive] = useState(0);
@@ -149,6 +163,9 @@ const Edit_product = ({ CurrentProduct }) => {
     const SetCategory = (e) => {
         setCategoryId(e.value);
     }
+    const SetCountry = (e) => {
+        setCountryId(e.value);
+    }
 
     const handleValidSubmit = (e) => {
         e.preventDefault();
@@ -160,6 +177,7 @@ const Edit_product = ({ CurrentProduct }) => {
         product.description = description;
         product.quantity = quantity;
         product.categoryId = categoryId;
+        product.countryId = countryId;
         product.images = imgsBase64;
 
         productService.editProduct(product).then(isOk => {
@@ -177,6 +195,7 @@ const Edit_product = ({ CurrentProduct }) => {
         setPrice(CurrentProduct.price);
         setDescription(CurrentProduct.description);
         setCategoryId(CurrentProduct.categoryId);
+        setCategoryId(CurrentProduct.countryId);
         setQuantity(CurrentProduct.quantity);
 
         setDummyimgs(defaultDummyImgs);
@@ -366,6 +385,24 @@ const Edit_product = ({ CurrentProduct }) => {
                                                         onChange={SetCategory}
                                                         options={categoryList}
                                                         value={categoryList.filter(option => option.value === categoryId)}
+                                                    />
+                                                </div>
+                                            </FormGroup>
+                                            <FormGroup className="form-group row">
+                                                <Label className="col-xl-3 col-sm-4">
+                                                    Країна-виробник товару:
+                                                </Label>
+                                                <div className="col-xl-8 col-sm-7 category-sm">
+                                                    <Select
+                                                        id="selectCountry"
+                                                        className="basic-single"
+                                                        classNamePrefix="select"
+                                                        defaultValue="Оберіть країну-виробника"
+                                                        lang="ru-RU"
+                                                        name="countryId"
+                                                        onChange={SetCountry}
+                                                        options={countryList}
+                                                        value={countryList.filter(option => option.value === countryId)}
                                                     />
                                                 </div>
                                             </FormGroup>
