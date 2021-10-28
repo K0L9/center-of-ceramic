@@ -32,8 +32,9 @@ import { ToastContainer, toast } from "react-toastify";
 
 //import css
 import "./add-product.css"
-import { getDefaultNormalizer } from "@testing-library/dom";
+import { getDefaultNormalizer, prettyDOM } from "@testing-library/dom";
 import { Redirect } from "react-router-dom";
+import { isCallExpression } from "@babel/types";
 
 
 const Edit_product = ({ CurrentProduct }) => {
@@ -102,7 +103,9 @@ const Edit_product = ({ CurrentProduct }) => {
     ]);
 
     const [title, setTitle] = useState(CurrentProduct.title);
-    const [price, setPrice] = useState(CurrentProduct.price);
+    const [isSale, setIsSale] = useState(CurrentProduct.isSale);
+    const [price, setPrice] = useState(CurrentProduct.isSale === false ? CurrentProduct.price : CurrentProduct.oldPrice);
+    const [newPrice, setNewPrice] = useState(CurrentProduct.isSale === true ? CurrentProduct.price : undefined);
     const [description, setDescription] = useState(CurrentProduct.description);
     const [categoryId, setCategoryId] = useState(CurrentProduct.categoryId);
     const [countryId, setCountryId] = useState(CurrentProduct.countryId);
@@ -166,6 +169,9 @@ const Edit_product = ({ CurrentProduct }) => {
     const SetCountry = (e) => {
         setCountryId(e.value);
     }
+    const SetNewPrice = (e) => {
+        setNewPrice(e.target.value);
+    }
 
     const handleValidSubmit = (e) => {
         e.preventDefault();
@@ -173,12 +179,22 @@ const Edit_product = ({ CurrentProduct }) => {
         var product = new Product();
         product.id = CurrentProduct.id;
         product.title = title;
-        product.price = price;
         product.description = description;
         product.quantity = quantity;
         product.categoryId = categoryId;
         product.countryId = countryId;
         product.images = imgsBase64;
+        product.isSale = isSale;
+
+        if (!isSale) {
+            product.price = price;
+        }
+        else {
+            product.oldPrice = price;
+            product.price = newPrice;
+        }
+
+        console.log("FINAL PRODUCT: ", product);
 
         productService.editProduct(product).then(isOk => {
             if (isOk === true) {
@@ -193,6 +209,7 @@ const Edit_product = ({ CurrentProduct }) => {
     const Discard = () => {
         setTitle(CurrentProduct.title);
         setPrice(CurrentProduct.price);
+        setIsSale(CurrentProduct.isSale);
         setDescription(CurrentProduct.description);
         setCategoryId(CurrentProduct.categoryId);
         setCategoryId(CurrentProduct.countryId);
@@ -218,6 +235,13 @@ const Edit_product = ({ CurrentProduct }) => {
         imgsBase64[indSmallImgActive] = { base64Str: '', fileName: "", isDeleted: true };
         setCurrentImageSrc(one);
     }
+    const SetIsSaleHandle = (event) => {
+        let isChecked = event.target.checked;
+        setIsSale(isChecked);
+
+        if (isChecked === false)
+            setNewPrice(0);
+    }
 
     if (isRedirect === true) {
         return (
@@ -234,7 +258,7 @@ const Edit_product = ({ CurrentProduct }) => {
                     <Col sm="12">
                         <Card>
                             <CardHeader>
-                                <h5>Добавлення товару</h5>
+                                <h5>Редагування товару</h5>
                             </CardHeader>
                             <CardBody>
                                 <Row className="product-adding">
@@ -313,6 +337,8 @@ const Edit_product = ({ CurrentProduct }) => {
                                                     </div>
                                                     <div className="valid-feedback">Looks good!</div>
                                                 </FormGroup>
+
+
                                                 <FormGroup className="form-group mb-3 row">
                                                     <Label className="col-xl-3 col-sm-4 mb-0">
                                                         Ціна:
@@ -321,15 +347,41 @@ const Edit_product = ({ CurrentProduct }) => {
                                                         <Input
                                                             className="form-control mb-0"
                                                             name="price"
-                                                            id="validationCustom02"
+                                                            id="price" //validationCustom02
                                                             type="number"
                                                             onChange={SetPrice}
                                                             value={price}
                                                             required
+                                                            disabled={isSale}
                                                         />
                                                     </div>
                                                     <div className="valid-feedback">Looks good!</div>
                                                 </FormGroup>
+
+                                                <FormGroup className="form-group mb-3 row">
+                                                    <Label className="col-xl-3 col-sm-4 mb-0">
+                                                        <Input
+                                                            className="checkbox_animated"
+                                                            id="chk-ani2"
+                                                            type="checkbox"
+                                                            onChange={SetIsSaleHandle}
+                                                            checked={isSale}
+                                                        />
+                                                        Акція:
+                                                    </Label>
+                                                    <div className="col-xl-8 col-sm-7">
+                                                        <Input
+                                                            className="form-control mb-0"
+                                                            name="newPrice"
+                                                            id="newPrice"
+                                                            type="number"
+                                                            onChange={SetNewPrice}
+                                                            value={newPrice}
+                                                            disabled={!isSale}
+                                                        />
+                                                    </div>
+                                                </FormGroup>
+
                                             </div>
                                             <FormGroup className="form-group row">
                                                 <Label className="col-xl-3 col-sm-4 mb-0">
