@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
@@ -10,6 +10,8 @@ import PostLoader from "../PostLoader";
 import { CompareContext } from "../../../helpers/Compare/CompareContext";
 import { CurrencyContext } from "../../../helpers/Currency/CurrencyContext";
 import emptySearch from "../../../public/assets/images/empty-search.jpg";
+
+import productService from "../../../services/product-service"
 
 const GET_PRODUCTS = gql`
   query products($type: _CategoryType!, $indexFrom: Int!, $limit: Int!) {
@@ -62,14 +64,14 @@ const TabContent = ({
   return (
     <Row className="no-slider">
       {!data ||
-      !data.products ||
-      !data.products.items ||
-      data.products.items.length === 0 ||
-      loading ? (
+        !data.products ||
+        !data.products.items ||
+        data.products.items.length === 0 ||
+        loading ? (
         data &&
-        data.products &&
-        data.products.items &&
-        data.products.items.length === 0 ? (
+          data.products &&
+          data.products.items &&
+          data.products.items.length === 0 ? (
           <Col xs="12">
             <div>
               <div className="col-sm-12 empty-cart-cls text-center">
@@ -151,6 +153,17 @@ const SpecialProducts = ({
     },
   });
 
+  const [list, setProductList] = useState({});
+
+  useEffect(() => {
+    productService.getAllProducts().then(list => {
+      setProductList({ products: { items: list } });
+    })
+  }, [])
+
+  console.log("LIST: ", list)
+  console.log("DATA: ", data)
+
   return (
     <div>
       <section className={designClass}>
@@ -196,7 +209,7 @@ const SpecialProducts = ({
 
             <TabPanel>
               <TabContent
-                data={data}
+                data={list}
                 loading={loading}
                 startIndex={0}
                 endIndex={8}

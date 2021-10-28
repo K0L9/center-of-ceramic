@@ -24,7 +24,7 @@ const Fashion = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/x-icon" href={favicon ? favicon : ""} />
       </Helmet>
-      <ModalComponent />
+      {/* <ModalComponent />
       <HeaderOne logoName={"logo.png"} topClass="top-header" />
       <Banner />
       <CollectionBanner />
@@ -32,8 +32,8 @@ const Fashion = () => {
         title="title1 section-t-space"
         inner="title-inner1"
         hrClass={false}
-      />
-      <TopCollection
+      /> */}
+      {/* <TopCollection
         noTitle="null"
         backImage={true}
         type="fashion"
@@ -43,8 +43,8 @@ const Fashion = () => {
         designClass="section-b-space p-t-0 ratio_asos"
         noSlider="false"
         cartClass="cart-info cart-wrap"
-      />
-      <Parallax />
+      /> */}
+      {/* <Parallax /> */}
       <SpecialProducts
         type="fashion"
         backImage={true}

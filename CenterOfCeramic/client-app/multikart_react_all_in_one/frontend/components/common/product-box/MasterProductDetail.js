@@ -40,22 +40,22 @@ const MasterProductDetail = ({
           </del>
         </h4>
 
-        {product.variants.map((vari) => {
+        {/* {product.variants.map((vari) => {
           var findItem = uniqueTags.find((x) => x.color === vari.color);
           if (!findItem) uniqueTags.push(vari);
-        })}
+        })} */}
 
         {product.type === "jewellery" ||
-        product.type === "nursery" ||
-        product.type === "beauty" ||
-        product.type === "electronics" ||
-        product.type === "goggles" ||
-        product.type === "watch" ||
-        product.type === "pets" ? (
+          product.type === "nursery" ||
+          product.type === "beauty" ||
+          product.type === "electronics" ||
+          product.type === "goggles" ||
+          product.type === "watch" ||
+          product.type === "pets" ? (
           ""
         ) : (
           <>
-            {title !== "Product style 4" && uniqueTags[0].color ? (
+            {/* {title !== "Product style 4" && uniqueTags[0].color ? (
               <ul className="color-variant">
                 {uniqueTags.map((vari, i) => {
                   return (
@@ -72,7 +72,25 @@ const MasterProductDetail = ({
               </ul>
             ) : (
               ""
-            )}
+            )} */}
+            {/* {title !== "Product style 4" && uniqueTags[0].color ? (
+              <ul className="color-variant">
+                {uniqueTags.map((vari, i) => {
+                  return (
+                    <li
+                      className={vari.color}
+                      key={i}
+                      title={vari.color}
+                      onClick={() =>
+                        variantChangeByColor(vari.image_id, product.images)
+                      }
+                    ></li>
+                  );
+                })}
+              </ul>
+            ) : (
+              ""
+            )} */}
           </>
         )}
       </div>

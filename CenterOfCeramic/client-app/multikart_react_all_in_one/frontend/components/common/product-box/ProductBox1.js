@@ -63,18 +63,18 @@ const ProductItem = ({
         </div>
         <div className="front" onClick={clickProductDetail}>
           <Media
-            src={`${image ? image : product.images[0].src}`}
+            src={`${image ? image : product.photos[0].url}`}
             className="img-fluid"
             alt=""
           />
         </div>
-        {backImage ? (
-          product.images[1] === "undefined" ? (
+        {/* {backImage ? (
+          product.photos[1] === "undefined" ? (
             "false"
           ) : (
             <div className="back" onClick={clickProductDetail}>
               <Media
-                src={`${image ? image : product.images[1].src}`}
+                src={`${image ? image : product.photos[1].url}`}
                 className="img-fluid m-auto"
                 alt=""
               />
@@ -82,7 +82,7 @@ const ProductItem = ({
           )
         ) : (
           ""
-        )}
+        )} */}
 
         <div className={cartClass}>
           <button title="Add to cart" onClick={addCart}>
@@ -107,15 +107,14 @@ const ProductItem = ({
               <Row className="compare-modal">
                 <Col lg="12">
                   <div className="media">
-                    <Media
-                      src={`${
-                        product.variants && image
-                          ? image
-                          : product.images[0].src
-                      }`}
+                    {/* <Media
+                      src={`${product.variants && image
+                        ? image
+                        : product.photos[0].url
+                        }`}
                       alt=""
                       className="img-fluid"
-                    />
+                    /> */}
                     <div className="media-body align-self-center text-center">
                       <h5>
                         <i className="fa fa-check"></i>Item{" "}
@@ -140,20 +139,19 @@ const ProductItem = ({
             </ModalBody>
           </Modal>
         </div>
-        {product.images ? (
+        {product.photos ? (
           <ul className="product-thumb-list">
-            {product.images.map((img, i) => (
+            {product.photos.map((img, i) => (
               <li
-                className={`grid_thumb_img ${
-                  img.src === image ? "active" : ""
-                }`}
+                className={`grid_thumb_img ${img.url === image ? "active" : ""
+                  }`}
                 key={i}
               >
                 <a href={null} title="Add to Wishlist">
                   <Media
-                    src={`${img.src}`}
+                    src={`${img.url}`}
                     alt="wishlist"
-                    onClick={() => onClickHandle(img.src)}
+                    onClick={() => onClickHandle(img.url)}
                   />
                 </a>
               </li>
@@ -182,13 +180,12 @@ const ProductItem = ({
           <Row>
             <Col lg="6" xs="12">
               <div className="quick-view-img">
-                <Media
-                  src={`${
-                    product.variants && image ? image : product.images[0].src
-                  }`}
+                {/* <Media
+                  src={`${product.variants && image ? image : product.photos[0].url
+                    }`}
                   alt=""
                   className="img-fluid"
-                />
+                /> */}
               </div>
             </Col>
             <Col lg="6" className="rtl-text">
@@ -198,17 +195,17 @@ const ProductItem = ({
                   {currency.symbol}
                   {(product.price * currency.value).toFixed(2)}
                 </h3>
-                {product.variants ? (
+                {/* {product.variants ? (
                   <ul className="color-variant">
                     {uniqueTags ? (
                       <ul className="color-variant">
                         {product.type === "jewellery" ||
-                        product.type === "nursery" ||
-                        product.type === "beauty" ||
-                        product.type === "electronics" ||
-                        product.type === "goggles" ||
-                        product.type === "watch" ||
-                        product.type === "pets" ? (
+                          product.type === "nursery" ||
+                          product.type === "beauty" ||
+                          product.type === "electronics" ||
+                          product.type === "goggles" ||
+                          product.type === "watch" ||
+                          product.type === "pets" ? (
                           ""
                         ) : (
                           <>
@@ -221,7 +218,7 @@ const ProductItem = ({
                                   onClick={() =>
                                     variantChangeByColor(
                                       vari.image_id,
-                                      product.images
+                                      product.photos
                                     )
                                   }
                                 ></li>
@@ -236,7 +233,7 @@ const ProductItem = ({
                   </ul>
                 ) : (
                   ""
-                )}
+                )} */}
                 <div className="border-product">
                   <h6 className="product-title">product details</h6>
                   <p>{product.description}</p>

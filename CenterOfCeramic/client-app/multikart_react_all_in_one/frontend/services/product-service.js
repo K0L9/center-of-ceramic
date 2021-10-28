@@ -5,7 +5,6 @@ class prodService {
         let List = fetch(this.URL_GET)
             .then(response => response.json())
             .then(list => {
-                console.log("LIST: ", list);
                 return list;
             })
 

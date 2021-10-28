@@ -10,8 +10,6 @@ import PostLoader from "../PostLoader";
 import { CompareContext } from "../../../helpers/Compare/CompareContext";
 import search from "../../../public/assets/images/empty-search.jpg";
 
-import productService from "../../../services/product-service";
-
 const GET_PRODUCTS = gql`
   query products($type: _CategoryType!, $indexFrom: Int!, $limit: Int!) {
     products(type: $type, indexFrom: $indexFrom, limit: $limit) {
@@ -83,10 +81,6 @@ const TopCollection = ({
       setDelayProduct(false);
     }, 1);
   }, [delayProduct]);
-
-  productService.getAllProducts().then(list => {
-    console.log("LIST IS COLLECTION: ", list);
-  })
 
   return (
     <>
