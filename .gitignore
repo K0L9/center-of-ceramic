@@ -3,6 +3,8 @@
 .vs/CenterOfCeramic/v16/.suo
 node_modules
 .next
+bin
+obj
 CenterOfCeramic/obj/CenterOfCeramic.csproj.nuget.dgspec.json
 CenterOfCeramic/obj/CenterOfCeramic.csproj.nuget.g.props
 CenterOfCeramic/obj/CenterOfCeramic.csproj.nuget.g.targets
