@@ -2,6 +2,10 @@
 .vs/CenterOfCeramic/config/applicationhost.config
 .vs/CenterOfCeramic/v16/.suo
 node_modules
+bin
+obj
+images
+.next
 CenterOfCeramic/obj/CenterOfCeramic.csproj.nuget.dgspec.json
 CenterOfCeramic/obj/CenterOfCeramic.csproj.nuget.g.props
 CenterOfCeramic/obj/CenterOfCeramic.csproj.nuget.g.targets
