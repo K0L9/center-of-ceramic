@@ -21,6 +21,7 @@ export const MENUITEMS = [
             // {
             // title: 'Physical', type: 'sub', active: false, children: [
             { path: '/products/physical/category', title: 'Категорії', type: 'link' },
+            { path: '/products/physical/country', title: 'Країна-виробник', type: 'link' },
             // { path: '/products/physical/sub-category', title: 'Sub Category', type: 'link' },
             { path: '/products/physical/product-list', title: 'Товари', type: 'link' },
             { path: '/products/physical/product-detail', title: 'Product Detail', type: 'link' },
