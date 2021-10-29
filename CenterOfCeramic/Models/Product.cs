@@ -16,16 +16,23 @@ namespace CenterOfCeramic.Models
         public string Description { get; set; }
         public int Quantity { get; set; }
 
+        public bool IsSale { get; set; }
+        public int? OldPrice { get; set; }
+
         //Foreign key
         public int CategoryId { get; set; }
+        public int CountryId { get; set; }
 
         //Navigation props
         public virtual ICollection<Photo> Photos { get; set; }
+        public virtual ICollection<Review> Reviews { get; set; }
         public virtual Category Category { get; set; }
+        public virtual Country Country { get; set; }
 
         public Product()
         {
             Photos = new HashSet<Photo>();
+            Reviews = new HashSet<Review>();
         }
     }
 }

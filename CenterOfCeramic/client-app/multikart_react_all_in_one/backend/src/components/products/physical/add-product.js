@@ -21,6 +21,7 @@ import { useEffect } from "react"
 
 import categoryService from "../../../app/services/categoryService"
 import productService from "../../../app/services/productService";
+import countryService from "../../../app/services/countryService";
 
 import Select from 'react-select';
 import { ToastContainer, toast } from "react-toastify";
@@ -30,16 +31,27 @@ import "./add-product.css"
 
 const Add_product = ({ afterPaste, onBlur, onChange }) => {
 	useEffect(() => {
-		let tmpList = [];
+		let tmpListCateg = [];
+		let tmpListCountry = [];
 
 		categoryService.getCategoryList().then(data => {
 			data.List.forEach(element => {
-				tmpList.push({ value: element.id, label: element.name });
+				tmpListCateg.push({ value: element.id, label: element.name });
 			});
-			setCategoryList(tmpList);
+			setCategoryList(tmpListCateg);
 
-			if (tmpList.length === 0) {
+			if (tmpListCateg.length === 0) {
 				toast.error("Немає жодної категорії для товару. Добавте категорію")
+			}
+		});
+		countryService.getCountryList().then(data => {
+			data.List.forEach(element => {
+				tmpListCountry.push({ value: element.id, label: element.name });
+			});
+			setCountryList(tmpListCountry);
+
+			if (tmpListCountry.length === 0) {
+				toast.error("Немає жодної країни-виробника для товару. Добавте країну")
 			}
 		});
 
@@ -83,9 +95,11 @@ const Add_product = ({ afterPaste, onBlur, onChange }) => {
 	const [title, setTitle] = useState('');
 	const [price, setPrice] = useState(0);
 	const [description, setDescription] = useState('');
-	const [categoryId, setCategoryId] = useState(43);
+	const [categoryId, setCategoryId] = useState(0);
+	const [countryId, setCountryId] = useState(0);
 	const [quantity, setQuantity] = useState(1);
 	const [categoryList, setCategoryList] = useState([]);
+	const [countryList, setCountryList] = useState([]);
 
 	const [currentImageSrc, setCurrentImageSrc] = useState(one);
 	const [indSmallImgActive, setIndSmallImgActive] = useState(0);
@@ -137,6 +151,9 @@ const Add_product = ({ afterPaste, onBlur, onChange }) => {
 	const SetCategory = (e) => {
 		setCategoryId(e.value);
 	}
+	const SetCountry = (e) => {
+		setCountryId(e.value);
+	}
 
 	const handleValidSubmit = (e) => {
 		e.preventDefault();
@@ -147,6 +164,7 @@ const Add_product = ({ afterPaste, onBlur, onChange }) => {
 		product.description = description;
 		product.quantity = quantity;
 		product.categoryId = categoryId;
+		product.countryId = countryId;
 		product.images = imgsBase64;
 
 		productService.addProduct(product).then(isOk => {
@@ -164,6 +182,7 @@ const Add_product = ({ afterPaste, onBlur, onChange }) => {
 		setPrice(0);
 		setDescription("");
 		setCategoryId(0);
+		setCountryId(0);
 		setQuantity(1);
 
 		setDummyimgs(defaultDummyImgs);
@@ -345,6 +364,23 @@ const Add_product = ({ afterPaste, onBlur, onChange }) => {
 														name="categoryId"
 														onChange={SetCategory}
 														options={categoryList}
+													/>
+												</div>
+											</FormGroup>
+											<FormGroup className="form-group row">
+												<Label className="col-xl-3 col-sm-4">
+													Країна-виробник товару:
+												</Label>
+												<div className="col-xl-8 col-sm-7 category-sm">
+													<Select
+														id="selectCountry"
+														className="basic-single"
+														classNamePrefix="select"
+														defaultValue="Оберіть країну-виробника"
+														lang="ru-RU"
+														name="countryId"
+														onChange={SetCountry}
+														options={countryList}
 													/>
 												</div>
 											</FormGroup>
