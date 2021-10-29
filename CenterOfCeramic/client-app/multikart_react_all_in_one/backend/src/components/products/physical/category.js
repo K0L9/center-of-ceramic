@@ -50,9 +50,15 @@ const Category = ({ CategoryList, getAllCategories, addCategory, deleteCategory,
 				var categ = new Categ();
 				categ.name = name;
 
-				addCategory(categ);
-				categoryService.addCategory(categ);
-				toast.success("Категорія успішно додана");
+				categoryService.addCategory(categ).then(isOk => {
+					if (isOk === true) {
+						toast.success("Категорія успішно додана");
+						addCategory(categ);
+					}
+					else {
+						toast.error("Виникли помилки при добавлені категорії. Спробуйте ще раз");
+					}
+				});
 			}
 		}
 		setOpen(false);

@@ -1,10 +1,10 @@
-class catService {
-    URL_GET = "/api/Category/get-all-categories"
-    URL_ADD = "/api/Category/add-category"
-    URL_DELETE = "/api/Category/delete-category"
-    URL_EDIT = "/api/Category/edit-category"
+class countService {
+    URL_GET = "/api/Country/get-all-countries"
+    URL_ADD = "/api/Country/add-country"
+    URL_DELETE = "/api/Country/delete-country"
+    URL_EDIT = "/api/Country/edit-country"
 
-    async getCategoryList() {
+    async getCountryList() {
         const List = await fetch(this.URL_GET, {
             method: 'get',
             dataType: 'json',
@@ -26,7 +26,7 @@ class catService {
             })
         return List
     }
-    async addCategory(newCateg) {
+    async addCountry(newCateg) {
         let isOk = await fetch(this.URL_ADD, {
             headers: {
                 "Content-Type": "application/json"
@@ -39,7 +39,7 @@ class catService {
 
         return isOk;
     }
-    async deleteCategory(index) {
+    async deleteCountry(index) {
         let isOk = await fetch(this.URL_DELETE + "/" + index, {
             headers: {
                 "Content-Type": "application/json"
@@ -51,7 +51,7 @@ class catService {
 
         return isOk;
     }
-    async editCategory(category) {
+    async editCountry(category) {
         fetch(this.URL_EDIT + "/" + category.id, {
             headers: {
                 "Content-Type": "application/json"
@@ -62,5 +62,5 @@ class catService {
     }
 }
 
-let categoryService = new catService();
-export default categoryService;
+let countryService = new countService();
+export default countryService;
