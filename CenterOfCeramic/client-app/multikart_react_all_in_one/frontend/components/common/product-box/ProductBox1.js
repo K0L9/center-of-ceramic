@@ -187,6 +187,12 @@ const ProductItem = ({
                   alt=""
                   className="img-fluid"
                 /> */}
+                <Media
+                  src={`${product.variants && image ? image : product.photos[0].url
+                    }`}
+                  alt=""
+                  className="img-fluid"
+                />
               </div>
             </Col>
             <Col lg="6" className="rtl-text">
@@ -236,7 +242,7 @@ const ProductItem = ({
                   ""
                 )} */}
                 <div className="border-product">
-                  <h6 className="product-title">product details</h6>
+                  <h6 className="product-title">Опис</h6>
                   <p>{product.description}</p>
                 </div>
                 <div className="product-description border-product">

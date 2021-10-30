@@ -38,12 +38,16 @@ namespace CenterOfCeramic.Services
                         continue;
 
                     var bytes = Convert.FromBase64String(el.Base64Str);
-                    using (var imageFile = new FileStream(@"E:\borya plutkas\ready\" + el.Filename, FileMode.Create))
+
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(el.Filename);
+                    var fullPath = ENV.FilePath + fileName;
+
+                    using (var imageFile = new FileStream(fullPath, FileMode.Create))
                     {
                         imageFile.Write(bytes, 0, bytes.Length);
                         imageFile.Flush();
                     }
-                    photos.Add(new Photo() { URL = @"http://127.0.0.1:5002/" + el.Filename });
+                    photos.Add(new Photo() { URL = @"http://127.0.0.1:5002/" + fileName });
                 }
 
                 var product = mapper.Map<Product>(productDTO);
