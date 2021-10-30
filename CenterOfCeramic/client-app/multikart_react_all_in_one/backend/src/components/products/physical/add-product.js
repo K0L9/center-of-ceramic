@@ -16,6 +16,7 @@ import {
 } from "reactstrap";
 import one from "../../../assets/images/pro3/1.jpg";
 import { Product } from "../../../app/models/product"
+import { connect } from "react-redux";
 
 import { useEffect } from "react"
 
@@ -25,11 +26,17 @@ import countryService from "../../../app/services/countryService";
 
 import Select from 'react-select';
 import { ToastContainer, toast } from "react-toastify";
+import { ChromePicker } from "react-color"
+import rgbHex from "rgb-hex";
+
+import { setVariant } from "../../../app/actions/variantActions";
+// import { variantReducer } from "../../../app/reducers/variantReducer"
 
 //import css
 import "./add-product.css"
+import { Disc } from "react-feather";
 
-const Add_product = ({ afterPaste, onBlur, onChange }) => {
+const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant }) => {
 	useEffect(() => {
 		let tmpListCateg = [];
 		let tmpListCountry = [];
@@ -205,6 +212,77 @@ const Add_product = ({ afterPaste, onBlur, onChange }) => {
 		imgsBase64[indSmallImgActive] = { base64Str: '', fileName: "" };
 		setCurrentImageSrc(one);
 	}
+
+	//variants
+	const [variants, setVariants] = useState([{ id: 0 }]);
+	const [isColorPicker, setIsColorPicker] = useState(false);
+	const [color, setColor] = useState("#fff");
+	const [indCurrVariant, setIndCurrVariant] = useState(0);
+	const [variantsStyles, setVariantsStyles] = useState([]);
+
+	const AddVariant = () => {
+		let tmpVariants = variants.slice();
+		tmpVariants.push({ id: tmpVariants.length });
+		setVariants(tmpVariants);
+		SaveProductToState();
+		Discard();
+		setIndCurrVariant(tmpVariants.length - 1)
+	}
+	const handleColorChange = () => {
+		setIsColorPicker(!isColorPicker);
+	}
+	const OnColorChange = (c) => {
+		setColor("#" + rgbHex(c.rgb.r, c.rgb.g, c.rgb.b, c.rgb.a))
+		var tmpStyles = variantsStyles.slice();
+		tmpStyles[indCurrVariant] = { background: color };
+		setVariantsStyles(tmpStyles);
+	}
+	const CheckIfActiveVariant = (ind) => {
+		if (ind === indCurrVariant)
+			return "activeVariant"
+
+		return null;
+	}
+	const SetCurrVariant = (ind) => {
+
+		setIndCurrVariant(ind);
+
+		SaveProductToState();
+
+		let newProduct = productVariants[ind];
+		if (newProduct !== undefined)
+			SetProductToFields(newProduct);
+
+	}
+	const GetVariantStyle = (ind) => {
+		return variantsStyles[ind];
+	}
+	const SetProductToFields = (product) => {
+		setTitle(product.title);
+		setPrice(product.price);
+		setQuantity(product.quantity);
+		setCountryId(product.countryId);
+		setCategoryId(product.categoryId);
+		setDescription(product.description);
+		setDummyimgs(product.dummyimgs)
+		setImgsBase64(product.images)
+		setIndCurrVariant(product.varId);
+		setCurrentImageSrc(product.dummyimgs[0].img);
+		setIndSmallImgActive(0);
+	}
+	const SaveProductToState = () => {
+		let product = {};
+		product.title = title;
+		product.price = price;
+		product.description = description;
+		product.quantity = quantity;
+		product.categoryId = categoryId;
+		product.countryId = countryId;
+		product.images = imgsBase64;
+		product.dummyimgs = dummyimgs;
+		product.varId = indCurrVariant;
+		setVariant(product);
+	}
 	return (
 		<Fragment>
 			<Breadcrumb title="Add Product" parent="Physical" />
@@ -271,6 +349,30 @@ const Add_product = ({ afterPaste, onBlur, onChange }) => {
 										</div>
 									</Col>
 									<Col xl="7">
+										<div className="variants">
+											{variants.map((data, ind) => (
+												<div className={`variantColor ${CheckIfActiveVariant(ind)}`} onClick={() => SetCurrVariant(ind)} style={GetVariantStyle(ind)} >
+
+												</div>
+											))}
+											<div className="variantColor" onClick={AddVariant} >
+
+											</div>
+											{isColorPicker === true &&
+												<div id="chromePickerContainer">
+													<ChromePicker
+														color={color}
+														onChange={c =>
+															OnColorChange(c)
+														} />
+												</div>}
+											<div className="variantsBtnGroup">
+												<Button type="button" color="light" onClick={handleColorChange} >Змінити колір</Button>
+											</div>
+
+										</div>
+
+
 										<Form
 											className="needs-validation add-product-form"
 											onSubmit={handleValidSubmit}
@@ -430,4 +532,13 @@ const Add_product = ({ afterPaste, onBlur, onChange }) => {
 	);
 };
 
-export default Add_product;
+const mapStateToProps = ({ variantReducer }) => {
+	const { productVariants } = variantReducer;
+	return { productVariants };
+}
+
+const mapDispatchToProps = {
+	setVariant
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Add_product);

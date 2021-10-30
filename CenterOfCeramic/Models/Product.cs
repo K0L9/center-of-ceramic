@@ -19,15 +19,19 @@ namespace CenterOfCeramic.Models
         public bool IsSale { get; set; }
         public int? OldPrice { get; set; }
 
+        public string ColorInGroup { get; set; }
+
         //Foreign key
         public int CategoryId { get; set; }
         public int CountryId { get; set; }
+        public int? ColorGroupId { get; set; }
 
         //Navigation props
         public virtual ICollection<Photo> Photos { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }
         public virtual Category Category { get; set; }
         public virtual Country Country { get; set; }
+        public virtual ColorGroup ColorGroup { get; set; }
 
         public Product()
         {

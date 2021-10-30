@@ -187,12 +187,12 @@ const ProductItem = ({
                   alt=""
                   className="img-fluid"
                 /> */}
-                <Media
+                {/* <Media
                   src={`${product.variants && image ? image : product.photos[0].url
                     }`}
                   alt=""
                   className="img-fluid"
-                />
+                /> */}
               </div>
             </Col>
             <Col lg="6" className="rtl-text">
