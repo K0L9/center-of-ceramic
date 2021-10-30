@@ -54,12 +54,13 @@ const ProductItem = ({
       }
     });
   };
+  console.log("PRODUCT: ", product);
   return (
     <div className="product-box product-wrap">
       <div className="img-wrapper">
         <div className="lable-block">
           {product.new === true ? <span className="lable3">new</span> : ""}
-          {product.sale === true ? <span className="lable4">on sale</span> : ""}
+          {product.isSale === true ? <span className="lable4">on sale</span> : ""}
         </div>
         <div className="front" onClick={clickProductDetail}>
           <Media
