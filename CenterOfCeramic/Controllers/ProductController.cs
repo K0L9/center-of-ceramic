@@ -25,11 +25,11 @@ namespace CenterOfCeramic.Controllers
             return Ok(_service.GetAllProducts());
         }
         [HttpPost("add-product")]
-        public IActionResult AddProduct([FromBody] ProductDTO productDTO)
+        public IActionResult AddProduct([FromBody] List<ProductDTO> productsDTO)
         {
             try
             {
-                var newProd = _service.AddProduct(productDTO);
+                var newProd = _service.AddProduct(productsDTO);
                 return Ok(newProd);
             }
             catch (Exception ex)

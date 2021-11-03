@@ -18,7 +18,7 @@ import one from "../../../assets/images/pro3/1.jpg";
 import { Product } from "../../../app/models/product"
 import { connect } from "react-redux";
 
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 
 import categoryService from "../../../app/services/categoryService"
 import productService from "../../../app/services/productService";
@@ -29,15 +29,18 @@ import { ToastContainer, toast } from "react-toastify";
 import { ChromePicker } from "react-color"
 import rgbHex from "rgb-hex";
 
-import { setVariant } from "../../../app/actions/variantActions";
+import { setVariant, removeVariant, clearVariants } from "../../../app/actions/variantActions";
 // import { variantReducer } from "../../../app/reducers/variantReducer"
 
 //import css
 import "./add-product.css"
 import { Disc } from "react-feather";
+import { Editor } from '@tinymce/tinymce-react'
 
-const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant }) => {
+const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant, removeVariant, clearVariants }) => {
 	useEffect(() => {
+		SaveProductToState();
+
 		let tmpListCateg = [];
 		let tmpListCountry = [];
 
@@ -149,8 +152,8 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 	const SetTitle = (e) => {
 		setTitle(e.target.value);
 	}
-	const SetDescription = (e) => {
-		setDescription(e.target.value);
+	const SetDescription = () => {
+		setDescription(editorRef.current.getContent());
 	}
 	const SetPrice = (e) => {
 		setPrice(e.target.value);
@@ -165,19 +168,39 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 	const handleValidSubmit = (e) => {
 		e.preventDefault();
 
-		var product = new Product();
-		product.title = title;
-		product.price = price;
-		product.description = description;
-		product.quantity = quantity;
-		product.categoryId = categoryId;
-		product.countryId = countryId;
-		product.images = imgsBase64;
+		SaveProductToState();
 
-		productService.addProduct(product).then(isOk => {
+		var products = [];
+
+		variantsStyles.map((style, id) => {
+			var product = new Product();
+			let tmpPr;
+			if (productVariants[id] === undefined) {
+				tmpPr = { title, price, description, quantity, categoryId, countryId, imgsBase64 };
+			}
+			else {
+				tmpPr = productVariants[id]
+			}
+			console.log("TMPPR: ", tmpPr)
+
+
+			product.title = tmpPr.title;
+			product.price = tmpPr.price;
+			product.description = tmpPr.description;
+			product.quantity = tmpPr.quantity;
+			product.categoryId = tmpPr.categoryId;
+			product.countryId = tmpPr.countryId;
+			product.images = tmpPr.images;
+			product.colorInGroup = style.background;
+
+			products.push(product);
+		})
+
+		productService.addProduct(products).then(isOk => {
 			if (isOk === true) {
 				toast.success("Товар успішно доданий")
 				Discard();
+				VariantsDiscard();
 			}
 			else {
 				toast.error("Виникли проблеми. Перевірте дані та спробуйте ще раз")
@@ -197,6 +220,24 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 		setCurrentImageSrc(one);
 		setIndSmallImgActive(0);
 	}
+	const DiscardToVariant = () => {
+		setTitle("");
+		setPrice(0);
+		setQuantity(1);
+
+		setDummyimgs(defaultDummyImgs);
+		setImgsBase64(defaultBase64StateValues);
+		setCurrentImageSrc(one);
+		setIndSmallImgActive(0);
+	}
+	const VariantsDiscard = () => {
+		setVariants([{ id: 0 }]);
+		setIsColorPicker(false);
+		setColor("#ccc");
+		setIndCurrVariant(0);
+		setVariantsStyles([]);
+		clearVariants();
+	}
 
 	const SetImageToBig = (src, i) => {
 		setCurrentImageSrc(src);
@@ -214,19 +255,26 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 	}
 
 	//variants
+	const [color, setColor] = useState("#ccc");
 	const [variants, setVariants] = useState([{ id: 0 }]);
+	const [variantsStyles, setVariantsStyles] = useState([{ background: color }]);
 	const [isColorPicker, setIsColorPicker] = useState(false);
-	const [color, setColor] = useState("#fff");
 	const [indCurrVariant, setIndCurrVariant] = useState(0);
-	const [variantsStyles, setVariantsStyles] = useState([]);
 
 	const AddVariant = () => {
 		let tmpVariants = variants.slice();
 		tmpVariants.push({ id: tmpVariants.length });
 		setVariants(tmpVariants);
-		SaveProductToState();
-		Discard();
+
 		setIndCurrVariant(tmpVariants.length - 1)
+
+		SaveProductToState();
+
+		let tmpVariantsStyles = variantsStyles.slice();
+		tmpVariantsStyles.push({ background: color });
+		setVariantsStyles(tmpVariantsStyles);
+
+		DiscardToVariant();
 	}
 	const handleColorChange = () => {
 		setIsColorPicker(!isColorPicker);
@@ -244,7 +292,8 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 		return null;
 	}
 	const SetCurrVariant = (ind) => {
-
+		console.log("ind: ", ind)
+		console.log("productVariants: ", productVariants)
 		setIndCurrVariant(ind);
 
 		SaveProductToState();
@@ -252,7 +301,6 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 		let newProduct = productVariants[ind];
 		if (newProduct !== undefined)
 			SetProductToFields(newProduct);
-
 	}
 	const GetVariantStyle = (ind) => {
 		return variantsStyles[ind];
@@ -283,6 +331,31 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 		product.varId = indCurrVariant;
 		setVariant(product);
 	}
+	const handleColorDelete = () => {
+		let tmpVariants = variants.slice();
+		tmpVariants.splice(indCurrVariant, 1);
+		setVariants(tmpVariants);
+
+		let tmpVariantsStyles = variantsStyles.slice();
+		tmpVariantsStyles.splice(indCurrVariant, 1);
+		setVariantsStyles(tmpVariantsStyles);
+
+		console.log(productVariants);
+		removeVariant(indCurrVariant);
+		console.log(productVariants);
+
+		if (indCurrVariant === 0) {
+			setTimeout(() => console.log("productvariant[0]: ", productVariants[0]), 3000);
+			setIndCurrVariant(0);
+			SetProductToFields(productVariants[0]);
+		}
+		else {
+			console.log(indCurrVariant)
+			setIndCurrVariant(indCurrVariant - 1);
+			SetProductToFields(productVariants[indCurrVariant - 1]);
+		}
+	}
+	const editorRef = useRef(null);
 	return (
 		<Fragment>
 			<Breadcrumb title="Add Product" parent="Physical" />
@@ -352,12 +425,8 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 										<div className="variants">
 											{variants.map((data, ind) => (
 												<div className={`variantColor ${CheckIfActiveVariant(ind)}`} onClick={() => SetCurrVariant(ind)} style={GetVariantStyle(ind)} >
-
 												</div>
 											))}
-											<div className="variantColor" onClick={AddVariant} >
-
-											</div>
 											{isColorPicker === true &&
 												<div id="chromePickerContainer">
 													<ChromePicker
@@ -366,8 +435,10 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 															OnColorChange(c)
 														} />
 												</div>}
-											<div className="variantsBtnGroup">
+											<div >
+												<Button type="button" color="light" onClick={AddVariant} >Добавити колір</Button>
 												<Button type="button" color="light" onClick={handleColorChange} >Змінити колір</Button>
+												<Button type="button" color="light" onClick={handleColorDelete} >Видалити колір</Button>
 											</div>
 
 										</div>
@@ -459,10 +530,10 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 												<div className="col-xl-8 col-sm-7 category-sm">
 													<Select
 														id="selectCategory"
-														className="basic-single"
+														className="basic-single z-101"
 														classNamePrefix="select"
 														defaultValue="Оберіть категорію"
-														lang="ua"
+														lang="ru"
 														name="categoryId"
 														onChange={SetCategory}
 														options={categoryList}
@@ -477,7 +548,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 												<div className="col-xl-8 col-sm-7 category-sm">
 													<Select
 														id="selectCountry"
-														className="basic-single"
+														className="basic-single z-100"
 														classNamePrefix="select"
 														defaultValue="Оберіть країну-виробника"
 														lang="ru-RU"
@@ -504,10 +575,32 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 
 													// onChange={SetDescription}
 													/> */}
-													<textarea
+
+													<Editor
+														onInit={(evt, editor) => editorRef.current = editor}
+														className="p10"
+														apiKey="rnv1zli3c4ebl1nb1ffig1imvcmahopklllvbv9br4wythl8"
+														init={{
+															height: 250,
+															menubar: true,
+															language: "ru",
+															plugins: [
+																'advlist autolink lists link image charmap print preview anchor',
+																'searchreplace visualblocks code fullscreen',
+																'insertdatetime media table paste code help wordcount'
+															],
+															toolbar: 'undo redo | formatselect | ' +
+																'bold italic backcolor | alignleft aligncenter ' +
+																'alignright alignjustify | bullist numlist outdent indent | ' +
+																'removeformat | help',
+															content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+														}}
+														onChange={SetDescription}
+													/>
+													{/* <textarea
 														className="p10"
 														value={description}
-														onChange={SetDescription} />
+														onChange={SetDescription} /> */}
 												</div>
 											</FormGroup>
 											{/* </Form> */}
@@ -538,7 +631,7 @@ const mapStateToProps = ({ variantReducer }) => {
 }
 
 const mapDispatchToProps = {
-	setVariant
+	setVariant, removeVariant, clearVariants
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Add_product);

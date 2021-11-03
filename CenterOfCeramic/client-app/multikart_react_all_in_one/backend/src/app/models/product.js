@@ -1,6 +1,6 @@
 export class Product {
 
-    constructor(id, title, price, description, categoryId, countryId, images, quantity, oldPrice, isSale = false) {
+    constructor(id, title, price, description, categoryId, countryId, images, quantity, oldPrice, colorInGroup, isSale = false) {
         this.id = id;
         this.title = title;
         this.price = price;
@@ -11,5 +11,6 @@ export class Product {
         this.quantity = quantity;
         this.isSale = isSale;
         this.oldPrice = oldPrice;
+        this.colorInGroup = colorInGroup;
     }
 }

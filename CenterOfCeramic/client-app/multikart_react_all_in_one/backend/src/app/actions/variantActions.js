@@ -6,3 +6,14 @@ export const setVariant = (variant) => {
         payload: variant
     }
 }
+export const clearVariants = () => {
+    return {
+        type: variantTypes.clear,
+    }
+}
+export const removeVariant = (id) => {
+    return {
+        type: variantTypes.remove,
+        payload: id
+    }
+}

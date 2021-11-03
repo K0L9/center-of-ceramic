@@ -27,38 +27,44 @@ namespace CenterOfCeramic.Services
             _db = db;
         }
         public IEnumerable<Product> GetAllProducts() => _db.Products.Include(x => x.Photos);
-        public async Task<Product> AddProduct(ProductDTO productDTO)
+        public async Task<ColorGroup> AddProduct(List<ProductDTO> productsDTO)
         {
             try
             {
-                var photos = new List<Photo>();
-                foreach (var el in productDTO.Images)
+                ColorGroup colorGroup = new ColorGroup();
+                foreach (var productDTO in productsDTO)
                 {
-                    if (el.Base64Str == String.Empty)
-                        continue;
-
-                    var bytes = Convert.FromBase64String(el.Base64Str);
-
-                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(el.Filename);
-                    var fullPath = ENV.FilePath + fileName;
-
-                    using (var imageFile = new FileStream(fullPath, FileMode.Create))
+                    var photos = new List<Photo>();
+                    foreach (var el in productDTO.Images)
                     {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
+                        if (el.Base64Str == String.Empty)
+                            continue;
+
+                        var bytes = Convert.FromBase64String(el.Base64Str);
+
+                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(el.Filename);
+                        var fullPath = ENV.FilePath + fileName;
+
+                        using (var imageFile = new FileStream(fullPath, FileMode.Create))
+                        {
+                            imageFile.Write(bytes, 0, bytes.Length);
+                            imageFile.Flush();
+                        }
+                        photos.Add(new Photo() { URL = @"http://127.0.0.1:5002/" + fileName });
                     }
-                    photos.Add(new Photo() { URL = @"http://127.0.0.1:5002/" + fileName });
+
+                    var product = mapper.Map<Product>(productDTO);
+                    product.Photos = photos;
+                    colorGroup.Products.Add(product);
                 }
 
-                var product = mapper.Map<Product>(productDTO);
-                product.Photos = photos;
-                var addedProd = await _db.Products.AddAsync(product);
+                var addedGroup = await _db.ColorGroups.AddAsync(colorGroup);
                 _db.SaveChanges();
-                return addedProd.Entity;
+                return addedGroup.Entity;
             }
             catch (Exception ex)
             {
-                throw new Exception("Error with add product. Try again");
+                throw new Exception("Error with add products. Try again");
             }
         }
         public void DeleteProduct(int id)
@@ -97,7 +103,7 @@ namespace CenterOfCeramic.Services
 
                 for (int i = 0; i < productDTO.Images.Count; i++)
                 {
-                    if(productDTO.Images.ElementAt(i).IsDeleted)
+                    if (productDTO.Images.ElementAt(i).IsDeleted)
                     {
                         photos.RemoveAt(i);
                     }

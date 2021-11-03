@@ -15,6 +15,7 @@ namespace CenterOfCeramic.Models.DTO
         public int CountryId { get; set; }
         public int Quantity { get; set; }
         public bool IsSale { get; set; }
+        public string ColorInGroup { get; set; }
         public int? OldPrice { get; set; }
         public ICollection<PhotoDTO> Images { get; set; }
     }

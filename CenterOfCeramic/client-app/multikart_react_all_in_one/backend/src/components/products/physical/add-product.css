@@ -73,5 +73,11 @@
 }
 #chromePickerContainer{
   position: absolute;
+  z-index: 103;
+}
+.z-100{
   z-index: 100;
+}
+.z-101{
+  z-index: 101;
 }
