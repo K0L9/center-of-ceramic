@@ -12,5 +12,5 @@ FROM build AS publish
 RUN dotnet publish "CenterOfCeramic.csproj" -c Release -o /app/publish
 FROM base AS final
 COPY --from=publish /app/publish .
-COPY client-app/multikart_react_all_in_one/backend/build/. client-app/multikart_react_all_in_one/backend/build/
+COPY client-app/multikart_react_all_in_one/backend/build/. client-app/build/
 ENTRYPOINT ["dotnet", "CenterOfCeramic.dll"]
