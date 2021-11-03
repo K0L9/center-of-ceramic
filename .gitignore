@@ -6,6 +6,9 @@ bin
 obj
 images
 .next
+frontend
+API 
+email-template
 CenterOfCeramic/obj/CenterOfCeramic.csproj.nuget.dgspec.json
 CenterOfCeramic/obj/CenterOfCeramic.csproj.nuget.g.props
 CenterOfCeramic/obj/CenterOfCeramic.csproj.nuget.g.targets
