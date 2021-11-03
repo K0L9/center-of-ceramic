@@ -15,7 +15,7 @@ pipeline  {
             steps {
                 echo 'Creating docker image ...'
                 dir('.'){
-                    sh "docker build -t k0l9/testCenterofCermic CenterOfCermic/. "
+                    sh "docker build -t k0l9/test-center-of-ceramic CenterOfCermic/. "
                 }
             }
         }
@@ -33,7 +33,7 @@ pipeline  {
            steps {
                 echo " ============== pushing image =================="
                 sh '''
-                docker push k0l9/testCenterofCermic:latest
+                docker push k0l9/test-center-of-ceramic:latest
                 '''
             }
         }
@@ -58,7 +58,7 @@ pipeline  {
             steps {
                 echo " ============== starting chatterbox server =================="
                 sh '''
-                docker run -d --restart=always -p 80:80  k0l9/testCenterofCermic
+                docker run -d --restart=always -p 80:80  k0l9/test-center-of-ceramic
                 '''
             }
         }
