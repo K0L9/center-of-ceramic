@@ -47,12 +47,13 @@ const ProductItem = ({
     router.push(`/product-details/${product.id}` + "-" + `${titleProps}`);
   };
 
-  const variantChangeByColor = (imgId, product_images) => {
-    product_images.map((data) => {
-      if (data.image_id == imgId) {
-        setImage(data.src);
-      }
-    });
+  const variantChangeByColor = (varInd) => {
+    setImage(product.variants[varInd].images[0].url);
+    // product.variants.map((data) => {
+    //   if (data.id == varInd) {
+    //     setImage(data.src);
+    //   }
+    // });
   };
   console.log("PRODUCT: ", product);
   return (
@@ -64,7 +65,7 @@ const ProductItem = ({
         </div>
         <div className="front" onClick={clickProductDetail}>
           <Media
-            src={`${image ? image : product.photos[0].url}`}
+            src={`${image ? image : product.variants[0].images[0].url}`}
             className="img-fluid"
             alt=""
           />
@@ -202,45 +203,31 @@ const ProductItem = ({
                   {currency.symbol}
                   {(product.price * currency.value).toFixed(2)}
                 </h3>
-                {/* {product.variants ? (
+                {product.variants ? (
                   <ul className="color-variant">
-                    {uniqueTags ? (
-                      <ul className="color-variant">
-                        {product.type === "jewellery" ||
-                          product.type === "nursery" ||
-                          product.type === "beauty" ||
-                          product.type === "electronics" ||
-                          product.type === "goggles" ||
-                          product.type === "watch" ||
-                          product.type === "pets" ? (
-                          ""
-                        ) : (
-                          <>
-                            {uniqueTags.map((vari, i) => {
-                              return (
-                                <li
-                                  className={vari.color}
-                                  key={i}
-                                  title={vari.color}
-                                  onClick={() =>
-                                    variantChangeByColor(
-                                      vari.image_id,
-                                      product.photos
-                                    )
-                                  }
-                                ></li>
-                              );
-                            })}
-                          </>
-                        )}
-                      </ul>
-                    ) : (
-                      ""
+                    {(
+                      <>
+                        {uniqueTags.map((vari, i) => {
+                          return (
+                            <li
+                              className={vari.color}
+                              key={i}
+                              title={vari.color}
+                              onClick={() =>
+                                variantChangeByColor(
+                                  vari.image_id,
+                                  product.photos
+                                )
+                              }
+                            ></li>
+                          );
+                        })}
+                      </>
                     )}
                   </ul>
                 ) : (
                   ""
-                )} */}
+                )}
                 <div className="border-product">
                   <h6 className="product-title">Опис</h6>
                   <p>{product.description}</p>
