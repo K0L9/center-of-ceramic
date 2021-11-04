@@ -27,7 +27,7 @@ namespace CenterOfCeramic.Services
 
             _db = db;
         }
-        public IEnumerable<Product> GetAllProducts() => _db.Products.Include(x => x.Variants).ThenInclude(x => x.Select(x => x.Images));
+        public IEnumerable<Product> GetAllProducts() => _db.Products.Include(nameof(Product.Variants)).Include("Variants.Images");
         public async Task<Product> AddProduct(ProductDTO productDTO)
         {
             try
@@ -72,12 +72,18 @@ namespace CenterOfCeramic.Services
         {
             try
             {
-                var product = _db.Products.Find(id);
+                var product = _db.Products.Include(x => x.Variants).ThenInclude(x => x.Select(x => x.Images)).SingleOrDefault(x => x.Id == id);
                 if (product == null)
                     throw new Exception($"Product with id {id} is not found");
 
-                //foreach (var ph in product.Photos)
-                //    _db.Photos.Remove(ph);
+                foreach (var el in product.Variants)
+                {
+                    foreach (var ph in el.Images)
+                    {
+                        _db.Photos.Remove(ph);
+                    }
+                    _db.ColorVariants.Remove(el);
+                }
 
                 _db.Products.Remove(product);
                 _db.SaveChanges();
@@ -91,7 +97,7 @@ namespace CenterOfCeramic.Services
         {
             try
             {
-                var product = _db.Products.SingleOrDefault(x => x.Id == id);//.Include(x => x.Photos);
+                var product = _db.Products.Include(x => x.Variants).ThenInclude(x => x.Select(x => x.Images)).SingleOrDefault(x => x.Id == id);
                 if (product == null)
                     throw new Exception($"Product with id {id} is not found");
 
@@ -100,42 +106,46 @@ namespace CenterOfCeramic.Services
                 mapper.Map<ProductDTO, Product>(productDTO, product);
                 product.Id = oldId;
 
-                //var photos = new List<Photo>(product.Photos);
+                int counter = 0;
+                foreach (var colVar in productDTO.Variants)
+                {
+                    var photos = new List<Photo>(product.Variants.ElementAt(counter).Images);
 
-                //for (int i = 0; i < productDTO.Images.Count; i++)
-                //{
-                //    if (productDTO.Images.ElementAt(i).IsDeleted)
-                //    {
-                //          photos.RemoveAt(i);
-                //    }
-                //    else if (productDTO.Images.ElementAt(i).Base64Str != String.Empty) // it is edit photo
-                //    {
-                //        var bytes = Convert.FromBase64String(productDTO.Images.ElementAt(i).Base64Str);
-                //        using (var imageFile = new FileStream(@"E:\borya plutkas\ready\" + productDTO.Images.ElementAt(i).Filename, FileMode.Create))
-                //        {
-                //            imageFile.Write(bytes, 0, bytes.Length);
-                //            imageFile.Flush();
-                //        }
-                //Photo newPhoto = new Photo() { URL = @"http://127.0.0.1:5002/" + productDTO.Images.ElementAt(i).Filename };
+                    for (int i = 0; i < colVar.Images.Count; i++)
+                    {
+                        if (colVar.Images.ElementAt(i).IsDeleted)
+                        {
+                            photos.RemoveAt(i);
+                        }
+                        else if (colVar.Images.ElementAt(i).Base64Str != String.Empty) // it is edit photo
+                        {
+                            var bytes = Convert.FromBase64String(colVar.Images.ElementAt(i).Base64Str);
+                            using (var imageFile = new FileStream(@"E:\borya plutkas\ready\" + colVar.Images.ElementAt(i).Filename, FileMode.Create))
+                            {
+                                imageFile.Write(bytes, 0, bytes.Length);
+                                imageFile.Flush();
+                            }
+                        }
 
-                        //if (photos.Count <= i)
-                        //    photos.Add(newPhoto);
-                        //else
-                        //    photos[i] = newPhoto;
-                    //}
-                //}
+                        Photo newPhoto = new Photo() { URL = @"http://127.0.0.1:5002/" + colVar.Images.ElementAt(i).Filename };
 
-                //product.Photos = photos;
+                        if (photos.Count <= i)
+                            photos.Add(newPhoto);
+                        else
+                            photos[i] = newPhoto;
+                    }
+
+                    product.Variants.ElementAt(counter++).Images = photos;
+                }
 
                 _db.SaveChanges();
 
-                return null;
+                return product;
             }
             catch (Exception)
             {
                 throw new Exception($"Error with edit product. Try again");
             }
-
         }
     }
 }

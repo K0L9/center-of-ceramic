@@ -43,6 +43,8 @@ const Product_list = ({ ProductList, getAllProducts, deleteProduct, setCurrProdu
 			<Redirect push to="edit-product" />
 		)
 
+	console.log("PRODUCT LIST: ", ProductList);
+
 	return (
 		<Fragment>
 			<Breadcrumb title="Product List" parent="Physical" />
@@ -72,7 +74,7 @@ const Product_list = ({ ProductList, getAllProducts, deleteProduct, setCurrProdu
 														<img
 															alt=""
 															className="img-fluid blur-up bg-img lazyloaded"
-															src={myData.photos.length === 0 ? one : myData.photos[0].url}
+															src={myData.variants[0].images.length === 0 ? one : myData.variants[0].images[0].url}
 														/>
 													</a>
 													<div className="product-hover">
@@ -108,9 +110,9 @@ const Product_list = ({ ProductList, getAllProducts, deleteProduct, setCurrProdu
 													{myData.price} <del>{myData.discount_price}</del>
 												</h4>
 												<ul className="color-variant">
-													<li className="bg-light0"></li>
-													<li className="bg-light1"></li>
-													<li className="bg-light2"></li>
+													{myData.variants.map((variant, ind) => {
+														<li className="bg-light1"></li>
+													})}
 												</ul>
 											</div>
 										</CardBody>

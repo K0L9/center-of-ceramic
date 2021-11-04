@@ -164,39 +164,37 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 	const SetCountry = (e) => {
 		setCountryId(e.value);
 	}
+	const SetIdentifier = (e) => {
+		setIdentifierNumber(e.target.value);
+	}
 
 	const handleValidSubmit = (e) => {
 		e.preventDefault();
 
 		SaveProductToState();
+		console.log("STYLES: ", variantsStyles);
 
-		var products = [];
+		var product = {};
 
-		variantsStyles.map((style, id) => {
-			var product = new Product();
-			let tmpPr;
-			if (productVariants[id] === undefined) {
-				tmpPr = { title, price, description, quantity, categoryId, countryId, imgsBase64 };
-			}
-			else {
-				tmpPr = productVariants[id]
-			}
-			console.log("TMPPR: ", tmpPr)
+		product.title = title;
+		product.price = price;
+		product.description = description;
+		product.quantity = quantity;
+		product.categoryId = categoryId;
+		product.countryId = countryId;
 
+		let colorVariants = [];
 
-			product.title = tmpPr.title;
-			product.price = tmpPr.price;
-			product.description = tmpPr.description;
-			product.quantity = tmpPr.quantity;
-			product.categoryId = tmpPr.categoryId;
-			product.countryId = tmpPr.countryId;
-			product.images = tmpPr.images;
-			product.colorInGroup = style.background;
-
-			products.push(product);
+		productVariants.map((x, ind) => {
+			colorVariants.push({ images: x.images, colorHex: variantsStyles[ind].background, identifierNumber: x.identifierNumber })
 		})
 
-		productService.addProduct(products).then(isOk => {
+		if (colorVariants.length !== variantsStyles.length)
+			colorVariants.push({ images: imgsBase64, colorHex: variantsStyles[variantsStyles.length - 1].background, identifyNumber: identifierNumber });
+
+		product.variants = colorVariants;
+
+		productService.addProduct(product).then(isOk => {
 			if (isOk === true) {
 				toast.success("Товар успішно доданий")
 				Discard();
@@ -214,6 +212,8 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 		setCategoryId(0);
 		setCountryId(0);
 		setQuantity(1);
+		setIdentifierNumber("");
+		setDescription("");
 
 		setDummyimgs(defaultDummyImgs);
 		setImgsBase64(defaultBase64StateValues);
@@ -221,9 +221,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 		setIndSmallImgActive(0);
 	}
 	const DiscardToVariant = () => {
-		setTitle("");
-		setPrice(0);
-		setQuantity(1);
+		setIdentifierNumber("");
 
 		setDummyimgs(defaultDummyImgs);
 		setImgsBase64(defaultBase64StateValues);
@@ -255,6 +253,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 	}
 
 	//variants
+	const [identifierNumber, setIdentifierNumber] = useState("");
 	const [color, setColor] = useState("#ccc");
 	const [variants, setVariants] = useState([{ id: 0 }]);
 	const [variantsStyles, setVariantsStyles] = useState([{ background: color }]);
@@ -271,7 +270,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 		SaveProductToState();
 
 		let tmpVariantsStyles = variantsStyles.slice();
-		tmpVariantsStyles.push({ background: color });
+		tmpVariantsStyles.push({ background: "#ccc" });
 		setVariantsStyles(tmpVariantsStyles);
 
 		DiscardToVariant();
@@ -292,8 +291,6 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 		return null;
 	}
 	const SetCurrVariant = (ind) => {
-		console.log("ind: ", ind)
-		console.log("productVariants: ", productVariants)
 		setIndCurrVariant(ind);
 
 		SaveProductToState();
@@ -306,28 +303,18 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 		return variantsStyles[ind];
 	}
 	const SetProductToFields = (product) => {
-		setTitle(product.title);
-		setPrice(product.price);
-		setQuantity(product.quantity);
-		setCountryId(product.countryId);
-		setCategoryId(product.categoryId);
-		setDescription(product.description);
 		setDummyimgs(product.dummyimgs)
 		setImgsBase64(product.images)
 		setIndCurrVariant(product.varId);
 		setCurrentImageSrc(product.dummyimgs[0].img);
 		setIndSmallImgActive(0);
+		setIdentifierNumber(product.identifierNumber);
 	}
 	const SaveProductToState = () => {
 		let product = {};
-		product.title = title;
-		product.price = price;
-		product.description = description;
-		product.quantity = quantity;
-		product.categoryId = categoryId;
-		product.countryId = countryId;
 		product.images = imgsBase64;
 		product.dummyimgs = dummyimgs;
+		product.identifierNumber = identifierNumber;
 		product.varId = indCurrVariant;
 		setVariant(product);
 	}
@@ -461,6 +448,23 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 															type="text"
 															onChange={SetTitle}
 															value={title}
+															required
+														/>
+													</div>
+													<div className="valid-feedback">Looks good!</div>
+												</FormGroup>
+												<FormGroup className="form-group mb-3 row">
+													<Label className="col-xl-3 col-sm-4 mb-0">
+														Код:
+													</Label>
+													<div className="col-xl-8 col-sm-7">
+														<Input
+															className="form-control"
+															name="identify_number"
+															id="validationCustom01"
+															type="text"
+															onChange={SetIdentifier}
+															value={identifierNumber}
 															required
 														/>
 													</div>

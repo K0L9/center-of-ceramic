@@ -22,7 +22,8 @@ namespace CenterOfCeramic.Controllers
         [HttpGet("get-all-products")]
         public IActionResult GetAllProducts()
         {
-            return Ok(_service.GetAllProducts());
+            var result = _service.GetAllProducts();
+            return Ok(result);
         }
         [HttpPost("add-product")]
         public IActionResult AddProduct([FromBody] ProductDTO productsDTO)

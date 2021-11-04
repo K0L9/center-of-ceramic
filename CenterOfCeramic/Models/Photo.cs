@@ -13,9 +13,9 @@ namespace CenterOfCeramic.Models
         public string URL { get; set; }
 
         //Foriegn key
-        public int ProductId { get; set; }
+        public int ColorVariantId { get; set; }
 
         //Navigation key
-        public virtual Product Product { get; set; }
+        public virtual ColorVariant ColorVariant { get; set; }
     }
 }
