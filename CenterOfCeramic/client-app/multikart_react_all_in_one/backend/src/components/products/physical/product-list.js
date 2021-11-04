@@ -23,7 +23,10 @@ const Product_list = ({ ProductList, getAllProducts, deleteProduct, setCurrProdu
 			getAllProducts(data.List);
 
 			data.List.map(x => {
-				starterImages.push(x.variants[0].images[0].url);
+				if (x.variants[0].images[0] === undefined)
+					starterImages.push(one);
+				else
+					starterImages.push(x.variants[0].images[0].url);
 			})
 		});
 		setCurrentImages(starterImages);
@@ -55,8 +58,11 @@ const Product_list = ({ ProductList, getAllProducts, deleteProduct, setCurrProdu
 	}
 
 	const getImage = (ind) => {
-		if (currentImages[ind] === undefined)
+		if (currentImages[ind] === undefined) {
+			if (ProductList[ind].variants[0].images[0] === undefined)
+				return one;
 			return ProductList[ind].variants[0].images[0].url;
+		}
 		return currentImages[ind];
 	}
 
@@ -130,11 +136,13 @@ const Product_list = ({ ProductList, getAllProducts, deleteProduct, setCurrProdu
 												<h4>
 													{myData.price} <del>{myData.discount_price}</del>
 												</h4>
-												<ul className="color-variant">
-													{myData.variants.map((variant, ind) =>
-														(<li className="bg-light1" style={{ backgroundColor: variant.colorHex }} onClick={() => setCurrVariantImage(i, ind)}></li>)
-													)}
-												</ul>
+												{myData.variants.length !== 1 && (
+													<ul className="color-variant">
+														{myData.variants.map((variant, ind) =>
+															(<li key={ind} className="bg-light1" style={{ backgroundColor: variant.colorHex }} onClick={() => setCurrVariantImage(i, ind)}></li>)
+														)}
+													</ul>
+												)}
 											</div>
 										</CardBody>
 									</div>

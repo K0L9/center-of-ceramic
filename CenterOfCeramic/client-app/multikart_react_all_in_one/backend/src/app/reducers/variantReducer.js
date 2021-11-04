@@ -1,13 +1,13 @@
 import { components } from "react-select";
 import variantTypes from "../types/variant-types";
+import { initialState as otherInitialState } from "./productReducer";
 const initialState = {
-    productVariants: []
+    productVariants: otherInitialState.productVariants
 }
 
 const variantReducer = (state = initialState, action) => {
     switch (action.type) {
         case variantTypes.set:
-
             var tmpProdVarList = state.productVariants.slice();
             if (tmpProdVarList.length <= action.payload.varId) {
                 tmpProdVarList.push(action.payload);
@@ -15,6 +15,8 @@ const variantReducer = (state = initialState, action) => {
             else {
                 tmpProdVarList[action.payload.varId] = action.payload;
             }
+            console.log("tmpProdVarList: ", tmpProdVarList)
+
             return {
                 ...state,
                 productVariants: tmpProdVarList

@@ -1,6 +1,5 @@
 import React, { Fragment, useState } from "react";
 import Breadcrumb from "../../common/breadcrumb";
-import CKEditors from "react-ckeditor-component";
 import {
 	Card,
 	CardBody,
@@ -15,7 +14,6 @@ import {
 	Button,
 } from "reactstrap";
 import one from "../../../assets/images/pro3/1.jpg";
-import { Product } from "../../../app/models/product"
 import { connect } from "react-redux";
 
 import { useEffect, useRef } from "react"
@@ -30,14 +28,12 @@ import { ChromePicker } from "react-color"
 import rgbHex from "rgb-hex";
 
 import { setVariant, removeVariant, clearVariants } from "../../../app/actions/variantActions";
-// import { variantReducer } from "../../../app/reducers/variantReducer"
 
 //import css
 import "./add-product.css"
-import { Disc } from "react-feather";
 import { Editor } from '@tinymce/tinymce-react'
 
-const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant, removeVariant, clearVariants }) => {
+const Add_product = ({ productVariants, setVariant, removeVariant, clearVariants }) => {
 	useEffect(() => {
 		SaveProductToState();
 
@@ -172,7 +168,6 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 		e.preventDefault();
 
 		SaveProductToState();
-		console.log("STYLES: ", variantsStyles);
 
 		var product = {};
 
@@ -209,11 +204,11 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 		setTitle("");
 		setPrice(0);
 		setDescription("");
+		editorRef.current.setContent('');
 		setCategoryId(0);
 		setCountryId(0);
 		setQuantity(1);
 		setIdentifierNumber("");
-		setDescription("");
 
 		setDummyimgs(defaultDummyImgs);
 		setImgsBase64(defaultBase64StateValues);
@@ -327,17 +322,13 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 		tmpVariantsStyles.splice(indCurrVariant, 1);
 		setVariantsStyles(tmpVariantsStyles);
 
-		console.log(productVariants);
 		removeVariant(indCurrVariant);
-		console.log(productVariants);
 
 		if (indCurrVariant === 0) {
-			setTimeout(() => console.log("productvariant[0]: ", productVariants[0]), 3000);
 			setIndCurrVariant(0);
 			SetProductToFields(productVariants[0]);
 		}
 		else {
-			console.log(indCurrVariant)
 			setIndCurrVariant(indCurrVariant - 1);
 			SetProductToFields(productVariants[indCurrVariant - 1]);
 		}
@@ -372,7 +363,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 															/>
 															<div className="btnGroup">
 
-																<button className="iconOverBtn" onClick={() => (document.getElementById("uploadFileInput").click())}>
+																<button type="button" className="iconOverBtn" onClick={() => (document.getElementById("uploadFileInput").click())}>
 																	<Input
 																		className="upload"
 																		type="file"
@@ -415,7 +406,7 @@ const Add_product = ({ afterPaste, onBlur, onChange, productVariants, setVariant
 										<Col xl="7">
 											<div className="variants">
 												{variants.map((data, ind) => (
-													<div className={`variantColor ${CheckIfActiveVariant(ind)}`} onClick={() => SetCurrVariant(ind)} style={GetVariantStyle(ind)} >
+													<div key={ind} className={`variantColor ${CheckIfActiveVariant(ind)}`} onClick={() => SetCurrVariant(ind)} style={GetVariantStyle(ind)} >
 													</div>
 												))}
 												{isColorPicker === true &&

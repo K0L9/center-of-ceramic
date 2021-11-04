@@ -72,7 +72,7 @@ namespace CenterOfCeramic.Services
         {
             try
             {
-                var product = _db.Products.Include(x => x.Variants).ThenInclude(x => x.Select(x => x.Images)).SingleOrDefault(x => x.Id == id);
+                var product = _db.Products.Include(nameof(Product.Variants)).Include("Variants.Images").SingleOrDefault(x => x.Id == id);
                 if (product == null)
                     throw new Exception($"Product with id {id} is not found");
 
@@ -88,7 +88,7 @@ namespace CenterOfCeramic.Services
                 _db.Products.Remove(product);
                 _db.SaveChanges();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw new Exception("Error with delete product. Try again");
             }
@@ -97,7 +97,7 @@ namespace CenterOfCeramic.Services
         {
             try
             {
-                var product = _db.Products.Include(x => x.Variants).ThenInclude(x => x.Select(x => x.Images)).SingleOrDefault(x => x.Id == id);
+                var product = _db.Products.Include(nameof(Product.Variants)).Include("Variants.Images").SingleOrDefault(x => x.Id == id);
                 if (product == null)
                     throw new Exception($"Product with id {id} is not found");
 
@@ -115,7 +115,9 @@ namespace CenterOfCeramic.Services
                     {
                         if (colVar.Images.ElementAt(i).IsDeleted)
                         {
-                            photos.RemoveAt(i);
+                            var tmpPhoto = photos.ElementAt(i);
+                            if (tmpPhoto != null)
+                                photos.Remove(tmpPhoto);
                         }
                         else if (colVar.Images.ElementAt(i).Base64Str != String.Empty) // it is edit photo
                         {
