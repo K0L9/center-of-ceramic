@@ -2,6 +2,7 @@ using CenterOfCeramic.Data;
 using CenterOfCeramic.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
@@ -35,7 +37,7 @@ namespace CenterOfCeramic
             services.AddControllers();
             services.AddSpaStaticFiles(configuration =>
             {
-                configuration.RootPath = "client-app/multikart_react_all_in_one/backend";
+                configuration.RootPath = "client-app/multikart_react_all_in_one";
             });
             services.AddSwaggerGen(c =>
             {
@@ -46,8 +48,12 @@ namespace CenterOfCeramic
             services.AddTransient<ProductService>();
             services.AddTransient<CountryService>();
 
-            services.AddControllersWithViews()
+            services.AddControllersWithViews(options => options.EnableEndpointRouting = false)
                 .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
+            services.AddMvc(x => x.EnableEndpointRouting = false);
+            services.AddControllers(options => options.EnableEndpointRouting = false);
+            services.AddRazorPages().AddMvcOptions(options => options.EnableEndpointRouting = false);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,6 +70,8 @@ namespace CenterOfCeramic
 
             app.UseHttpsRedirection();
 
+            app.UseMvc();
+
             app.UseRouting();
 
             app.UseAuthorization();
@@ -73,12 +81,51 @@ namespace CenterOfCeramic
                 endpoints.MapControllers();
             });
 
+            //UseUserPage(app);
+            app.Map("/admin", false, UseUserPage );
+            //app.Map("/user", UseAdminPage);
+
+        }
+        private void UseAdminPage(IApplicationBuilder app)
+        {
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "client-app/multikart_react_all_in_one/backend";
-                if (env.IsDevelopment())
-                    spa.UseReactDevelopmentServer(npmScript: "start");
-                //spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+                //spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
+                //{
+                //    OnPrepareResponse = context =>
+                //    {
+                //        if (context.File.Name == "index.html")
+                //        {
+                //            context.Context.Response.Headers
+                //                .Add("Cache-Control", "no-cache, no-store, must-revalidate");
+                //            context.Context.Response.Headers.Add("Pragma", "no-cache");
+                //            context.Context.Response.Headers.Add("Expires", "0");
+                //        }
+                //    }
+                //};
+                spa.UseReactDevelopmentServer(npmScript: "start");
+            });
+        }
+        private void UseUserPage(IApplicationBuilder app)
+        {
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "client-app/multikart_react_all_in_one/frontend";
+                //spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
+                //{
+                //    OnPrepareResponse = context =>
+                //    {
+                //        if (context.File.Name == "index.html")
+                //        {
+                //            context.Context.Response.Headers
+                //                .Add("Cache-Control", "no-cache, no-store, must-revalidate");
+                //            context.Context.Response.Headers.Add("Pragma", "no-cache");
+                //            context.Context.Response.Headers.Add("Expires", "0");
+                //        }
+                //    }
+                //};
+                spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
             });
         }
     }
