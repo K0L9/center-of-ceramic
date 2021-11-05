@@ -11,7 +11,7 @@ const MasterProductDetail = ({
   variantChangeByColor,
 }) => {
   let RatingStars = [];
-  let rating = 5;
+  let rating = 3;
   for (var i = 0; i < rating; i++) {
     RatingStars.push(<i className="fa fa-star" key={i}></i>);
   }
@@ -29,15 +29,17 @@ const MasterProductDetail = ({
         <h4>
           {currency.symbol}
           {(
-            (product.price - (product.price * product.discount) / 100) *
+            (product.price) *
             currency.value
           ).toFixed(2)}
-          <del>
-            <span className="money">
-              {currency.symbol}
-              {(product.price * currency.value).toFixed(2)}
-            </span>
-          </del>
+          {product.isSale === true &&
+            <del>
+              <span className="money">
+                {currency.symbol}
+                {(product.oldPirce * currency.value).toFixed(2)}
+              </span>
+            </del>
+          }
         </h4>
 
         {/* {product.variants.map((vari) => {
@@ -45,17 +47,26 @@ const MasterProductDetail = ({
           if (!findItem) uniqueTags.push(vari);
         })} */}
 
-        {product.type === "jewellery" ||
-          product.type === "nursery" ||
-          product.type === "beauty" ||
-          product.type === "electronics" ||
-          product.type === "goggles" ||
-          product.type === "watch" ||
-          product.type === "pets" ? (
-          ""
-        ) : (
-          <>
-            {/* {title !== "Product style 4" && uniqueTags[0].color ? (
+        <>
+
+          <ul className="color-variant">
+            {product.variants.map((vari, i) => {
+              return (
+                <li
+                  className={vari.color}
+                  key={i}
+                  title={vari.color}
+                  style={{ backgroundColor: vari.colorHex }}
+                  onClick={() =>
+                    variantChangeByColor(i)
+                  }
+                ></li>
+              );
+            })}
+          </ul>
+
+
+          {/* {title !== "Product style 4" && uniqueTags[0].color ? (
               <ul className="color-variant">
                 {uniqueTags.map((vari, i) => {
                   return (
@@ -73,26 +84,7 @@ const MasterProductDetail = ({
             ) : (
               ""
             )} */}
-            {/* {title !== "Product style 4" && uniqueTags[0].color ? (
-              <ul className="color-variant">
-                {uniqueTags.map((vari, i) => {
-                  return (
-                    <li
-                      className={vari.color}
-                      key={i}
-                      title={vari.color}
-                      onClick={() =>
-                        variantChangeByColor(vari.image_id, product.images)
-                      }
-                    ></li>
-                  );
-                })}
-              </ul>
-            ) : (
-              ""
-            )} */}
-          </>
-        )}
+        </>
       </div>
     </div>
   );

@@ -3,15 +3,17 @@ using System;
 using CenterOfCeramic.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CenterOfCeramic.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211030182118_AddColorGroup")]
+    partial class AddColorGroup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,27 +37,16 @@ namespace CenterOfCeramic.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("CenterOfCeramic.Models.ColorVariant", b =>
+            modelBuilder.Entity("CenterOfCeramic.Models.ColorGroup", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<string>("ColorHex")
-                        .HasColumnType("text");
-
-                    b.Property<string>("IdentifierNumber")
-                        .HasColumnType("text");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ColorVariants");
+                    b.ToTable("ColorGroup");
                 });
 
             modelBuilder.Entity("CenterOfCeramic.Models.Country", b =>
@@ -80,7 +71,7 @@ namespace CenterOfCeramic.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int>("ColorVariantId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("integer");
 
                     b.Property<string>("URL")
@@ -89,7 +80,7 @@ namespace CenterOfCeramic.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ColorVariantId");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("Photos");
                 });
@@ -103,6 +94,12 @@ namespace CenterOfCeramic.Migrations
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("integer");
+
+                    b.Property<int?>("ColorGroupId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ColorInGroup")
+                        .HasColumnType("text");
 
                     b.Property<int>("CountryId")
                         .HasColumnType("integer");
@@ -120,7 +117,7 @@ namespace CenterOfCeramic.Migrations
                     b.Property<int>("Price")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("Quantity")
+                    b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
                     b.Property<string>("Title")
@@ -130,6 +127,8 @@ namespace CenterOfCeramic.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("ColorGroupId");
 
                     b.HasIndex("CountryId");
 
@@ -159,26 +158,15 @@ namespace CenterOfCeramic.Migrations
                     b.ToTable("Reviews");
                 });
 
-            modelBuilder.Entity("CenterOfCeramic.Models.ColorVariant", b =>
+            modelBuilder.Entity("CenterOfCeramic.Models.Photo", b =>
                 {
                     b.HasOne("CenterOfCeramic.Models.Product", "Product")
-                        .WithMany("Variants")
+                        .WithMany("Photos")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("CenterOfCeramic.Models.Photo", b =>
-                {
-                    b.HasOne("CenterOfCeramic.Models.ColorVariant", "ColorVariant")
-                        .WithMany("Images")
-                        .HasForeignKey("ColorVariantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ColorVariant");
                 });
 
             modelBuilder.Entity("CenterOfCeramic.Models.Product", b =>
@@ -189,6 +177,10 @@ namespace CenterOfCeramic.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("CenterOfCeramic.Models.ColorGroup", "ColorGroup")
+                        .WithMany("Products")
+                        .HasForeignKey("ColorGroupId");
+
                     b.HasOne("CenterOfCeramic.Models.Country", "Country")
                         .WithMany("Products")
                         .HasForeignKey("CountryId")
@@ -196,6 +188,8 @@ namespace CenterOfCeramic.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+
+                    b.Navigation("ColorGroup");
 
                     b.Navigation("Country");
                 });
@@ -216,9 +210,9 @@ namespace CenterOfCeramic.Migrations
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("CenterOfCeramic.Models.ColorVariant", b =>
+            modelBuilder.Entity("CenterOfCeramic.Models.ColorGroup", b =>
                 {
-                    b.Navigation("Images");
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("CenterOfCeramic.Models.Country", b =>
@@ -228,9 +222,9 @@ namespace CenterOfCeramic.Migrations
 
             modelBuilder.Entity("CenterOfCeramic.Models.Product", b =>
                 {
-                    b.Navigation("Reviews");
+                    b.Navigation("Photos");
 
-                    b.Navigation("Variants");
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

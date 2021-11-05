@@ -1,6 +1,5 @@
 import React, { Fragment, useState } from "react";
 import Breadcrumb from "../../common/breadcrumb";
-import CKEditors from "react-ckeditor-component";
 import {
 	Card,
 	CardBody,
@@ -15,9 +14,9 @@ import {
 	Button,
 } from "reactstrap";
 import one from "../../../assets/images/pro3/1.jpg";
-import { Product } from "../../../app/models/product"
+import { connect } from "react-redux";
 
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 
 import categoryService from "../../../app/services/categoryService"
 import productService from "../../../app/services/productService";
@@ -25,12 +24,19 @@ import countryService from "../../../app/services/countryService";
 
 import Select from 'react-select';
 import { ToastContainer, toast } from "react-toastify";
+import { ChromePicker } from "react-color"
+import rgbHex from "rgb-hex";
+
+import { setVariant, removeVariant, clearVariants } from "../../../app/actions/variantActions";
 
 //import css
 import "./add-product.css"
+import { Editor } from '@tinymce/tinymce-react'
 
-const Add_product = ({ afterPaste, onBlur, onChange }) => {
+const Add_product = ({ productVariants, setVariant, removeVariant, clearVariants }) => {
 	useEffect(() => {
+		SaveProductToState();
+
 		let tmpListCateg = [];
 		let tmpListCountry = [];
 
@@ -142,8 +148,8 @@ const Add_product = ({ afterPaste, onBlur, onChange }) => {
 	const SetTitle = (e) => {
 		setTitle(e.target.value);
 	}
-	const SetDescription = (e) => {
-		setDescription(e.target.value);
+	const SetDescription = () => {
+		setDescription(editorRef.current.getContent());
 	}
 	const SetPrice = (e) => {
 		setPrice(e.target.value);
@@ -154,23 +160,40 @@ const Add_product = ({ afterPaste, onBlur, onChange }) => {
 	const SetCountry = (e) => {
 		setCountryId(e.value);
 	}
+	const SetIdentifier = (e) => {
+		setIdentifierNumber(e.target.value);
+	}
 
 	const handleValidSubmit = (e) => {
 		e.preventDefault();
 
-		var product = new Product();
+		SaveProductToState();
+
+		var product = {};
+
 		product.title = title;
 		product.price = price;
 		product.description = description;
 		product.quantity = quantity;
 		product.categoryId = categoryId;
 		product.countryId = countryId;
-		product.images = imgsBase64;
+
+		let colorVariants = [];
+
+		productVariants.map((x, ind) => {
+			colorVariants.push({ images: x.images, colorHex: variantsStyles[ind].background, identifierNumber: x.identifierNumber })
+		})
+
+		if (colorVariants.length !== variantsStyles.length)
+			colorVariants.push({ images: imgsBase64, colorHex: variantsStyles[variantsStyles.length - 1].background, identifyNumber: identifierNumber });
+
+		product.variants = colorVariants;
 
 		productService.addProduct(product).then(isOk => {
 			if (isOk === true) {
 				toast.success("Товар успішно доданий")
 				Discard();
+				VariantsDiscard();
 			}
 			else {
 				toast.error("Виникли проблеми. Перевірте дані та спробуйте ще раз")
@@ -181,14 +204,32 @@ const Add_product = ({ afterPaste, onBlur, onChange }) => {
 		setTitle("");
 		setPrice(0);
 		setDescription("");
+		editorRef.current.setContent('');
 		setCategoryId(0);
 		setCountryId(0);
 		setQuantity(1);
+		setIdentifierNumber("");
 
 		setDummyimgs(defaultDummyImgs);
 		setImgsBase64(defaultBase64StateValues);
 		setCurrentImageSrc(one);
 		setIndSmallImgActive(0);
+	}
+	const DiscardToVariant = () => {
+		setIdentifierNumber("");
+
+		setDummyimgs(defaultDummyImgs);
+		setImgsBase64(defaultBase64StateValues);
+		setCurrentImageSrc(one);
+		setIndSmallImgActive(0);
+	}
+	const VariantsDiscard = () => {
+		setVariants([{ id: 0 }]);
+		setIsColorPicker(false);
+		setColor("#ccc");
+		setIndCurrVariant(0);
+		setVariantsStyles([]);
+		clearVariants();
 	}
 
 	const SetImageToBig = (src, i) => {
@@ -205,76 +246,185 @@ const Add_product = ({ afterPaste, onBlur, onChange }) => {
 		imgsBase64[indSmallImgActive] = { base64Str: '', fileName: "" };
 		setCurrentImageSrc(one);
 	}
+
+	//variants
+	const [identifierNumber, setIdentifierNumber] = useState("");
+	const [color, setColor] = useState("#ccc");
+	const [variants, setVariants] = useState([{ id: 0 }]);
+	const [variantsStyles, setVariantsStyles] = useState([{ background: color }]);
+	const [isColorPicker, setIsColorPicker] = useState(false);
+	const [indCurrVariant, setIndCurrVariant] = useState(0);
+
+	const AddVariant = () => {
+		let tmpVariants = variants.slice();
+		tmpVariants.push({ id: tmpVariants.length });
+		setVariants(tmpVariants);
+
+		setIndCurrVariant(tmpVariants.length - 1)
+
+		SaveProductToState();
+
+		let tmpVariantsStyles = variantsStyles.slice();
+		tmpVariantsStyles.push({ background: "#ccc" });
+		setVariantsStyles(tmpVariantsStyles);
+
+		DiscardToVariant();
+	}
+	const handleColorChange = () => {
+		setIsColorPicker(!isColorPicker);
+	}
+	const OnColorChange = (c) => {
+		setColor("#" + rgbHex(c.rgb.r, c.rgb.g, c.rgb.b, c.rgb.a))
+		var tmpStyles = variantsStyles.slice();
+		tmpStyles[indCurrVariant] = { background: color };
+		setVariantsStyles(tmpStyles);
+	}
+	const CheckIfActiveVariant = (ind) => {
+		if (ind === indCurrVariant)
+			return "activeVariant"
+
+		return null;
+	}
+	const SetCurrVariant = (ind) => {
+		setIndCurrVariant(ind);
+
+		SaveProductToState();
+
+		let newProduct = productVariants[ind];
+		if (newProduct !== undefined)
+			SetProductToFields(newProduct);
+	}
+	const GetVariantStyle = (ind) => {
+		return variantsStyles[ind];
+	}
+	const SetProductToFields = (product) => {
+		setDummyimgs(product.dummyimgs)
+		setImgsBase64(product.images)
+		setIndCurrVariant(product.varId);
+		setCurrentImageSrc(product.dummyimgs[0].img);
+		setIndSmallImgActive(0);
+		setIdentifierNumber(product.identifierNumber);
+	}
+	const SaveProductToState = () => {
+		let product = {};
+		product.images = imgsBase64;
+		product.dummyimgs = dummyimgs;
+		product.identifierNumber = identifierNumber;
+		product.varId = indCurrVariant;
+		setVariant(product);
+	}
+	const handleColorDelete = () => {
+		let tmpVariants = variants.slice();
+		tmpVariants.splice(indCurrVariant, 1);
+		setVariants(tmpVariants);
+
+		let tmpVariantsStyles = variantsStyles.slice();
+		tmpVariantsStyles.splice(indCurrVariant, 1);
+		setVariantsStyles(tmpVariantsStyles);
+
+		removeVariant(indCurrVariant);
+
+		if (indCurrVariant === 0) {
+			setIndCurrVariant(0);
+			SetProductToFields(productVariants[0]);
+		}
+		else {
+			setIndCurrVariant(indCurrVariant - 1);
+			SetProductToFields(productVariants[indCurrVariant - 1]);
+		}
+	}
+	const editorRef = useRef(null);
 	return (
 		<Fragment>
 			<Breadcrumb title="Add Product" parent="Physical" />
 
 			<Container fluid={true}>
 				<Row>
-					<Col sm="12">
-						<Card>
-							<CardHeader>
-								<h5>Добавлення товару</h5>
-							</CardHeader>
-							<CardBody>
-								<Row className="product-adding">
-									<Col xl="5">
-										<div className="add-product">
-											<Row>
-												<Col xl="9 xl-50" sm="6 col-9">
-													<div className="big-curr-img">
-														<img
-															src={currentImageSrc}
-															alt=""
-															className="img-fluid image_zoom_1 blur-up lazyloaded"
-														/>
-														<div className="btnGroup">
+					<Form
+						className="needs-validation add-product-form"
+						onSubmit={handleValidSubmit}
+					>
+						<Col sm="12">
+							<Card>
+								<CardHeader>
+									<h5>Добавлення товару</h5>
+								</CardHeader>
+								<CardBody>
+									<Row className="product-adding">
+										<Col xl="5">
+											<div className="add-product">
+												<Row>
+													<Col xl="9 xl-50" sm="6 col-9">
+														<div className="big-curr-img">
+															<img
+																src={currentImageSrc}
+																alt=""
+																className="img-fluid image_zoom_1 blur-up lazyloaded"
+															/>
+															<div className="btnGroup">
 
-															<button className="iconOverBtn" onClick={() => (document.getElementById("uploadFileInput").click())}>
-																<Input
-																	className="upload"
-																	type="file"
-																	hidden
-																	id="uploadFileInput"
-																	accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*"
-																	onChange={(e) => _handleImgChange(e)}
-																/>
-																Завантажити</button>
+																<button type="button" className="iconOverBtn" onClick={() => (document.getElementById("uploadFileInput").click())}>
+																	<Input
+																		className="upload"
+																		type="file"
+																		hidden
+																		id="uploadFileInput"
+																		accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*"
+																		onChange={(e) => _handleImgChange(e)}
+																	/>
+																	Завантажити</button>
 
-															<button className="iconOverBtn" onClick={DeletePhoto}>Видалити</button>
+																<button className="iconOverBtn" onClick={DeletePhoto}>Видалити</button>
+															</div>
 														</div>
-													</div>
-												</Col>
-												<Col xl="3 xl-50" sm="6 col-3">
-													<ul className="file-upload-product">
-														{dummyimgs.map((res, i) => {
-															return (
-																<li key={i}>
-																	<div className={`box-input-file smallImgs ${CheckActiveSmallImg(i)}`} onClick={() => SetImageToBig(res.img, i)}>
-																		{/* <Input
+													</Col>
+													<Col xl="3 xl-50" sm="6 col-3">
+														<ul className="file-upload-product">
+															{dummyimgs.map((res, i) => {
+																return (
+																	<li key={i}>
+																		<div className={`box-input-file smallImgs ${CheckActiveSmallImg(i)}`} onClick={() => SetImageToBig(res.img, i)}>
+																			{/* <Input
 																			className="upload"
 																			type="file"
 																			onChange={(e) => _handleImgChange(e, i)}
 																		/> */}
-																		<img
-																			alt=""
-																			src={res.img}
-																			style={{ width: 50, height: 50 }}
-																		/>
-																	</div>
-																</li>
-															);
-														})}
-													</ul>
-												</Col>
-											</Row>
-										</div>
-									</Col>
-									<Col xl="7">
-										<Form
-											className="needs-validation add-product-form"
-											onSubmit={handleValidSubmit}
-										>
+																			<img
+																				alt=""
+																				src={res.img}
+																				style={{ width: 50, height: 50 }}
+																			/>
+																		</div>
+																	</li>
+																);
+															})}
+														</ul>
+													</Col>
+												</Row>
+											</div>
+										</Col>
+										<Col xl="7">
+											<div className="variants">
+												{variants.map((data, ind) => (
+													<div key={ind} className={`variantColor ${CheckIfActiveVariant(ind)}`} onClick={() => SetCurrVariant(ind)} style={GetVariantStyle(ind)} >
+													</div>
+												))}
+												{isColorPicker === true &&
+													<div id="chromePickerContainer">
+														<ChromePicker
+															color={color}
+															onChange={c =>
+																OnColorChange(c)
+															} />
+													</div>}
+												<div >
+													<Button type="button" color="light" onClick={AddVariant} >Добавити колір</Button>
+													<Button type="button" color="light" onClick={handleColorChange} >Змінити колір</Button>
+													<Button type="button" color="light" onClick={handleColorDelete} >Видалити колір</Button>
+												</div>
+
+											</div>
+
 											<div className="form form-label-center">
 												<FormGroup className="form-group mb-3 row">
 													<Label className="col-xl-3 col-sm-4 mb-0">
@@ -288,6 +438,23 @@ const Add_product = ({ afterPaste, onBlur, onChange }) => {
 															type="text"
 															onChange={SetTitle}
 															value={title}
+															required
+														/>
+													</div>
+													<div className="valid-feedback">Looks good!</div>
+												</FormGroup>
+												<FormGroup className="form-group mb-3 row">
+													<Label className="col-xl-3 col-sm-4 mb-0">
+														Код:
+													</Label>
+													<div className="col-xl-8 col-sm-7">
+														<Input
+															className="form-control"
+															name="identify_number"
+															id="validationCustom01"
+															type="text"
+															onChange={SetIdentifier}
+															value={identifierNumber}
 															required
 														/>
 													</div>
@@ -357,13 +524,14 @@ const Add_product = ({ afterPaste, onBlur, onChange }) => {
 												<div className="col-xl-8 col-sm-7 category-sm">
 													<Select
 														id="selectCategory"
-														className="basic-single"
+														className="basic-single z-101"
 														classNamePrefix="select"
 														defaultValue="Оберіть категорію"
-														lang="ua"
+														lang="ru"
 														name="categoryId"
 														onChange={SetCategory}
 														options={categoryList}
+														value={categoryList.filter(option => option.value == categoryId)}
 													/>
 												</div>
 											</FormGroup>
@@ -374,58 +542,81 @@ const Add_product = ({ afterPaste, onBlur, onChange }) => {
 												<div className="col-xl-8 col-sm-7 category-sm">
 													<Select
 														id="selectCountry"
-														className="basic-single"
+														className="basic-single z-100"
 														classNamePrefix="select"
 														defaultValue="Оберіть країну-виробника"
 														lang="ru-RU"
 														name="countryId"
 														onChange={SetCountry}
 														options={countryList}
+														value={countryList.filter(option => option.value == countryId)}
 													/>
 												</div>
 											</FormGroup>
 											<FormGroup className="form-group row">
-												<Label className="col-xl-3 col-sm-4">
-													Опис:
-												</Label>
-												<div className="col-xl-8 col-sm-7 description-sm">
-													{/* <CKEditors
-														activeclassName="p10"
-														events={{
-															ready: onReadyCkEDITOR,
-															// blur: onBlur,
-															// afterPaste: afterPaste,
-															change: SetDescription,
-														}}
 
-													// onChange={SetDescription}
-													/> */}
-													<textarea
-														className="p10"
-														value={description}
-														onChange={SetDescription} />
-												</div>
 											</FormGroup>
 											{/* </Form> */}
-											<div className="offset-xl-3 offset-sm-4">
-												<Button type="submit" color="primary">
-													Підтвердити
-												</Button>
-												<Button type="button" color="light" onClick={Discard}>
-													Очистити
-												</Button>
-											</div>
-										</Form>
-									</Col>
-								</Row>
-							</CardBody>
-						</Card>
-					</Col>
+
+										</Col>
+
+
+										<Label className="col-xl-12 col-sm-12" style={{ textAlign: "center", fontSize: 16, fontWeight: 600 }}>
+											Опис:
+										</Label>
+										<div className="col-xl-12 col-sm-12 description-sm">
+											<Editor
+												onInit={(evt, editor) => editorRef.current = editor}
+												className="p10"
+												apiKey="rnv1zli3c4ebl1nb1ffig1imvcmahopklllvbv9br4wythl8"
+												init={{
+													height: 250,
+													menubar: true,
+													language: "ru",
+													plugins: [
+														'advlist autolink lists link image charmap print preview anchor',
+														'searchreplace visualblocks code fullscreen',
+														'insertdatetime media table paste code help wordcount'
+													],
+													toolbar: 'undo redo | formatselect | ' +
+														'bold italic backcolor | alignleft aligncenter ' +
+														'alignright alignjustify | bullist numlist outdent indent | ' +
+														'removeformat | help',
+													content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+												}}
+												onChange={SetDescription}
+											/>
+										</div>
+
+										<div className="offset-xl-12 offset-sm-12" style={{ marginTop: 10 }}>
+											<Button type="submit" color="primary">
+												Підтвердити
+											</Button>
+											<Button type="button" color="light" onClick={Discard}>
+												Очистити
+											</Button>
+										</div>
+
+									</Row>
+								</CardBody>
+							</Card>
+						</Col>
+					</Form>
+
 				</Row>
 			</Container>
 			<ToastContainer pauseOnHover={false}></ToastContainer>
-		</Fragment>
+		</Fragment >
 	);
 };
 
-export default Add_product;
+const mapStateToProps = ({ variantReducer }) => {
+	const { productVariants } = variantReducer;
+	return { productVariants };
+}
+
+const mapDispatchToProps = {
+	setVariant, removeVariant, clearVariants
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Add_product);

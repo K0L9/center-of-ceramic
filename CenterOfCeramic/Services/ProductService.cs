@@ -19,59 +19,76 @@ namespace CenterOfCeramic.Services
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<ProductDTO, Product>().ForMember(x => x.Photos, opt => opt.Ignore());
+                cfg.CreateMap<ProductDTO, Product>();
                 cfg.CreateMap<Product, ProductDTO>();
+                cfg.CreateMap<ColorVariantDTO, ColorVariant>().ForMember(x => x.Images, opt => opt.Ignore());
             });
             mapper = new Mapper(config);
 
             _db = db;
         }
-        public IEnumerable<Product> GetAllProducts() => _db.Products.Include(x => x.Photos);
+        public IEnumerable<Product> GetAllProducts() => _db.Products.Include(nameof(Product.Variants)).Include("Variants.Images");
         public async Task<Product> AddProduct(ProductDTO productDTO)
         {
             try
             {
-                var photos = new List<Photo>();
-                foreach (var el in productDTO.Images)
-                {
-                    if (el.Base64Str == String.Empty)
-                        continue;
+                var product = mapper.Map<Product>(productDTO);
+                int counter = 0;
 
-                    var bytes = Convert.FromBase64String(el.Base64Str);
-                    using (var imageFile = new FileStream(@"E:\borya plutkas\ready\" + el.Filename, FileMode.Create))
+                foreach (var colorVariant in productDTO.Variants)
+                {
+                    var photos = new List<Photo>();
+                    foreach (var el in colorVariant.Images)
                     {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
+                        if (el.Base64Str == String.Empty)
+                            continue;
+
+                        var bytes = Convert.FromBase64String(el.Base64Str);
+
+                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(el.Filename);
+                        var fullPath = ENV.FilePath + fileName;
+
+                        using (var imageFile = new FileStream(fullPath, FileMode.Create))
+                        {
+                            imageFile.Write(bytes, 0, bytes.Length);
+                            imageFile.Flush();
+                        }
+                        photos.Add(new Photo() { URL = @"http://127.0.0.1:5002/" + fileName });
                     }
-                    photos.Add(new Photo() { URL = @"http://127.0.0.1:5002/" + el.Filename });
+
+                    product.Variants.ElementAt(counter++).Images = photos;
                 }
 
-                var product = mapper.Map<Product>(productDTO);
-                product.Photos = photos;
-                var addedProd = await _db.Products.AddAsync(product);
+                var addedProduct = await _db.Products.AddAsync(product);
                 _db.SaveChanges();
-                return addedProd.Entity;
+                return addedProduct.Entity;
             }
             catch (Exception ex)
             {
-                throw new Exception("Error with add product. Try again");
+                throw new Exception("Error with add products. Try again");
             }
         }
         public void DeleteProduct(int id)
         {
             try
             {
-                var product = _db.Products.Find(id);
+                var product = _db.Products.Include(nameof(Product.Variants)).Include("Variants.Images").SingleOrDefault(x => x.Id == id);
                 if (product == null)
                     throw new Exception($"Product with id {id} is not found");
 
-                foreach (var ph in product.Photos)
-                    _db.Photos.Remove(ph);
+                foreach (var el in product.Variants)
+                {
+                    foreach (var ph in el.Images)
+                    {
+                        _db.Photos.Remove(ph);
+                    }
+                    _db.ColorVariants.Remove(el);
+                }
 
                 _db.Products.Remove(product);
                 _db.SaveChanges();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw new Exception("Error with delete product. Try again");
             }
@@ -80,7 +97,7 @@ namespace CenterOfCeramic.Services
         {
             try
             {
-                var product = _db.Products.Include(x => x.Photos).SingleOrDefault(x => x.Id == id);
+                var product = _db.Products.Include(nameof(Product.Variants)).Include("Variants.Images").SingleOrDefault(x => x.Id == id);
                 if (product == null)
                     throw new Exception($"Product with id {id} is not found");
 
@@ -89,32 +106,39 @@ namespace CenterOfCeramic.Services
                 mapper.Map<ProductDTO, Product>(productDTO, product);
                 product.Id = oldId;
 
-                var photos = new List<Photo>(product.Photos);
-
-                for (int i = 0; i < productDTO.Images.Count; i++)
+                int counter = 0;
+                foreach (var colVar in productDTO.Variants)
                 {
-                    if(productDTO.Images.ElementAt(i).IsDeleted)
+                    var photos = new List<Photo>(product.Variants.ElementAt(counter).Images);
+
+                    for (int i = 0; i < colVar.Images.Count; i++)
                     {
-                        photos.RemoveAt(i);
-                    }
-                    else if (productDTO.Images.ElementAt(i).Base64Str != String.Empty) // it is edit photo
-                    {
-                        var bytes = Convert.FromBase64String(productDTO.Images.ElementAt(i).Base64Str);
-                        using (var imageFile = new FileStream(@"E:\borya plutkas\ready\" + productDTO.Images.ElementAt(i).Filename, FileMode.Create))
+                        if (colVar.Images.ElementAt(i).IsDeleted)
                         {
-                            imageFile.Write(bytes, 0, bytes.Length);
-                            imageFile.Flush();
+                            var tmpPhoto = photos.ElementAt(i);
+                            if (tmpPhoto != null)
+                                photos.Remove(tmpPhoto);
                         }
-                        Photo newPhoto = new Photo() { URL = @"http://127.0.0.1:5002/" + productDTO.Images.ElementAt(i).Filename };
+                        else if (colVar.Images.ElementAt(i).Base64Str != String.Empty) // it is edit photo
+                        {
+                            var bytes = Convert.FromBase64String(colVar.Images.ElementAt(i).Base64Str);
+                            using (var imageFile = new FileStream(@"E:\borya plutkas\ready\" + colVar.Images.ElementAt(i).Filename, FileMode.Create))
+                            {
+                                imageFile.Write(bytes, 0, bytes.Length);
+                                imageFile.Flush();
+                            }
+                        }
+
+                        Photo newPhoto = new Photo() { URL = @"http://127.0.0.1:5002/" + colVar.Images.ElementAt(i).Filename };
 
                         if (photos.Count <= i)
                             photos.Add(newPhoto);
                         else
                             photos[i] = newPhoto;
                     }
-                }
 
-                product.Photos = photos;
+                    product.Variants.ElementAt(counter++).Images = photos;
+                }
 
                 _db.SaveChanges();
 
@@ -124,7 +148,6 @@ namespace CenterOfCeramic.Services
             {
                 throw new Exception($"Error with edit product. Try again");
             }
-
         }
     }
 }

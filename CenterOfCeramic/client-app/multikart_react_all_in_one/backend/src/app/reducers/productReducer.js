@@ -1,8 +1,10 @@
 import productTypes from "../types/product-types"
 const initialState = {
     ProductList: [],
-    CurrentProduct: {}
+    CurrentProduct: {},
+    productVariants: []
 }
+export { initialState };
 
 const productReducer = (state = initialState, action) => {
     switch (action.type) {

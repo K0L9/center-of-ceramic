@@ -3,15 +3,17 @@ using System;
 using CenterOfCeramic.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CenterOfCeramic.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211103141103_EditIndetifyNumber")]
+    partial class EditIndetifyNumber
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,7 +82,10 @@ namespace CenterOfCeramic.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int>("ColorVariantId")
+                    b.Property<int?>("ColorVariantId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProductId")
                         .HasColumnType("integer");
 
                     b.Property<string>("URL")
@@ -90,6 +95,8 @@ namespace CenterOfCeramic.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ColorVariantId");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("Photos");
                 });
@@ -172,13 +179,17 @@ namespace CenterOfCeramic.Migrations
 
             modelBuilder.Entity("CenterOfCeramic.Models.Photo", b =>
                 {
-                    b.HasOne("CenterOfCeramic.Models.ColorVariant", "ColorVariant")
-                        .WithMany("Images")
-                        .HasForeignKey("ColorVariantId")
+                    b.HasOne("CenterOfCeramic.Models.ColorVariant", null)
+                        .WithMany("Photos")
+                        .HasForeignKey("ColorVariantId");
+
+                    b.HasOne("CenterOfCeramic.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ColorVariant");
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("CenterOfCeramic.Models.Product", b =>
@@ -218,7 +229,7 @@ namespace CenterOfCeramic.Migrations
 
             modelBuilder.Entity("CenterOfCeramic.Models.ColorVariant", b =>
                 {
-                    b.Navigation("Images");
+                    b.Navigation("Photos");
                 });
 
             modelBuilder.Entity("CenterOfCeramic.Models.Country", b =>

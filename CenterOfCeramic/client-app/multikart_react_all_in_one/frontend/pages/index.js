@@ -24,11 +24,11 @@ const Fashion = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/x-icon" href={favicon ? favicon : ""} />
       </Helmet>
-      {/* <ModalComponent />
+      {/* <ModalComponent /> */}
       <HeaderOne logoName={"logo.png"} topClass="top-header" />
-      <Banner />
-      <CollectionBanner />
-      <Paragraph
+      {/* <Banner /> */}
+      {/* <CollectionBanner /> */}
+      {/* <Paragraph
         title="title1 section-t-space"
         inner="title-inner1"
         hrClass={false}

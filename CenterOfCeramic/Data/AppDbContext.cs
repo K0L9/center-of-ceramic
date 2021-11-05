@@ -16,5 +16,6 @@ namespace CenterOfCeramic.Data
         public virtual DbSet<Photo> Photos { get; set; }
         public virtual DbSet<Country> Countries { get; set; }
         public virtual DbSet<Review> Reviews { get; set; }
+        public virtual DbSet<ColorVariant> ColorVariants { get; set; }
     }
 }

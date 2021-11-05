@@ -11,15 +11,25 @@ import { deleteProduct, getAllProducts, setCurrProduct } from "../../../app/acti
 import { toast, ToastContainer } from "react-toastify";
 import { Link, Redirect } from "react-router-dom";
 import one from "../../../assets/images/pro3/1.jpg";
+import { COMPARISON_BINARY_OPERATORS } from "@babel/types";
 
 const Product_list = ({ ProductList, getAllProducts, deleteProduct, setCurrProduct }) => {
 
 	const [isEdit, setIsEdit] = useState(false);
 
 	useEffect(() => {
+		let starterImages = [];
 		productService.getProductList().then(data => {
 			getAllProducts(data.List);
+
+			data.List.map(x => {
+				if (x.variants[0].images[0] === undefined)
+					starterImages.push(one);
+				else
+					starterImages.push(x.variants[0].images[0].url);
+			})
 		});
+		setCurrentImages(starterImages);
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
@@ -38,10 +48,29 @@ const Product_list = ({ ProductList, getAllProducts, deleteProduct, setCurrProdu
 		setCurrProduct(myData);
 	}
 
-	if (isEdit === true)
+	const [currentImages, setCurrentImages] = useState([]);
+
+	const setCurrVariantImage = (prInd, varInd) => {
+		let tmp = currentImages.slice();
+
+		tmp[prInd] = ProductList[prInd].variants[varInd].images[0].url;
+		setCurrentImages(tmp);
+	}
+
+	const getImage = (ind) => {
+		if (currentImages[ind] === undefined) {
+			if (ProductList[ind].variants[0].images[0] === undefined)
+				return one;
+			return ProductList[ind].variants[0].images[0].url;
+		}
+		return currentImages[ind];
+	}
+
+	if (isEdit === true) {
 		return (
 			<Redirect push to="edit-product" />
 		)
+	}
 
 	return (
 		<Fragment>
@@ -72,7 +101,7 @@ const Product_list = ({ ProductList, getAllProducts, deleteProduct, setCurrProdu
 														<img
 															alt=""
 															className="img-fluid blur-up bg-img lazyloaded"
-															src={myData.photos.length === 0 ? one : myData.photos[0].url}
+															src={getImage(i) === undefined ? one : getImage(i)}
 														/>
 													</a>
 													<div className="product-hover">
@@ -107,11 +136,13 @@ const Product_list = ({ ProductList, getAllProducts, deleteProduct, setCurrProdu
 												<h4>
 													{myData.price} <del>{myData.discount_price}</del>
 												</h4>
-												<ul className="color-variant">
-													<li className="bg-light0"></li>
-													<li className="bg-light1"></li>
-													<li className="bg-light2"></li>
-												</ul>
+												{myData.variants.length !== 1 && (
+													<ul className="color-variant">
+														{myData.variants.map((variant, ind) =>
+															(<li key={ind} className="bg-light1" style={{ backgroundColor: variant.colorHex }} onClick={() => setCurrVariantImage(i, ind)}></li>)
+														)}
+													</ul>
+												)}
 											</div>
 										</CardBody>
 									</div>

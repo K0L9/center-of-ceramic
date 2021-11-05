@@ -16,7 +16,7 @@ namespace CenterOfCeramic.Models.DTO
         public int Quantity { get; set; }
         public bool IsSale { get; set; }
         public int? OldPrice { get; set; }
-        public ICollection<PhotoDTO> Images { get; set; }
+        public ICollection<ColorVariantDTO> Variants { get; set; }
     }
 
     public class PhotoDTO

@@ -52,3 +52,32 @@
 .big-curr-img .iconOverBtn:hover {
   background-color: rgba(85, 85, 85, 0.322);
 }
+
+
+.variants{
+  margin-bottom: 10px;
+}
+.variantColor{
+  background-color: rgb(223, 223, 223);
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  display: inline-block;
+  margin-right: 3px;
+}
+.variantsBtnGroup{
+  display: inline-block;
+}
+.activeVariant{
+  border: 2px orange solid;
+}
+#chromePickerContainer{
+  position: absolute;
+  z-index: 103;
+}
+.z-100{
+  z-index: 100;
+}
+.z-101{
+  z-index: 101;
+}

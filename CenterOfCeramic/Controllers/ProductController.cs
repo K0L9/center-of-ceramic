@@ -22,14 +22,15 @@ namespace CenterOfCeramic.Controllers
         [HttpGet("get-all-products")]
         public IActionResult GetAllProducts()
         {
-            return Ok(_service.GetAllProducts());
+            var result = _service.GetAllProducts();
+            return Ok(result);
         }
         [HttpPost("add-product")]
-        public IActionResult AddProduct([FromBody] ProductDTO productDTO)
+        public IActionResult AddProduct([FromBody] ProductDTO productsDTO)
         {
             try
             {
-                var newProd = _service.AddProduct(productDTO);
+                var newProd = _service.AddProduct(productsDTO);
                 return Ok(newProd);
             }
             catch (Exception ex)
