@@ -31,12 +31,12 @@ const MasterProductDetail = ({
           {(
             (product.price) *
             currency.value
-          ).toFixed(2)}
+          )}
           {product.isSale === true &&
             <del>
               <span className="money">
                 {currency.symbol}
-                {(product.oldPirce * currency.value).toFixed(2)}
+                {(product.oldPirce * currency.value)}
               </span>
             </del>
           }
@@ -47,26 +47,27 @@ const MasterProductDetail = ({
           if (!findItem) uniqueTags.push(vari);
         })} */}
 
-        <>
+        {product.variants.length > 1 && (
+          <>
+            <ul className="color-variant">
+              {product.variants.map((vari, i) => {
+                return (
+                  <li
+                    className={vari.color}
+                    key={i}
+                    title={vari.color}
+                    style={{ backgroundColor: vari.colorHex }}
+                    onClick={() =>
+                      variantChangeByColor(i)
+                    }
+                  ></li>
+                );
+              })}
+            </ul>
+          </>
+        )}
 
-          <ul className="color-variant">
-            {product.variants.map((vari, i) => {
-              return (
-                <li
-                  className={vari.color}
-                  key={i}
-                  title={vari.color}
-                  style={{ backgroundColor: vari.colorHex }}
-                  onClick={() =>
-                    variantChangeByColor(i)
-                  }
-                ></li>
-              );
-            })}
-          </ul>
-
-
-          {/* {title !== "Product style 4" && uniqueTags[0].color ? (
+        {/* {title !== "Product style 4" && uniqueTags[0].color ? (
               <ul className="color-variant">
                 {uniqueTags.map((vari, i) => {
                   return (
@@ -84,7 +85,8 @@ const MasterProductDetail = ({
             ) : (
               ""
             )} */}
-        </>
+
+
       </div>
     </div>
   );

@@ -55,7 +55,19 @@ const ProductItem = ({
     //   }
     // });
   };
-  console.log("PRODUCT: ", product);
+
+  function removeTags(str) {
+    if ((str === null) || (str === ''))
+      return false;
+    else
+      str = str.toString();
+
+    // Regular expression to identify HTML tags in 
+    // the input string. Replacing the identified 
+    // HTML tag with a null string.
+    return str.replace(/(<([^>]+)>)/ig, '');
+  }
+
   return (
     <div className="product-box product-wrap">
       <div className="img-wrapper">
@@ -182,18 +194,12 @@ const ProductItem = ({
           <Row>
             <Col lg="6" xs="12">
               <div className="quick-view-img">
-                {/* <Media
-                  src={`${product.variants && image ? image : product.photos[0].url
+                <Media
+                  src={`${product.variants && image ? image : product.variants[0].images[0].url
                     }`}
                   alt=""
                   className="img-fluid"
-                /> */}
-                {/* <Media
-                  src={`${product.variants && image ? image : product.photos[0].url
-                    }`}
-                  alt=""
-                  className="img-fluid"
-                /> */}
+                />
               </div>
             </Col>
             <Col lg="6" className="rtl-text">
@@ -203,34 +209,26 @@ const ProductItem = ({
                   {currency.symbol}
                   {(product.price * currency.value).toFixed(2)}
                 </h3>
-                {product.variants ? (
+                {product.variants.length > 1 && (
                   <ul className="color-variant">
-                    {(
-                      <>
-                        {uniqueTags.map((vari, i) => {
-                          return (
-                            <li
-                              className={vari.color}
-                              key={i}
-                              title={vari.color}
-                              onClick={() =>
-                                variantChangeByColor(
-                                  vari.image_id,
-                                  product.photos
-                                )
-                              }
-                            ></li>
-                          );
-                        })}
-                      </>
-                    )}
+                    {product.variants.map((vari, i) => {
+                      return (
+                        <li
+                          className={vari.color}
+                          key={i}
+                          title={vari.color}
+                          style={{ backgroundColor: vari.colorHex }}
+                          onClick={() =>
+                            variantChangeByColor(i)
+                          }
+                        ></li>
+                      );
+                    })}
                   </ul>
-                ) : (
-                  ""
                 )}
                 <div className="border-product">
                   <h6 className="product-title">Опис</h6>
-                  <p>{product.description}</p>
+                  <p>{removeTags(product.description)}</p>
                 </div>
                 <div className="product-description border-product">
                   {product.size ? (
@@ -288,13 +286,13 @@ const ProductItem = ({
                     className="btn btn-solid"
                     onClick={() => addCart(product)}
                   >
-                    add to cart
+                    До корзини
                   </button>
                   <button
                     className="btn btn-solid"
                     onClick={clickProductDetail}
                   >
-                    View detail
+                    Детальніше
                   </button>
                 </div>
               </div>
