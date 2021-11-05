@@ -364,6 +364,7 @@ const Add_product = ({ afterPaste, onBlur, onChange }) => {
 														name="categoryId"
 														onChange={SetCategory}
 														options={categoryList}
+														value={categoryList.filter(option => option.value == categoryId)}
 													/>
 												</div>
 											</FormGroup>
@@ -381,6 +382,7 @@ const Add_product = ({ afterPaste, onBlur, onChange }) => {
 														name="countryId"
 														onChange={SetCountry}
 														options={countryList}
+														value={countryList.filter(option => option.value == countryId)}
 													/>
 												</div>
 											</FormGroup>
