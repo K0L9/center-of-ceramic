@@ -559,8 +559,6 @@ const Add_product = ({ productVariants, setVariant, removeVariant, clearVariants
 											{/* </Form> */}
 
 										</Col>
-
-
 										<Label className="col-xl-12 col-sm-12" style={{ textAlign: "center", fontSize: 16, fontWeight: 600 }}>
 											Опис:
 										</Label>

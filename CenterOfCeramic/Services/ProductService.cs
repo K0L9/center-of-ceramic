@@ -185,50 +185,6 @@ namespace CenterOfCeramic.Services
                     _db.SaveChanges();
                 }
 
-
-                //int counter = 0;
-                //foreach (var colVar in productDTO.Variants)
-                //{
-                //    List<Photo> photos;
-                //    if (oldColorVariants.Count() > counter)
-                //        photos = new List<Photo>(oldColorVariants.ElementAt(counter).Images);
-                //    else
-                //        photos = new List<Photo>();
-
-                //    product.Variants.ElementAt(counter).Images = oldColorVariants.ElementAt(counter).Images;
-
-                //    for (int i = 0; i < colVar.Images.Count; i++)
-                //    {
-                //        if (colVar.Images.ElementAt(i).IsDeleted)
-                //        {
-                //            var tmpPhoto = photos.ElementAt(i);
-                //            if (tmpPhoto != null)
-                //                product.Variants.ElementAt(counter).Images.Remove(tmpPhoto);
-                //        }
-                //        else if (colVar.Images.ElementAt(i).Base64Str != String.Empty) // it is edit photo
-                //        {
-                //            var bytes = Convert.FromBase64String(colVar.Images.ElementAt(i).Base64Str);
-                //            using (var imageFile = new FileStream(@"E:\borya plutkas\ready\" + colVar.Images.ElementAt(i).Filename, FileMode.Create))
-                //            {
-                //                imageFile.Write(bytes, 0, bytes.Length);
-                //                imageFile.Flush();
-                //            }
-                //            Photo newPhoto = new Photo() { URL = @"http://127.0.0.1:5002/" + colVar.Images.ElementAt(i).Filename, ColorVariantId = product.Variants.ElementAt(counter).Id };
-
-                //            _db.Photos.Add(newPhoto);
-
-                //            if (product.Variants.ElementAt(counter).Images.Count <= i)
-                //                product.Variants.ElementAt(counter).Images.Add(newPhoto);
-                //            //else
-                //            //    product.Variants.ElementAt(counter).Images.ElementAt(i).URL = @"http://127.0.0.1:5002/" + colVar.Images.ElementAt(i).Filename;
-                //        }
-                //    }
-                //    counter++;
-
-                //    product.Variants.ElementAt(counter++).Images = photos;
-                //    _db.SaveChanges();
-                //}
-
                 return product;
             }
             catch (Exception ex)

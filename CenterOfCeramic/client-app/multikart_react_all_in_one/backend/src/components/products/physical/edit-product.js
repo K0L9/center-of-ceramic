@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useRef } from "react";
 import Breadcrumb from "../../common/breadcrumb";
 import CKEditors from "react-ckeditor-component";
 import {
@@ -36,6 +36,7 @@ import { ToastContainer, toast } from "react-toastify";
 //import css
 import "./add-product.css"
 import { getDefaultNormalizer, prettyDOM } from "@testing-library/dom";
+import { Editor } from '@tinymce/tinymce-react'
 import { Redirect } from "react-router-dom";
 import { isCallExpression } from "@babel/types";
 
@@ -202,7 +203,7 @@ const Edit_product = ({ CurrentProduct }) => {
         setTitle(e.target.value);
     }
     const SetDescription = (e) => {
-        setDescription(e.target.value);
+        setDescription(editorRef.current.getContent());
     }
     const SetPrice = (e) => {
         setPrice(e.target.value);
@@ -219,7 +220,6 @@ const Edit_product = ({ CurrentProduct }) => {
     const SetIdentifier = (e) => {
         setIdentifierNumber(e.target.value);
         SaveProductToState();
-
     }
 
     const Discard = () => {
@@ -436,6 +436,8 @@ const Edit_product = ({ CurrentProduct }) => {
         }
     }
 
+    const editorRef = useRef(null);
+
     if (isRedirect === true) {
         return (
             <Redirect to="/products/physical/product-list" />
@@ -448,90 +450,91 @@ const Edit_product = ({ CurrentProduct }) => {
 
             <Container fluid={true}>
                 <Row>
-                    <Col sm="12">
-                        <Card>
-                            <CardHeader>
-                                <h5>Редагування товару</h5>
-                            </CardHeader>
-                            <CardBody>
-                                <Row className="product-adding">
-                                    <Col xl="5">
-                                        <div className="add-product">
-                                            <Row>
-                                                <Col xl="9 xl-50" sm="6 col-9">
-                                                    <div className="big-curr-img">
-                                                        <img
-                                                            src={currentImageSrc}
-                                                            alt=""
-                                                            className="img-fluid image_zoom_1 blur-up lazyloaded"
-                                                        />
-                                                        <div className="btnGroup">
+                    <Form
+                        className="needs-validation add-product-form"
+                        onSubmit={handleValidSubmit}
+                    >
+                        <Col sm="12">
+                            <Card>
+                                <CardHeader>
+                                    <h5>Редагування товару</h5>
+                                </CardHeader>
+                                <CardBody>
+                                    <Row className="product-adding">
+                                        <Col xl="5">
+                                            <div className="add-product">
+                                                <Row>
+                                                    <Col xl="9 xl-50" sm="6 col-9">
+                                                        <div className="big-curr-img">
+                                                            <img
+                                                                src={currentImageSrc}
+                                                                alt=""
+                                                                className="img-fluid image_zoom_1 blur-up lazyloaded"
+                                                            />
+                                                            <div className="btnGroup">
 
-                                                            <button className="iconOverBtn" onClick={() => (document.getElementById("uploadFileInput").click())}>
-                                                                <Input
-                                                                    className="upload"
-                                                                    type="file"
-                                                                    hidden
-                                                                    id="uploadFileInput"
-                                                                    accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*"
-                                                                    onChange={(e) => _handleImgChange(e)}
-                                                                />
-                                                                Завантажити</button>
+                                                                <button className="iconOverBtn" onClick={() => (document.getElementById("uploadFileInput").click())}>
+                                                                    <Input
+                                                                        className="upload"
+                                                                        type="file"
+                                                                        hidden
+                                                                        id="uploadFileInput"
+                                                                        accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*"
+                                                                        onChange={(e) => _handleImgChange(e)}
+                                                                    />
+                                                                    Завантажити</button>
 
-                                                            <button className="iconOverBtn" onClick={DeletePhoto}>Видалити</button>
+                                                                <button className="iconOverBtn" onClick={DeletePhoto}>Видалити</button>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </Col>
-                                                <Col xl="3 xl-50" sm="6 col-3">
-                                                    <ul className="file-upload-product">
-                                                        {dummyimgs.map((res, i) => {
-                                                            return (
-                                                                <li key={i}>
-                                                                    <div className={`box-input-file smallImgs ${CheckActiveSmallImg(i)}`} onClick={() => SetImageToBig(res.img, i)}>
-                                                                        {/* <Input
+                                                    </Col>
+                                                    <Col xl="3 xl-50" sm="6 col-3">
+                                                        <ul className="file-upload-product">
+                                                            {dummyimgs.map((res, i) => {
+                                                                return (
+                                                                    <li key={i}>
+                                                                        <div className={`box-input-file smallImgs ${CheckActiveSmallImg(i)}`} onClick={() => SetImageToBig(res.img, i)}>
+                                                                            {/* <Input
 																			className="upload"
 																			type="file"
 																			onChange={(e) => _handleImgChange(e, i)}
 																		/> */}
-                                                                        <img
-                                                                            alt=""
-                                                                            src={res.img}
-                                                                            style={{ width: 50, height: 50 }}
-                                                                        />
-                                                                    </div>
-                                                                </li>
-                                                            );
-                                                        })}
-                                                    </ul>
-                                                </Col>
-                                            </Row>
-                                        </div>
-                                    </Col>
-                                    <Col xl="7">
-                                        <div className="variants">
-                                            {variants.map((data, ind) => (
-                                                <div className={`variantColor ${CheckIfActiveVariant(ind)}`} onClick={() => SetCurrVariant(ind)} style={GetVariantStyle(ind)} >
+                                                                            <img
+                                                                                alt=""
+                                                                                src={res.img}
+                                                                                style={{ width: 50, height: 50 }}
+                                                                            />
+                                                                        </div>
+                                                                    </li>
+                                                                );
+                                                            })}
+                                                        </ul>
+                                                    </Col>
+                                                </Row>
+                                            </div>
+                                        </Col>
+                                        <Col xl="7">
+                                            <div className="variants">
+                                                {variants.map((data, ind) => (
+                                                    <div className={`variantColor ${CheckIfActiveVariant(ind)}`} onClick={() => SetCurrVariant(ind)} style={GetVariantStyle(ind)} >
+                                                    </div>
+                                                ))}
+                                                {isColorPicker === true &&
+                                                    <div id="chromePickerContainer">
+                                                        <ChromePicker
+                                                            color={color}
+                                                            onChange={c =>
+                                                                OnColorChange(c)
+                                                            } />
+                                                    </div>}
+                                                <div >
+                                                    <Button type="button" color="light" onClick={AddVariant} >Добавити колір</Button>
+                                                    <Button type="button" color="light" onClick={handleColorChange} >Змінити колір</Button>
+                                                    <Button type="button" color="light" onClick={handleColorDelete} >Видалити колір</Button>
                                                 </div>
-                                            ))}
-                                            {isColorPicker === true &&
-                                                <div id="chromePickerContainer">
-                                                    <ChromePicker
-                                                        color={color}
-                                                        onChange={c =>
-                                                            OnColorChange(c)
-                                                        } />
-                                                </div>}
-                                            <div >
-                                                <Button type="button" color="light" onClick={AddVariant} >Добавити колір</Button>
-                                                <Button type="button" color="light" onClick={handleColorChange} >Змінити колір</Button>
-                                                <Button type="button" color="light" onClick={handleColorDelete} >Видалити колір</Button>
+
                                             </div>
 
-                                        </div>
-                                        <Form
-                                            className="needs-validation add-product-form"
-                                            onSubmit={handleValidSubmit}
-                                        >
                                             <div className="form form-label-center">
                                                 <FormGroup className="form-group mb-3 row">
                                                     <Label className="col-xl-3 col-sm-4 mb-0">
@@ -688,43 +691,50 @@ const Edit_product = ({ CurrentProduct }) => {
                                                     />
                                                 </div>
                                             </FormGroup>
-                                            <FormGroup className="form-group row">
-                                                <Label className="col-xl-3 col-sm-4">
-                                                    Опис:
-                                                </Label>
-                                                <div className="col-xl-8 col-sm-7 description-sm">
-                                                    {/* <CKEditors
-														activeclassName="p10"
-														events={{
-															ready: onReadyCkEDITOR,
-															// blur: onBlur,
-															// afterPaste: afterPaste,
-															change: SetDescription,
-														}}
-
-													// onChange={SetDescription}
-													/> */}
-                                                    <textarea
-                                                        className="p10"
-                                                        value={description}
-                                                        onChange={SetDescription} />
-                                                </div>
-                                            </FormGroup>
                                             {/* </Form> */}
-                                            <div className="offset-xl-3 offset-sm-4">
-                                                <Button type="submit" color="primary">
-                                                    Підтвердити
-                                                </Button>
-                                                <Button type="button" color="light" onClick={Discard}>
-                                                    Відмінити зміни
-                                                </Button>
-                                            </div>
-                                        </Form>
-                                    </Col>
-                                </Row>
-                            </CardBody>
-                        </Card>
-                    </Col>
+                                        </Col>
+                                        <Label className="col-xl-12 col-sm-12" style={{ textAlign: "center", fontSize: 16, fontWeight: 600 }}>
+                                            Опис:
+                                        </Label>
+                                        <div className="col-xl-12 col-sm-12 description-sm">
+                                            <Editor
+                                                onInit={(evt, editor) => editorRef.current = editor}
+                                                className="p10"
+                                                apiKey="rnv1zli3c4ebl1nb1ffig1imvcmahopklllvbv9br4wythl8"
+                                                init={{
+                                                    height: 250,
+                                                    menubar: true,
+                                                    language: "ru",
+                                                    plugins: [
+                                                        'advlist autolink lists link image charmap print preview anchor',
+                                                        'searchreplace visualblocks code fullscreen',
+                                                        'insertdatetime media table paste code help wordcount'
+                                                    ],
+                                                    toolbar: 'undo redo | formatselect | ' +
+                                                        'bold italic backcolor | alignleft aligncenter ' +
+                                                        'alignright alignjustify | bullist numlist outdent indent | ' +
+                                                        'removeformat | help',
+                                                    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                                                }}
+                                                onChange={SetDescription}
+                                                value={description}
+                                            />
+                                        </div>
+
+                                        <div className="offset-xl-12 offset-sm-12" style={{ marginTop: 10 }}>
+                                            <Button type="submit" color="primary">
+                                                Підтвердити
+                                            </Button>
+                                            <Button type="button" color="light" onClick={Discard}>
+                                                Очистити
+                                            </Button>
+                                        </div>
+                                    </Row>
+                                </CardBody>
+                            </Card>
+                        </Col>
+                    </Form>
+
                 </Row>
             </Container>
             <ToastContainer pauseOnHover={false}></ToastContainer>
