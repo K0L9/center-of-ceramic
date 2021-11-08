@@ -109,6 +109,7 @@ namespace CenterOfCeramic.Services
                 mapper.Map<ProductDTO, Product>(productDTO, product);
                 product.Id = oldId;
 
+                //edit old variants
                 for (int i = 0; i < product.Variants.Count(); i++)
                 {
                     product.Variants.ElementAt(i).ColorHex = productDTO.Variants.ElementAt(i).ColorHex;
@@ -152,6 +153,7 @@ namespace CenterOfCeramic.Services
                     }
                 }
 
+                //add new variants
                 for (int i = product.Variants.Count; i < productDTO.Variants.Count(); i++)
                 {
                     var variantDTO = productDTO.Variants.ElementAt(i);
@@ -183,6 +185,21 @@ namespace CenterOfCeramic.Services
 
                     product.Variants.Add(colorVariant);
                     _db.SaveChanges();
+                }
+
+                //delete variants
+                if (productDTO.Variants.Count < product.Variants.Count)
+                {
+                    for (int i = 0; i < productDTO.Variants.Count; i++)
+                    {
+                        if ((productDTO.Variants.ElementAt(i).ColorHex != product.Variants.ElementAt(i).ColorHex) &&
+                            (productDTO.Variants.ElementAt(i).IdentifierNumber != product.Variants.ElementAt(i).IdentifierNumber))
+                        {
+                            var delVari = product.Variants.ElementAt(i);
+                            if (delVari != null)
+                                product.Variants.Remove(delVari);
+                        }
+                    }
                 }
 
                 return product;
