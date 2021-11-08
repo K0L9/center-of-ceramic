@@ -53,6 +53,7 @@ const TabContent = ({
   endIndex,
   cartClass,
   backImage,
+  emptyMessage,
 }) => {
   const context = useContext(CartContext);
   const wishListContext = useContext(WishlistContext);
@@ -68,41 +69,39 @@ const TabContent = ({
         !data.products.items ||
         data.products.items.length === 0 ||
         loading ? (
-        data &&
-          data.products &&
-          data.products.items &&
-          data.products.items.length === 0 ? (
-          <Col xs="12">
-            <div>
-              <div className="col-sm-12 empty-cart-cls text-center">
-                <Media
-                  src={emptySearch}
-                  className="img-fluid mb-4 mx-auto"
-                  alt=""
-                />
-                <h3>
-                  <strong>Your Cart is Empty</strong>
-                </h3>
-                <h4>Explore more shortlist some items.</h4>
+        loading ?
+          (
+            <div className="row mx-0 margin-default">
+              <div className="col-xl-3 col-lg-4 col-6">
+                <PostLoader />
+              </div>
+              <div className="col-xl-3 col-lg-4 col-6">
+                <PostLoader />
+              </div>
+              <div className="col-xl-3 col-lg-4 col-6">
+                <PostLoader />
+              </div>
+              <div className="col-xl-3 col-lg-4 col-6">
+                <PostLoader />
               </div>
             </div>
-          </Col>
-        ) : (
-          <div className="row mx-0 margin-default">
-            <div className="col-xl-3 col-lg-4 col-6">
-              <PostLoader />
-            </div>
-            <div className="col-xl-3 col-lg-4 col-6">
-              <PostLoader />
-            </div>
-            <div className="col-xl-3 col-lg-4 col-6">
-              <PostLoader />
-            </div>
-            <div className="col-xl-3 col-lg-4 col-6">
-              <PostLoader />
-            </div>
-          </div>
-        )
+          ) : (
+            <Col xs="12">
+              <div>
+                <div className="col-sm-12 empty-cart-cls text-center">
+                  <Media
+                    src={emptySearch}
+                    className="img-fluid mb-4 mx-auto"
+                    alt=""
+                  />
+                  <h3>
+                    <strong>Пошук результатів не дав</strong>
+                  </h3>
+                  <h4>{emptyMessage}</h4>
+                </div>
+              </div>
+            </Col>
+          )
       ) : (
         data &&
         data.products.items
@@ -154,15 +153,32 @@ const SpecialProducts = ({
   });
 
   const [list, setProductList] = useState({});
+  const [newProducts, setNewProducts] = useState([]);
+  const [bestProducts, setBestProducts] = useState([]);
+  const [salesProducts, setSalesProducts] = useState([]);
 
   useEffect(() => {
     productService.getAllProducts().then(list => {
       setProductList({ products: { items: list } });
+
+      let tmpSalesProduct = { products: { items: [] } };
+      let tmpNewProduct = { products: { items: [] } };
+      let tmpBestProduct = { products: { items: [] } };
+
+      list.map((x, counter) => {
+        if (x.isSale)
+          tmpSalesProduct.products.items.push(x);
+        if (counter < 8)
+          tmpNewProduct.products.items.push(x);
+        if (counter > 8 && counter < 16)
+          tmpBestProduct.products.items.push(x);
+      })
+
+      setNewProducts(tmpNewProduct);
+      setBestProducts(tmpBestProduct);
+      setSalesProducts(tmpSalesProduct);
     })
   }, [])
-
-  console.log("LIST: ", list)
-  console.log("DATA: ", data)
 
   return (
     <div>
@@ -174,7 +190,7 @@ const SpecialProducts = ({
             <div className={title}>
               <h4>{heading}</h4>
               {/* exclusive products */}
-              <h2 className={inner}>special products</h2>
+              <h2 className={inner}>спеціальні пропозиції</h2>
               {line ? (
                 <div className="line"></div>
               ) : hrClass ? (
@@ -191,50 +207,53 @@ const SpecialProducts = ({
                 className={activeTab == type ? "active" : ""}
                 onClick={() => setActiveTab(type)}
               >
-                NEW ARRIVAL
+                ЗНИЖКИ
               </Tab>
               <Tab
                 className={activeTab == "furniture" ? "active" : ""}
                 onClick={() => setActiveTab("furniture")}
               >
-                FEATURED{" "}
+                БЕСТСЕЛЛЕРИ{" "}
               </Tab>
               <Tab
                 className={activeTab == "furniture" ? "active" : ""}
                 onClick={() => setActiveTab("furniture")}
               >
-                SPECIAL
+                НОВІ ТОВАРИ
               </Tab>
             </TabList>
 
             <TabPanel>
               <TabContent
-                data={list}
+                data={salesProducts}
                 loading={loading}
                 startIndex={0}
                 endIndex={8}
                 cartClass={cartClass}
                 backImage={backImage}
+                emptyMessage={"Товарів за знижкою на даний момент немає "}
               />
             </TabPanel>
             <TabPanel>
               <TabContent
-                data={data}
+                data={bestProducts}
                 loading={loading}
                 startIndex={0}
                 endIndex={8}
                 cartClass={cartClass}
                 backImage={backImage}
+                emptyMessage={"Бестселерів товарів не знайдено"}
               />
             </TabPanel>
             <TabPanel>
               <TabContent
-                data={data}
+                data={newProducts}
                 loading={loading}
                 startIndex={0}
                 endIndex={8}
                 cartClass={cartClass}
                 backImage={backImage}
+                emptyMessage={"Нових товарів не знайдено"}
               />
             </TabPanel>
           </Tabs>

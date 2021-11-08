@@ -61,20 +61,19 @@ const Instagram = ({ type }) => {
   return (
     <section className="instagram ratio_square">
       <Container
-        className={`${
-          type == "nursery" ||
+        className={`${type == "nursery" ||
           type == "bags" ||
           type == "fashion" ||
           type == "christmas" ||
           type == "fashion"
-            ? "p-0"
-            : ""
-        }`}
+          ? "p-0"
+          : ""
+          }`}
         fluid={true}
       >
         <Row>
           <Col className="pt-0">
-            <h2 className="title-borderless"># instagram</h2>
+            <h2 className="title-borderless">наші партнери</h2>
             <div className="slide-7 no-arrow slick-instagram">
               <Slider {...settings}>
                 {data &&

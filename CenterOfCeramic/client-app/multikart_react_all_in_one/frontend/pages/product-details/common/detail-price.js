@@ -25,64 +25,73 @@ const DetailsWithPrice = ({ item, stickyClass, changeColorVar }) => {
     setQuantity(parseInt(e.target.value));
   };
 
+  // const minusQuantity = () => {
+  //   setQuantity(e.target.value > 1 ? e.target.value - 1 : e.target.value)
+  // }
+
+  function removeTags(str) {
+    if ((str === null) || (str === ''))
+      return false;
+    else
+      str = str.toString();
+
+    return str.replace(/(<([^>]+)>)/ig, '').split(".")[0];
+  }
+
   return (
     <>
       <div className={`product-right ${stickyClass}`}>
-        Detail Price
         <h2> {product.title} </h2>
-        <h4>
-          <del>
-            {symbol}
-            {product.price}
-          </del>
-          <span>{product.discount}% off</span>
-        </h4>
+
+        {product.isSale === true &&
+          <h4>
+            <del>
+              {symbol}
+              {product.oldPrice}
+            </del>
+            <span>{parseInt(product.price / product.oldPrice * 100)}% економії</span>
+          </h4>
+        }
         <h3>
           {symbol}
-          {product.price - (product.price * product.discount) / 100}
+          {product.price}
         </h3>
-        {product.variants.map((vari) => {
+
+        {/* {product.variants.map((vari) => {
           var findItem = uniqueColor.find((x) => x.color === vari.color);
           if (!findItem) uniqueColor.push(vari);
           var findItemSize = uniqueSize.find((x) => x === vari.size);
           if (!findItemSize) uniqueSize.push(vari.size);
-        })}
+        })} */}
         {changeColorVar === undefined ? (
           <>
-            {uniqueColor ? (
-              <ul className="color-variant">
-                {uniqueColor.map((vari, i) => {
-                  return (
-                    <li className={vari.color} key={i} title={vari.color}></li>
-                  );
-                })}
-              </ul>
-            ) : (
-              ""
-            )}
+            <ul className="color-variant">
+              {product.variants.map((vari, i) => {
+                return (
+                  <li className={vari.colorHex} style={{ backgroundColor: vari.colorHex }} key={i}></li>
+                );
+              })}
+            </ul>
           </>
         ) : (
           <>
-            {uniqueColor ? (
-              <ul className="color-variant">
-                {uniqueColor.map((vari, i) => {
-                  return (
-                    <li
-                      className={vari.color}
-                      key={i}
-                      title={vari.color}
-                      onClick={() => changeColorVar(i)}
-                    ></li>
-                  );
-                })}
-              </ul>
-            ) : (
-              ""
-            )}
+            <ul className="color-variant">
+              {product.variants.map((vari, i) => {
+                return (
+                  <li
+                    className={vari.color}
+                    key={i}
+                    title={vari.color}
+                    style={{ backgroundColor: vari.colorHex }}
+                    onClick={() => changeColorVar(i)}
+                  ></li>
+                );
+              })}
+            </ul>
           </>
         )}
         <div className="product-description border-product">
-          {product.variants ? (
+          {/* {product.variants ? (
             <div>
               <h6 className="product-title size-text">
                 select size
@@ -117,9 +126,9 @@ const DetailsWithPrice = ({ item, stickyClass, changeColorVar }) => {
             </div>
           ) : (
             ""
-          )}
+          )} */}
           <span className="instock-cls">{stock}</span>
-          <h6 className="product-title">quantity</h6>
+          <h6 className="product-title">Кількість</h6>
           <div className="qty-box">
             <div className="input-group">
               <span className="input-group-prepend">
@@ -167,8 +176,8 @@ const DetailsWithPrice = ({ item, stickyClass, changeColorVar }) => {
           </Link>
         </div>
         <div className="border-product">
-          <h6 className="product-title">product details</h6>
-          <p>{product.description}</p>
+          <h6 className="product-title">Короткий опис</h6>
+          <p>{removeTags(product.description)}</p>
         </div>
         <div className="border-product">
           <h6 className="product-title">share it</h6>

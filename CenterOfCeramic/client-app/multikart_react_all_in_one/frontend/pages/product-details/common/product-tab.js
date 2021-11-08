@@ -56,7 +56,7 @@ const ProductTab = () => {
               <TabContent activeTab={activeTab} className="nav-material">
                 <TabPane tabId="1">
                   <p className="mb-0 pb-0">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                    dolor sit amet, consectetur adipiscing elit, sed
                     do eiusmod tempor incididunt ut labore et dolore magna
                     aliqua. Ut enim ad minim veniam, quis nostrud exercitation
                     ullamco laboris nisi ut aliquip ex ea commodo consequat.

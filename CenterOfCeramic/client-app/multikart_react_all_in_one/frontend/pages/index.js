@@ -44,7 +44,7 @@ const Fashion = () => {
         noSlider="false"
         cartClass="cart-info cart-wrap"
       /> */}
-      {/* <Parallax /> */}
+      <Parallax />
       <SpecialProducts
         type="fashion"
         backImage={true}
@@ -57,7 +57,7 @@ const Fashion = () => {
         cartClass="cart-info cart-wrap"
       />
       <ServiceLayout sectionClass="border-section small-section" />
-      <Blog type="fashion" title="title1" inner="title-inner1" />
+      {/* <Blog type="fashion" title="title1" inner="title-inner1" /> */}
       <Instagram type="fashion" />
       <div className="section-b-space">
         <LogoBlock />
