@@ -21,7 +21,6 @@ const LogoBlock = ({ designClass }) => {
           <Col md="12">
             <Slider {...Slider6} className="slide-6 no-arrow">
               {imgData.map((imgSrc, i) => {
-                console.log("IMAGE: ");
                 return (
                   <div key={i}>
                     <div className="logo-block">

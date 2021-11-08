@@ -72,33 +72,31 @@ const Edit_product = ({ CurrentProduct }) => {
         let tmpVariantsList = []
 
         if (CurrentProduct.variants !== undefined) {
-            if (CurrentProduct.variants.length > 1) {
-                CurrentProduct.variants.map((x, ind) => {
-                    let tmpDmmyImgs = [];
-                    if (x.images !== undefined) {
-                        x.images.map(img => {
-                            tmpDmmyImgs.push({ img: img === undefined ? one : img.url });
-                        })
-                        for (let counter = x.images.length; counter < 6; counter++) {
-                            tmpDmmyImgs.push({ img: one });
-                        }
+            CurrentProduct.variants.map((x, ind) => {
+                let tmpDmmyImgs = [];
+                if (x.images !== undefined) {
+                    x.images.map(img => {
+                        tmpDmmyImgs.push({ img: img === undefined ? one : img.url });
+                    })
+                    for (let counter = x.images.length; counter < 6; counter++) {
+                        tmpDmmyImgs.push({ img: one });
                     }
-                    else {
-                        tmpDmmyImgs = defaultDummyImgs;
-                    }
-                    let tmp = {
-                        dummyimgs: tmpDmmyImgs,
-                        identifierNumber: x.identifierNumber,
-                        images: defaultBase64StateValues,
-                        varId: x.varid
-                    }
-                    tmpVariantsList.push(tmp);
+                }
+                else {
+                    tmpDmmyImgs = defaultDummyImgs;
+                }
+                let tmp = {
+                    dummyimgs: tmpDmmyImgs,
+                    identifierNumber: x.identifierNumber,
+                    images: defaultBase64StateValues,
+                    varId: x.varid
+                }
+                tmpVariantsList.push(tmp);
 
-                    variantsIdsTmp.push(ind);
-                    variantsStylesTmp.push({ background: x.colorHex });
-                })
-                setProductVariants(tmpVariantsList);
-            }
+                variantsIdsTmp.push(ind);
+                variantsStylesTmp.push({ background: x.colorHex });
+            })
+            setProductVariants(tmpVariantsList);
         }
 
         setVariants(variantsIdsTmp);
@@ -218,7 +216,11 @@ const Edit_product = ({ CurrentProduct }) => {
     const SetNewPrice = (e) => {
         setNewPrice(e.target.value);
     }
+    const SetIdentifier = (e) => {
+        setIdentifierNumber(e.target.value);
+        SaveProductToState();
 
+    }
 
     const Discard = () => {
         setTitle(CurrentProduct.title);
@@ -277,9 +279,14 @@ const Edit_product = ({ CurrentProduct }) => {
         return "";
     }
     const DeletePhoto = () => {
-        dummyimgs[indSmallImgActive] = { img: one };
-        imgsBase64[indSmallImgActive] = { base64Str: '', fileName: "", isDeleted: true };
+        dummyimgs[indSmallImgActive].img = one
+
+        imgsBase64[indSmallImgActive].base64Str = '';
+        imgsBase64[indSmallImgActive].fileName = '';
+        imgsBase64[indSmallImgActive].isDeleted = true;
+
         setCurrentImageSrc(one);
+        SaveProductToState();
     }
     const SetIsSaleHandle = (event) => {
         let isChecked = event.target.checked;
@@ -300,9 +307,6 @@ const Edit_product = ({ CurrentProduct }) => {
         product.countryId = countryId;
         product.isSale = isSale;
 
-        console.log("IMAGES: ", imgsBase64);
-        console.log("DUMMY: ", dummyimgs);
-
         if (!isSale) {
             product.price = price;
         }
@@ -313,10 +317,8 @@ const Edit_product = ({ CurrentProduct }) => {
 
         let colorVariants = [];
 
-        console.log("productVariants: ", productVariants)
-
         productVariants.map((x, ind) => {
-            console.log("X: ", x)
+            console.log("X", x)
             colorVariants.push({ images: x.images, colorHex: variantsStyles[ind].background, identifierNumber: x.identifierNumber })
         })
 
@@ -325,7 +327,7 @@ const Edit_product = ({ CurrentProduct }) => {
 
         product.variants = colorVariants;
 
-        console.log("Ready product: ", product);
+        console.log("Ready product", product)
 
         productService.editProduct(product).then(isOk => {
             if (isOk === true) {
@@ -337,9 +339,6 @@ const Edit_product = ({ CurrentProduct }) => {
             }
         });
     };
-
-
-
 
     //variants
     const [identifierNumber, setIdentifierNumber] = useState(CurrentProduct.variants === undefined ? null : CurrentProduct.variants[0].identifierNumber);
@@ -383,7 +382,6 @@ const Edit_product = ({ CurrentProduct }) => {
     const SetCurrVariant = (ind) => {
         SaveProductToState();
         setIndCurrVariant(ind);
-        console.log("productVariants: ", productVariants)
 
         let newProduct = productVariants[ind];
         if (newProduct !== undefined)
@@ -414,8 +412,6 @@ const Edit_product = ({ CurrentProduct }) => {
         else {
             tmpList[product.varId] = product;
         }
-
-        console.log("tmpList: ", tmpList)
 
         setProductVariants(tmpList);
     }
@@ -549,6 +545,23 @@ const Edit_product = ({ CurrentProduct }) => {
                                                             type="text"
                                                             onChange={SetTitle}
                                                             value={title}
+                                                            required
+                                                        />
+                                                    </div>
+                                                    <div className="valid-feedback">Looks good!</div>
+                                                </FormGroup>
+                                                <FormGroup className="form-group mb-3 row">
+                                                    <Label className="col-xl-3 col-sm-4 mb-0">
+                                                        Код:
+                                                    </Label>
+                                                    <div className="col-xl-8 col-sm-7">
+                                                        <Input
+                                                            className="form-control"
+                                                            name="identify_number"
+                                                            id="validationCustom01"
+                                                            type="text"
+                                                            onChange={SetIdentifier}
+                                                            value={identifierNumber}
                                                             required
                                                         />
                                                     </div>

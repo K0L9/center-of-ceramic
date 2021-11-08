@@ -19,7 +19,7 @@ namespace CenterOfCeramic.Services
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<ProductDTO, Product>();
+                cfg.CreateMap<ProductDTO, Product>().ForMember(x => x.Variants, opt => opt.Ignore());
                 cfg.CreateMap<Product, ProductDTO>();
                 cfg.CreateMap<ColorVariantDTO, ColorVariant>().ForMember(x => x.Images, opt => opt.Ignore());
             });
@@ -28,6 +28,8 @@ namespace CenterOfCeramic.Services
             _db = db;
         }
         public IEnumerable<Product> GetAllProducts() => _db.Products.Include(nameof(Product.Variants)).Include("Variants.Images");
+        public Product GetProductById(int id) => _db.Products.Include(x => x.Category).Include(x => x.Country)
+            .Include(nameof(Product.Variants)).Include("Variants.Images").SingleOrDefault(x => x.Id == id);
         public async Task<Product> AddProduct(ProductDTO productDTO)
         {
             try
@@ -59,7 +61,7 @@ namespace CenterOfCeramic.Services
                     product.Variants.ElementAt(counter++).Images = photos;
                 }
 
-                var addedProduct = await _db.Products.AddAsync(product);
+                var addedProduct = _db.Products.Add(product);
                 _db.SaveChanges();
                 return addedProduct.Entity;
             }
@@ -102,49 +104,134 @@ namespace CenterOfCeramic.Services
                     throw new Exception($"Product with id {id} is not found");
 
                 int oldId = product.Id;
+                IEnumerable<ColorVariant> oldColorVariants = new List<ColorVariant>(product.Variants);
 
                 mapper.Map<ProductDTO, Product>(productDTO, product);
                 product.Id = oldId;
 
-                int counter = 0;
-                foreach (var colVar in productDTO.Variants)
+                for (int i = 0; i < product.Variants.Count(); i++)
                 {
-                    var photos = new List<Photo>(product.Variants.ElementAt(counter).Images);
+                    product.Variants.ElementAt(i).ColorHex = productDTO.Variants.ElementAt(i).ColorHex;
+                    product.Variants.ElementAt(i).IdentifierNumber = productDTO.Variants.ElementAt(i).IdentifierNumber;
+                    _db.SaveChanges();
 
-                    for (int i = 0; i < colVar.Images.Count; i++)
+                    var photos = new List<Photo>(product.Variants.ElementAt(i).Images);
+
+                    for (int j = 0; j < productDTO.Variants.ElementAt(i).Images.Count(); j++)
                     {
-                        if (colVar.Images.ElementAt(i).IsDeleted)
+                        var thisPhotoDTO = productDTO.Variants.ElementAt(i).Images.ElementAt(j);
+                        if (thisPhotoDTO.IsDeleted)
                         {
-                            var tmpPhoto = photos.ElementAt(i);
-                            if (tmpPhoto != null)
-                                photos.Remove(tmpPhoto);
+                            var tmpPhoto = product.Variants.ElementAt(i).Images.ElementAt(j);
+                            if(tmpPhoto != null)
+                                product.Variants.ElementAt(i).Images.Remove(tmpPhoto);
+                            _db.SaveChanges();
                         }
-                        else if (colVar.Images.ElementAt(i).Base64Str != String.Empty) // it is edit photo
+                        else if(thisPhotoDTO.Base64Str != String.Empty)
                         {
-                            var bytes = Convert.FromBase64String(colVar.Images.ElementAt(i).Base64Str);
-                            using (var imageFile = new FileStream(@"E:\borya plutkas\ready\" + colVar.Images.ElementAt(i).Filename, FileMode.Create))
+                            var bytes = Convert.FromBase64String(thisPhotoDTO.Base64Str);
+
+                            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(thisPhotoDTO.Filename);
+                            var fullPath = ENV.FilePath + fileName;
+
+                            using (var imageFile = new FileStream(fullPath, FileMode.Create))
                             {
                                 imageFile.Write(bytes, 0, bytes.Length);
                                 imageFile.Flush();
                             }
+
+                            var photo = new Photo() { URL = @"http://127.0.0.1:5002/" + fileName };
+
+                            if (j < product.Variants.ElementAt(i).Images.Count)
+                                product.Variants.ElementAt(i).Images.ElementAt(j).URL = photo.URL;
+                            else
+                                product.Variants.ElementAt(i).Images.Add(photo);
+
+                            _db.SaveChanges();
                         }
-
-                        Photo newPhoto = new Photo() { URL = @"http://127.0.0.1:5002/" + colVar.Images.ElementAt(i).Filename };
-
-                        if (photos.Count <= i)
-                            photos.Add(newPhoto);
-                        else
-                            photos[i] = newPhoto;
                     }
-
-                    product.Variants.ElementAt(counter++).Images = photos;
                 }
 
-                _db.SaveChanges();
+                for (int i = product.Variants.Count; i < productDTO.Variants.Count(); i++)
+                {
+                    var variantDTO = productDTO.Variants.ElementAt(i);
+                    var colorVariant = new ColorVariant();
+
+                    colorVariant.ColorHex = variantDTO.ColorHex;
+                    colorVariant.IdentifierNumber = variantDTO.IdentifierNumber;
+
+                    for (int j = 0; j < variantDTO.Images.Count(); j++)
+                    {
+                        var imageDTO = variantDTO.Images.ElementAt(j);
+
+                        if (imageDTO.Base64Str == String.Empty)
+                            continue;
+
+                        var bytes = Convert.FromBase64String(imageDTO.Base64Str);
+
+                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageDTO.Filename);
+                        var fullPath = ENV.FilePath + fileName;
+
+                        using (var imageFile = new FileStream(fullPath, FileMode.Create))
+                        {
+                            imageFile.Write(bytes, 0, bytes.Length);
+                            imageFile.Flush();
+                        }
+
+                        colorVariant.Images.Add(new Photo() { URL = @"http://127.0.0.1:5002/" + fileName });
+                    }
+
+                    product.Variants.Add(colorVariant);
+                    _db.SaveChanges();
+                }
+
+
+                //int counter = 0;
+                //foreach (var colVar in productDTO.Variants)
+                //{
+                //    List<Photo> photos;
+                //    if (oldColorVariants.Count() > counter)
+                //        photos = new List<Photo>(oldColorVariants.ElementAt(counter).Images);
+                //    else
+                //        photos = new List<Photo>();
+
+                //    product.Variants.ElementAt(counter).Images = oldColorVariants.ElementAt(counter).Images;
+
+                //    for (int i = 0; i < colVar.Images.Count; i++)
+                //    {
+                //        if (colVar.Images.ElementAt(i).IsDeleted)
+                //        {
+                //            var tmpPhoto = photos.ElementAt(i);
+                //            if (tmpPhoto != null)
+                //                product.Variants.ElementAt(counter).Images.Remove(tmpPhoto);
+                //        }
+                //        else if (colVar.Images.ElementAt(i).Base64Str != String.Empty) // it is edit photo
+                //        {
+                //            var bytes = Convert.FromBase64String(colVar.Images.ElementAt(i).Base64Str);
+                //            using (var imageFile = new FileStream(@"E:\borya plutkas\ready\" + colVar.Images.ElementAt(i).Filename, FileMode.Create))
+                //            {
+                //                imageFile.Write(bytes, 0, bytes.Length);
+                //                imageFile.Flush();
+                //            }
+                //            Photo newPhoto = new Photo() { URL = @"http://127.0.0.1:5002/" + colVar.Images.ElementAt(i).Filename, ColorVariantId = product.Variants.ElementAt(counter).Id };
+
+                //            _db.Photos.Add(newPhoto);
+
+                //            if (product.Variants.ElementAt(counter).Images.Count <= i)
+                //                product.Variants.ElementAt(counter).Images.Add(newPhoto);
+                //            //else
+                //            //    product.Variants.ElementAt(counter).Images.ElementAt(i).URL = @"http://127.0.0.1:5002/" + colVar.Images.ElementAt(i).Filename;
+                //        }
+                //    }
+                //    counter++;
+
+                //    product.Variants.ElementAt(counter++).Images = photos;
+                //    _db.SaveChanges();
+                //}
 
                 return product;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw new Exception($"Error with edit product. Try again");
             }

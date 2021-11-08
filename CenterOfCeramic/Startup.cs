@@ -75,10 +75,10 @@ namespace CenterOfCeramic
 
             app.UseSpa(spa =>
             {
-                spa.Options.SourcePath = "client-app/multikart_react_all_in_one/frontend";
+                spa.Options.SourcePath = "client-app/multikart_react_all_in_one/backend";
                 if (env.IsDevelopment())
-                    spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
-                //spa.UseReactDevelopmentServer(npmScript: "start");
+                spa.UseReactDevelopmentServer(npmScript: "start");
+                //spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
             });
         }
     }

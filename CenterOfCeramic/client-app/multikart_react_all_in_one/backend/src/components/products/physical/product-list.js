@@ -59,7 +59,7 @@ const Product_list = ({ ProductList, getAllProducts, deleteProduct, setCurrProdu
 
 	const getImage = (ind) => {
 		if (currentImages[ind] === undefined) {
-			if (ProductList[ind].variants[0].images[0] === undefined)
+			if (ProductList[ind].variants.length === 0 || ProductList[ind].variants[0].images[0] === undefined)
 				return one;
 			return ProductList[ind].variants[0].images[0].url;
 		}

@@ -15,7 +15,6 @@ const MasterProductDetail = ({
   for (var i = 0; i < rating; i++) {
     RatingStars.push(<i className="fa fa-star" key={i}></i>);
   }
-
   return (
     <div className={`product-detail ${productDetail} ${detailClass}`}>
       <div>
@@ -36,7 +35,7 @@ const MasterProductDetail = ({
             <del>
               <span className="money">
                 {currency.symbol}
-                {(product.oldPirce * currency.value)}
+                {(product.oldPrice * currency.value)}
               </span>
             </del>
           }

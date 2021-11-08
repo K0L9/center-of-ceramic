@@ -23,6 +23,10 @@ const productReducer = (state = initialState, action) => {
         case productTypes.delete:
             var deletedList = state.ProductList.slice();
             deletedList.splice(action.payload, 1);
+
+            console.log("ProductList: ", state.ProductList);
+            console.log("ID: ", action.payload);
+            console.log("DELETED LIST: ", deletedList);
             return {
                 ...state,
                 ProductList: deletedList

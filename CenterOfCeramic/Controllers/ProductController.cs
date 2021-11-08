@@ -25,6 +25,22 @@ namespace CenterOfCeramic.Controllers
             var result = _service.GetAllProducts();
             return Ok(result);
         }
+        [HttpGet("get-product-by-id/{id}")]
+        public IActionResult GetProductById(int id)
+        {
+            try
+            {
+                var user = _service.GetProductById(id);
+                if (user == null)
+                    return NotFound();
+
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+        }
         [HttpPost("add-product")]
         public IActionResult AddProduct([FromBody] ProductDTO productsDTO)
         {

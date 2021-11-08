@@ -10,6 +10,8 @@ import DetailsWithPrice from "../common/detail-price";
 import Filter from "../common/filter";
 import { Container, Row, Col, Media } from "reactstrap";
 
+import productService from "../../../services/product-service"
+
 const GET_SINGLE_PRODUCTS = gql`
   query product($id: Int!) {
     product(id: $id) {
@@ -40,11 +42,11 @@ const GET_SINGLE_PRODUCTS = gql`
 `;
 
 const LeftSidebarPage = ({ pathId }) => {
-  var { loading, data } = useQuery(GET_SINGLE_PRODUCTS, {
-    variables: {
-      id: parseInt(pathId),
-    },
-  });
+  // var { loading, data } = useQuery(GET_SINGLE_PRODUCTS, {
+  //   variables: {
+  //     id: parseInt(pathId),
+  //   },
+  // });
 
   const [state, setState] = useState({ nav1: null, nav2: null });
   const slider1 = useRef();
@@ -65,12 +67,23 @@ const LeftSidebarPage = ({ pathId }) => {
     focusOnSelect: true,
   };
 
+  const [product, setProduct] = useState({});
+
   useEffect(() => {
     setState({
       nav1: slider1.current,
       nav2: slider2.current,
     });
-  }, [data]);
+
+    let id = pathId.split("-")[0];
+    productService.getProductById(id).then(product => {
+      setProduct(product);
+    })
+
+
+  }, product);
+
+  console.log("PRODUCT: ", product);
 
   const { nav1, nav2 } = state;
 
@@ -79,8 +92,19 @@ const LeftSidebarPage = ({ pathId }) => {
   };
 
   const changeColorVar = (img_id) => {
+    setIdVarSelect(img_id);
+    slider1.current.slickGoTo(0);
     slider2.current.slickGoTo(img_id);
   };
+  const changePhoto = (id) => {
+    if (slider1)
+      slider1.current.slickGoTo(id);
+  }
+  const photoSlide = (event, slick, currentSlide, nextSlide) => {
+    if (slider2)
+      slider2.current.slickGoTo(slick);
+  }
+  const [idVarSelect, setIdVarSelect] = useState(0);
 
   return (
     <section className="">
@@ -90,9 +114,7 @@ const LeftSidebarPage = ({ pathId }) => {
             <Col sm="3" className="collection-filter">
               <Filter />
               <Service />
-              {/* <!-- side-bar single product slider start --> */}
               <NewProduct />
-              {/* <!-- side-bar single product slider end --> */}
             </Col>
             <Col lg="9" sm="12" xs="12">
               <Container fluid={true}>
@@ -106,10 +128,7 @@ const LeftSidebarPage = ({ pathId }) => {
                     </div>
                   </Col>
                 </Row>
-                {!data ||
-                !data.product ||
-                data.product.length === 0 ||
-                loading ? (
+                {!product || !product.variants || !product.variants[0].images ? (
                   "loading"
                 ) : (
                   <Row>
@@ -119,8 +138,9 @@ const LeftSidebarPage = ({ pathId }) => {
                         asNavFor={nav2}
                         ref={(slider) => (slider1.current = slider)}
                         className="product-slick"
+                        beforeChange={photoSlide}
                       >
-                        {data.product.images.map((vari, index) => (
+                        {product.variants[idVarSelect].images.map((vari, index) => (
                           <div key={index}>
                             <ImageZoom image={vari} />
                           </div>
@@ -132,23 +152,24 @@ const LeftSidebarPage = ({ pathId }) => {
                         asNavFor={nav1}
                         ref={(slider) => (slider2.current = slider)}
                       >
-                        {data.product.variants
-                          ? data.product.images.map((vari, index) => (
-                              <div key={index}>
-                                <Media
-                                  src={`${vari.src}`}
-                                  key={index}
-                                  alt={vari.alt}
-                                  className="img-fluid"
-                                />
-                              </div>
-                            ))
+                        {product && product.variants && product.variants[idVarSelect] && product.variants[idVarSelect].images
+                          ? product.variants[idVarSelect].images.map((vari, index) => (
+                            <div key={index}>
+                              <Media
+                                src={`${vari.url}`}
+                                key={index}
+                                alt={vari.alt}
+                                className="img-fluid"
+                                onClick={() => changePhoto(index)}
+                              />
+                            </div>
+                          ))
                           : ""}
                       </Slider>
                     </Col>
                     <Col lg="6" className="rtl-text">
                       <DetailsWithPrice
-                        item={data.product}
+                        item={product}
                         changeColorVar={changeColorVar}
                       />
                     </Col>
@@ -160,7 +181,7 @@ const LeftSidebarPage = ({ pathId }) => {
           </Row>
         </Container>
       </div>
-    </section>
+    </section >
   );
 };
 

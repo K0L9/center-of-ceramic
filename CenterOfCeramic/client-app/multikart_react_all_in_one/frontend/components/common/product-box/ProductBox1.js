@@ -62,9 +62,6 @@ const ProductItem = ({
     else
       str = str.toString();
 
-    // Regular expression to identify HTML tags in 
-    // the input string. Replacing the identified 
-    // HTML tag with a null string.
     return str.replace(/(<([^>]+)>)/ig, '');
   }
 
@@ -208,7 +205,14 @@ const ProductItem = ({
                 <h3>
                   {currency.symbol}
                   {(product.price * currency.value).toFixed(2)}
+                  {product.isSale === true &&
+                    <del>
+                      {currency.symbol}
+                      {(product.oldPrice * currency.value)}
+                    </del>
+                  }
                 </h3>
+
                 {product.variants.length > 1 && (
                   <ul className="color-variant">
                     {product.variants.map((vari, i) => {
