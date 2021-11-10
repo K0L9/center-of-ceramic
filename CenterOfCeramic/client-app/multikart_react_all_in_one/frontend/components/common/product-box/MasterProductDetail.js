@@ -11,7 +11,7 @@ const MasterProductDetail = ({
   variantChangeByColor,
 }) => {
   let RatingStars = [];
-  let rating = 3;
+  let rating = product.rating;
   for (var i = 0; i < rating; i++) {
     RatingStars.push(<i className="fa fa-star" key={i}></i>);
   }

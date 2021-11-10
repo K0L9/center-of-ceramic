@@ -23,7 +23,7 @@ const Product_list = ({ ProductList, getAllProducts, deleteProduct, setCurrProdu
 			getAllProducts(data.List);
 
 			data.List.map(x => {
-				if (x.variants[0].images[0] === undefined)
+				if (x.variants[0] === undefined || x.variants[0].images[0] === undefined)
 					starterImages.push(one);
 				else
 					starterImages.push(x.variants[0].images[0].url);

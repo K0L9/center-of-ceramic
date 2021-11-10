@@ -10,6 +10,8 @@ namespace CenterOfCeramic.Models
         public int Id { get; set; }
         public string Body { get; set; }
         public int Rating { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
 
         //foreign
         public int ProductId { get; set; }

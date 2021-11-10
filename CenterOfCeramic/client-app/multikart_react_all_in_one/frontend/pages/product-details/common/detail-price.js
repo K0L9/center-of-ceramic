@@ -21,13 +21,18 @@ const DetailsWithPrice = ({ item, stickyClass, changeColorVar }) => {
   const uniqueColor = [];
   const uniqueSize = [];
 
+  const [qty, setQty] = useState(1);
+
   const changeQty = (e) => {
-    setQuantity(parseInt(e.target.value));
+    setQty(e.target.value);
   };
 
-  // const minusQuantity = () => {
-  //   setQuantity(e.target.value > 1 ? e.target.value - 1 : e.target.value)
-  // }
+  const minusQuantity = (e) => {
+    setQty(e.target.value > 1 ? e.target.value - 1 : e.target.value)
+  }
+  const plusQuantity = (e) => {
+    setQty(e.target.value + 1);
+  }
 
   function removeTags(str) {
     if ((str === null) || (str === ''))
@@ -36,6 +41,17 @@ const DetailsWithPrice = ({ item, stickyClass, changeColorVar }) => {
       str = str.toString();
 
     return str.replace(/(<([^>]+)>)/ig, '').split(".")[0];
+  }
+
+  const getInStock = () => {
+    if (qty <= product.quantity) {
+      return (
+        <span>В наявності</span>
+      )
+    }
+    return (
+      <span>Недостатньо товарів</span>
+    )
   }
 
   return (
@@ -49,7 +65,7 @@ const DetailsWithPrice = ({ item, stickyClass, changeColorVar }) => {
               {symbol}
               {product.oldPrice}
             </del>
-            <span>{parseInt(product.price / product.oldPrice * 100)}% економії</span>
+            <span>{parseInt(100 - (product.price * 100 / product.oldPrice))}% економії</span>
           </h4>
         }
         <h3>
@@ -63,32 +79,34 @@ const DetailsWithPrice = ({ item, stickyClass, changeColorVar }) => {
           var findItemSize = uniqueSize.find((x) => x === vari.size);
           if (!findItemSize) uniqueSize.push(vari.size);
         })} */}
-        {changeColorVar === undefined ? (
-          <>
-            <ul className="color-variant">
-              {product.variants.map((vari, i) => {
-                return (
-                  <li className={vari.colorHex} style={{ backgroundColor: vari.colorHex }} key={i}></li>
-                );
-              })}
-            </ul>
-          </>
-        ) : (
-          <>
-            <ul className="color-variant">
-              {product.variants.map((vari, i) => {
-                return (
-                  <li
-                    className={vari.color}
-                    key={i}
-                    title={vari.color}
-                    style={{ backgroundColor: vari.colorHex }}
-                    onClick={() => changeColorVar(i)}
-                  ></li>
-                );
-              })}
-            </ul>
-          </>
+        {product.variants.lenght === 1 && (
+          changeColorVar === undefined ? (
+            <>
+              <ul className="color-variant">
+                {product.variants.map((vari, i) => {
+                  return (
+                    <li className={vari.colorHex} style={{ backgroundColor: vari.colorHex }} key={i}></li>
+                  );
+                })}
+              </ul>
+            </>
+          ) : (
+            <>
+              <ul className="color-variant">
+                {product.variants.map((vari, i) => {
+                  return (
+                    <li
+                      className={vari.color}
+                      key={i}
+                      title={vari.color}
+                      style={{ backgroundColor: vari.colorHex }}
+                      onClick={() => changeColorVar(i)}
+                    ></li>
+                  );
+                })}
+              </ul>
+            </>
+          )
         )}
         <div className="product-description border-product">
           {/* {product.variants ? (
@@ -127,7 +145,7 @@ const DetailsWithPrice = ({ item, stickyClass, changeColorVar }) => {
           ) : (
             ""
           )} */}
-          <span className="instock-cls">{stock}</span>
+          <span className="instock-cls">{getInStock()}</span>
           <h6 className="product-title">Кількість</h6>
           <div className="qty-box">
             <div className="input-group">
@@ -135,7 +153,7 @@ const DetailsWithPrice = ({ item, stickyClass, changeColorVar }) => {
                 <button
                   type="button"
                   className="btn quantity-left-minus"
-                  onClick={minusQty}
+                  onClick={minusQuantity}
                   data-type="minus"
                   data-field=""
                 >
@@ -145,7 +163,7 @@ const DetailsWithPrice = ({ item, stickyClass, changeColorVar }) => {
               <Input
                 type="text"
                 name="quantity"
-                value={quantity}
+                value={qty}
                 onChange={changeQty}
                 className="form-control input-number"
               />
@@ -153,7 +171,7 @@ const DetailsWithPrice = ({ item, stickyClass, changeColorVar }) => {
                 <button
                   type="button"
                   className="btn quantity-right-plus"
-                  onClick={() => plusQty(product)}
+                  onClick={plusQuantity}
                   data-type="plus"
                   data-field=""
                 >
@@ -169,10 +187,10 @@ const DetailsWithPrice = ({ item, stickyClass, changeColorVar }) => {
             className="btn btn-solid"
             onClick={() => context.addToCart(product, quantity)}
           >
-            add to cart
+            в корзину
           </a>
           <Link href={`/page/account/checkout`}>
-            <a className="btn btn-solid">buy now</a>
+            <a className="btn btn-solid">купити зараз</a>
           </Link>
         </div>
         <div className="border-product">
@@ -180,15 +198,15 @@ const DetailsWithPrice = ({ item, stickyClass, changeColorVar }) => {
           <p>{removeTags(product.description)}</p>
         </div>
         <div className="border-product">
-          <h6 className="product-title">share it</h6>
+          <h6 className="product-title">поширити це</h6>
           <div className="product-icon">
             <MasterSocial />
           </div>
         </div>
-        <div className="border-product">
+        {/* <div className="border-product">
           <h6 className="product-title">Time Reminder</h6>
           <CountdownComponent />
-        </div>
+        </div> */}
       </div>
     </>
   );

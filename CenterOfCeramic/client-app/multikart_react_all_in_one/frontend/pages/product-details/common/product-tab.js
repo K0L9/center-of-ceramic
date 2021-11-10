@@ -8,10 +8,60 @@ import {
   Nav,
   NavItem,
   NavLink,
+  Form,
+  Label,
+  Input,
 } from "reactstrap";
 
-const ProductTab = () => {
+import { Link, RichText, Date } from 'prismic-reactjs';
+import ReactStars from "react-rating-stars-component";
+
+import reviewService from "../../../services/review-service"
+import { toast, ToastContainer } from "react-toastify";
+
+const ProductTab = ({ product }) => {
   const [activeTab, setActiveTab] = useState("1");
+
+  const [body, setBody] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [rating, setRating] = useState(1);
+
+  const ratingChanged = (newRating) => {
+    setRating(newRating);
+  };
+  const bodyChanged = (e) => {
+    setBody(e.target.value);
+  }
+  const nameChagned = (e) => {
+    setName(e.target.value);
+  }
+  const emailChanged = (e) => {
+    setEmail(e.target.value);
+  }
+
+  const sendReview = (e) => {
+    e.preventDefault();
+
+    const review = { name, email, body, rating, productId: product.id };
+    reviewService.addReview(review).then(isOk => {
+      if (isOk) {
+        toast.success("Дякуємо за відгук");
+        Discard();
+      }
+      else {
+        toast.error("Виникли помилки. Спробуйте ще раз");
+      }
+    });
+
+  }
+
+  const Discard = () => {
+    setRating(1);
+    setBody("");
+    setName("");
+    setEmail("");
+  }
 
   return (
     <section className="tab-product m-0">
@@ -25,23 +75,7 @@ const ProductTab = () => {
                     className={activeTab === "1" ? "active" : ""}
                     onClick={() => setActiveTab("1")}
                   >
-                    Description
-                  </NavLink>
-                </NavItem>
-                <NavItem className="nav nav-tabs" id="myTab" role="tablist">
-                  <NavLink
-                    className={activeTab === "2" ? "active" : ""}
-                    onClick={() => setActiveTab("2")}
-                  >
-                    Details
-                  </NavLink>
-                </NavItem>
-                <NavItem className="nav nav-tabs" id="myTab" role="tablist">
-                  <NavLink
-                    className={activeTab === "3" ? "active" : ""}
-                    onClick={() => setActiveTab("3")}
-                  >
-                    Vedio
+                    Опис
                   </NavLink>
                 </NavItem>
                 <NavItem className="nav nav-tabs" id="myTab" role="tablist">
@@ -49,71 +83,64 @@ const ProductTab = () => {
                     className={activeTab === "4" ? "active" : ""}
                     onClick={() => setActiveTab("4")}
                   >
-                    Write Review
+                    Відгуки
                   </NavLink>
                 </NavItem>
               </Nav>
               <TabContent activeTab={activeTab} className="nav-material">
                 <TabPane tabId="1">
-                  <p className="mb-0 pb-0">
-                    dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Duis aute irure dolor in reprehenderit in voluptate velit
-                    esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-                    occaecat cupidatat non proident, sunt in culpa qui officia
-                    deserunt mollit anim id est laborum." sed do eiusmod tempor
-                    incididunt ut labore et dolore magna aliqua. Ut enim ad
-                    minim veniam, quis nostrud exercitation ullamco laboris nisi
-                    ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-                    reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                    proident, sunt in culpa qui officia deserunt mollit anim id
-                    est laborum."
+                  <p>
+                    {/* {RichText.render(description.description)} */}
+                    {/* <option dangerouslySetInnerHTML={{ __html:  }}></option> */}
+                    {product.descripion}
                   </p>
                 </TabPane>
-                <TabPane tabId="2">
-                  <p className="mb-0 pb-0">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Duis aute irure dolor in reprehenderit in voluptate velit
-                    esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-                    occaecat cupidatat non proident, sunt in culpa qui officia
-                    deserunt mollit anim id est laborum."
-                  </p>
-                </TabPane>
-                <TabPane tabId="3">
-                  <p className="mb-0 pb-0">
-                    {" "}
-                    sed do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Duis aute irure dolor in reprehenderit in voluptate velit
-                    esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-                    occaecat cupidatat non proident, sunt in culpa qui officia
-                    deserunt mollit anim id est laborum."
-                  </p>
-                </TabPane>
+
                 <TabPane tabId="4">
-                  <p className="mb-0 pb-0">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Duis aute irure dolor in reprehenderit in voluptate velit
-                    esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-                    occaecat cupidatat non proident, sunt in culpa qui officia
-                    deserunt mollit anim id est laborum."
-                  </p>
+                  <Form onSubmit={sendReview} className="form-fluid">
+                    <div className="form-group">
+                      <Row className="mb-2">
+                        <Col sm="12" lg="4">
+                          <Label for="review">Ім'я</Label>
+                          <Input type="text" className="form-control" id="review" value={name}
+                            placeholder="Введіть ім'я" required="" onChange={nameChagned} />
+                        </Col>
+
+                        <Col sm="12" lg="4">
+                          <Label for="email">Пошта</Label>
+                          <Input type="text" className="form-control" id="email" value={email}
+                            placeholder="Введіть пошту" required="" onChange={emailChanged} />
+                        </Col>
+
+                        <Col sm="12" lg="4" >
+                          <ReactStars
+                            count={5}
+                            onChange={ratingChanged}
+                            size={35}
+                            value={rating}
+                            activeColor="#ffd700"
+                          />
+                        </Col>
+                      </Row>
+                      <Row className="mb-2" >
+                        <Col>
+                          <Input type="textarea" style={{ height: 200 }} className="form-control" value={body} placeholder="Залиште ваш відгук про товар тут." onChange={bodyChanged} />
+                        </Col>
+                      </Row>
+                      <Row className="mb-2">
+                        <Col>
+                          <button type="submit" className="btn btn-solid">Відіслати</button>
+                        </Col>
+                      </Row>
+                    </div>
+                  </Form>
                 </TabPane>
               </TabContent>
             </Row>
           </Col>
         </Row>
       </Container>
+      <ToastContainer />
     </section>
   );
 };

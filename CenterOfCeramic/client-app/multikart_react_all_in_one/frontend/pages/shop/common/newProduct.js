@@ -1,9 +1,10 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import { Media } from "reactstrap";
 import Slider from "react-slick";
 import { CurrencyContext } from "../../../helpers/Currency/CurrencyContext";
+import productService from "../../../services/product-service";
 
 const GET_PRODUCTS = gql`
   query newProducts($type: String!) {
@@ -21,11 +22,31 @@ const GET_PRODUCTS = gql`
 const NewProduct = () => {
   const CurContect = useContext(CurrencyContext);
   const symbol = CurContect.state.symbol;
-  var { loading, data } = useQuery(GET_PRODUCTS, {
-    variables: {
-      type: "fashion",
-    },
-  });
+  // var { loading, data } = useQuery(GET_PRODUCTS, {
+  //   variables: {
+  //     type: "fashion",
+  //   },
+  // });
+
+  const [data, setData] = useState({});
+
+  useEffect(() => {
+    productService.getNewProducts().then(products => {
+      setData({ newProducts: products });
+    })
+  }, [])
+
+  const getStarsRating = (ratingPr) => {
+    let RatingStars = [];
+    let rating = ratingPr;
+    for (var i = 0; i < rating; i++) {
+      RatingStars.push(<i className="fa fa-star" key={i}></i>);
+    }
+
+    return RatingStars;
+  }
+
+  console.log("Products; ", data);
 
   return (
     // <!-- side-bar single product slider start -->
@@ -34,9 +55,8 @@ const NewProduct = () => {
       <Slider className="offer-slider slide-1">
         <div>
           {!data ||
-          !data.newProducts ||
-          data.newProducts.length === 0 ||
-          loading ? (
+            !data.newProducts ||
+            data.newProducts.length === 0 ? (
             "loading"
           ) : (
             <>
@@ -46,18 +66,16 @@ const NewProduct = () => {
                     <a href="">
                       <Media
                         className="img-fluid blur-up lazyload"
-                        src={product.images[0].src}
-                        alt={product.images[0].alt}
+                        src={product.variants[0].images[0].url}
+                        alt={product.variants[0].images[0].alt}
                       />
                     </a>
                     <div className="media-body align-self-center">
-                      <div className="rating">
-                        <i className="fa fa-star"></i>{" "}
-                        <i className="fa fa-star"></i>{" "}
-                        <i className="fa fa-star"></i>{" "}
-                        <i className="fa fa-star"></i>{" "}
-                        <i className="fa fa-star"></i>
-                      </div>
+                      {product.rating !== 0 && (
+                        <div className="rating">
+                          {getStarsRating(product.rating)}
+                        </div>
+                      )}
                       <a href={null}>
                         <h6>{product.title}</h6>
                       </a>
@@ -73,9 +91,8 @@ const NewProduct = () => {
         </div>
         <div>
           {!data ||
-          !data.newProducts ||
-          data.newProducts.length === 0 ||
-          loading ? (
+            !data.newProducts ||
+            data.newProducts.length === 0 ? (
             "loading"
           ) : (
             <>
@@ -85,18 +102,16 @@ const NewProduct = () => {
                     <a href="">
                       <Media
                         className="img-fluid blur-up lazyload"
-                        src={product.images[0].src}
-                        alt={product.images[0].alt}
+                        src={product.variants[0].images[0].src}
+                        alt={product.variants[0].images[0].alt}
                       />
                     </a>
                     <div className="media-body align-self-center">
-                      <div className="rating">
-                        <i className="fa fa-star"></i>{" "}
-                        <i className="fa fa-star"></i>{" "}
-                        <i className="fa fa-star"></i>{" "}
-                        <i className="fa fa-star"></i>{" "}
-                        <i className="fa fa-star"></i>
-                      </div>
+                      {product.rating !== 0 && (
+                        <div className="rating">
+                          {getStarsRating(product.rating)}
+                        </div>
+                      )}
                       <a href={null}>
                         <h6>{product.title}</h6>
                       </a>

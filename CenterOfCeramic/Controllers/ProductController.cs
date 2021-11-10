@@ -41,6 +41,37 @@ namespace CenterOfCeramic.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpGet("get-related-product/{id}")]
+        public IActionResult GetRelatedProduct(int id)
+        {
+            try
+            {
+                var result = _service.GetRelatedProducts(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("get-new-products")]
+        public IActionResult GetNewProducts()
+        {
+            try
+            {
+                var result = _service.GetNewProducts();
+                if (result.Count() == 0)
+                    return BadRequest("No one product");
+
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
         [HttpPost("add-product")]
         public IActionResult AddProduct([FromBody] ProductDTO productsDTO)
         {

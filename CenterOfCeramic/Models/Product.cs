@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,6 +23,17 @@ namespace CenterOfCeramic.Models
         //Foreign key
         public int CategoryId { get; set; }
         public int CountryId { get; set; }
+
+        [NotMapped]
+        public int Rating
+        {
+            get
+            {
+                if (Reviews.Count == 0)
+                    return 0;
+                return (int)Math.Round(Reviews.Select(x => x.Rating).Average(), 0);
+            }
+        }
 
         //Navigation props
         public virtual ICollection<ColorVariant> Variants { get; set; }

@@ -6,14 +6,14 @@ import { withApollo } from '../../helpers/apollo/apollo';
 import LeftSidebarPage from './product/leftSidebarPage';
 
 const LeftSidebar = () => {
-  
+
   const router = useRouter();
   const id = router.query.id;
-  
+
   return (
     <CommonLayout parent="Home" title="Product">
-        <LeftSidebarPage pathId={id} />
-      <ProductSection />
+      <LeftSidebarPage pathId={id} />
+      <ProductSection pathId={id} />
     </CommonLayout>
   );
 }

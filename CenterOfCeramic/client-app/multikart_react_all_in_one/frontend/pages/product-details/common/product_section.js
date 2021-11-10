@@ -1,12 +1,15 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Container, Row, Col, Media, Modal, ModalBody } from "reactstrap";
 import { useQuery } from "@apollo/react-hooks";
+// import { Redirect } from "react-router-dom";
 import gql from "graphql-tag";
 import { CurrencyContext } from "../../../helpers/Currency/CurrencyContext";
 import CartContext from "../../../helpers/cart";
 import { WishlistContext } from "../../../helpers/wishlist/WishlistContext";
 import { CompareContext } from "../../../helpers/Compare/CompareContext";
 import { useRouter } from "next/router";
+
+import productService from "../../../services/product-service"
 
 const GET_PRODUCTS = gql`
   query products($type: _CategoryType!, $indexFrom: Int!, $limit: Int!) {
@@ -41,7 +44,7 @@ const GET_PRODUCTS = gql`
   }
 `;
 
-const ProductSection = () => {
+const ProductSection = ({ pathId }) => {
   const router = useRouter();
   const curContext = useContext(CurrencyContext);
   const wishlistContext = useContext(WishlistContext);
@@ -59,13 +62,23 @@ const ProductSection = () => {
   const toggle = () => setModal(!modal);
   const uniqueTags = [];
 
+  const [data, setData] = useState([]);
+  const [redirectPath, setRedirectPath] = useState("");
+
+  useEffect(() => {
+    let id = pathId.split("-")[0];
+    productService.getRelatedProduct(id).then(products => {
+      setData({ products: { items: products } });
+    })
+  }, [])
+
   const changeQty = (e) => {
     setQuantity(parseInt(e.target.value));
   };
 
   const clickProductDetail = (product) => {
-    const titleProps = product.title.split(" ").join("");
-    router.push(`/product-details/${product.id}` + "-" + `${titleProps}`);
+    router.push(`/product-details/${product.id}` + "-" + `${titleProps}`, undefined, { locale: false });
+    // setRedirectPath(`/product-details/${product.id}` + "-" + `${titleProps}`);
   };
 
   const getSelectedProduct = (item) => {
@@ -73,27 +86,44 @@ const ProductSection = () => {
     toggle();
   };
 
-  var { loading, data } = useQuery(GET_PRODUCTS, {
-    variables: {
-      type: "fashion",
-      indexFrom: 0,
-      limit: 8,
-    },
-  });
+  const getStarsRating = (ratingPr) => {
+    let RatingStars = [];
+    let rating = ratingPr;
+    for (var i = 0; i < rating; i++) {
+      RatingStars.push(<i className="fa fa-star" key={i}></i>);
+    }
+
+    return RatingStars;
+  }
+
+  // var { loading, data } = useQuery(GET_PRODUCTS, {
+  //   variables: {
+  //     type: "fashion",
+  //     indexFrom: 0,
+  //     limit: 8,
+  //   },
+  // });
+
+  // console.log("data.products.items: ", data.products.items)
+
+  if (redirectPath != "") {
+    return (
+      <Redirect push to={redirectPath} />
+    )
+  }
 
   return (
     <section className="section-b-space ratio_asos">
       <Container>
         <Row>
           <Col className="product-related">
-            <h2>related products</h2>
+            <h2>схожі товари</h2>
           </Col>
         </Row>
         <Row className="search-product">
           {!data ||
             !data.products ||
-            data.products.items.length === 0 ||
-            loading ? (
+            data.products.items.length === 0 ? (
             "loading"
           ) : (
             <>
@@ -103,24 +133,26 @@ const ProductSection = () => {
                     <div className="product-box">
                       <div className="img-wrapper">
                         <div className="front">
-                          <a href={null}>
+                          <a href={`/product-details/${product.id}` + "-" + `${product.title.split(" ").join("")}`}>
                             <Media
-                              onClick={() => clickProductDetail(product)}
-                              src={product.images[0].src}
+                              // onClick={() => clickProductDetail(product)}
+                              src={product.variants[0].images[0].url}
                               className="img-fluid blur-up lazyload bg-img"
                               alt=""
                             />
                           </a>
                         </div>
-                        <div className="back">
-                          <a href={null}>
-                            <Media
-                              src={product.images[1].src}
-                              className="img-fluid blur-up lazyload bg-img"
-                              alt=""
-                            />
-                          </a>
-                        </div>
+                        {product.variants[0].images[1] && (
+                          <div className="back">
+                            <a href={null}>
+                              <Media
+                                src={product.variants[0].images[1].src}
+                                className="img-fluid blur-up lazyload bg-img"
+                                alt=""
+                              />
+                            </a>
+                          </div>
+                        )}
                         <div className="cart-info cart-wrap">
                           <button
                             data-toggle="modal"
@@ -156,13 +188,11 @@ const ProductSection = () => {
                         </div>
                       </div>
                       <div className="product-detail">
-                        <div className="rating">
-                          <i className="fa fa-star"></i>{" "}
-                          <i className="fa fa-star"></i>{" "}
-                          <i className="fa fa-star"></i>{" "}
-                          <i className="fa fa-star"></i>{" "}
-                          <i className="fa fa-star"></i>
-                        </div>
+                        {product.rating && (
+                          <div className="rating">
+                            {getStarsRating(product.rating)}
+                          </div>
+                        )}
                         <a href={null}>
                           <h6>{product.title}</h6>
                         </a>
@@ -170,11 +200,13 @@ const ProductSection = () => {
                           {symbol}
                           {product.price}
                         </h4>
-                        <ul className="color-variant">
-                          <li className="bg-light0"></li>
-                          <li className="bg-light1"></li>
-                          <li className="bg-light2"></li>
-                        </ul>
+                        {product.variants.length > 1 && (
+                          <ul className="color-variant">
+                            {product.variants.map((x, ind) => {
+                              <li className="bg-light0" style={{ backgroundColor: x.colorHex }}></li>
+                            })}
+                          </ul>
+                        )}
                       </div>
                     </div>
                   </Col>

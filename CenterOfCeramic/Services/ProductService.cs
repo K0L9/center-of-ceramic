@@ -15,22 +15,100 @@ namespace CenterOfCeramic.Services
     {
         AppDbContext _db;
         Mapper mapper;
+        Mapper mapperEdit;
+        Random random;
         public ProductService(AppDbContext db)
         {
             var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<ProductDTO, Product>();
+                cfg.CreateMap<Product, ProductDTO>();
+                cfg.CreateMap<ColorVariantDTO, ColorVariant>().ForMember(x => x.Images, opt => opt.Ignore());
+            });
+            var configEdit = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<ProductDTO, Product>().ForMember(x => x.Variants, opt => opt.Ignore());
                 cfg.CreateMap<Product, ProductDTO>();
                 cfg.CreateMap<ColorVariantDTO, ColorVariant>().ForMember(x => x.Images, opt => opt.Ignore());
             });
             mapper = new Mapper(config);
+            mapperEdit = new Mapper(configEdit);
 
             _db = db;
+            random = new Random();
         }
-        public IEnumerable<Product> GetAllProducts() => _db.Products.Include(nameof(Product.Variants)).Include("Variants.Images");
+        public IEnumerable<Product> GetAllProducts() => _db.Products.Include(nameof(Product.Variants)).Include("Variants.Images").Include(x => x.Reviews);
         public Product GetProductById(int id) => _db.Products.Include(x => x.Category).Include(x => x.Country)
-            .Include(nameof(Product.Variants)).Include("Variants.Images").SingleOrDefault(x => x.Id == id);
-        public async Task<Product> AddProduct(ProductDTO productDTO)
+            .Include(nameof(Product.Variants)).Include("Variants.Images").Include(x => x.Reviews).SingleOrDefault(x => x.Id == id);
+        public IEnumerable<Product> GetRelatedProducts(int id)
+        {
+            try
+            {
+                int lenghtRelatedProducts = 10;
+
+                var product = _db.Products.SingleOrDefault(x => x.Id == id);
+
+                if (product == null)
+                    throw new Exception("Product not found");
+
+                var result = new List<Product>();
+                var productsFromDb = new List<Product>(_db.Products
+                    .Include(x => x.Category)
+                    .Include(x => x.Country)
+                    .Include(nameof(Product.Variants))
+                    .Include("Variants.Images").Include(x => x.Reviews)
+                    .Where(x => x.CategoryId == product.CategoryId));
+
+                for (int i = 0; i < lenghtRelatedProducts || i < productsFromDb.Count(); i++)
+                {
+                    int index = random.Next(0, productsFromDb.Count());
+                    var productToAdd = productsFromDb[index];
+                    if (productToAdd != product)
+                        result.Add(productToAdd);
+                }
+
+                //if (result.Count() < lenghtRelatedProducts)
+                //{
+                //    var productsFromDbWithoutCateg = _db.Products
+                //        .Include(x => x.Category)
+                //        .Include(x => x.Country)
+                //        .Include(nameof(Product.Variants))
+                //        .Include("Variants.Images")
+                //        .Include(x => x.Reviews)
+                //        .Take(lenghtRelatedProducts);
+
+                //    for (int i = 0; i < lenghtRelatedProducts - result.Count(); i++)
+                //    {
+                //        int index = random.Next(0, productsFromDbWithoutCateg.Count());
+                //        var productToAdd = productsFromDbWithoutCateg.ElementAt(index);
+                //        if (productToAdd != product)
+                //            result.Add(productToAdd);
+                //    }
+                //}
+
+                return result;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public IEnumerable<Product> GetNewProducts()
+        {
+            try
+            {
+                const int countNewProduct = 5;
+                var result = _db.Products.Include(x => x.Category).Include(x => x.Country)
+                                        .Include(nameof(Product.Variants)).Include("Variants.Images").Include(x => x.Reviews).Take(countNewProduct);
+                return result;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        async public Task<Product> AddProduct(ProductDTO productDTO)
         {
             try
             {
@@ -74,7 +152,7 @@ namespace CenterOfCeramic.Services
         {
             try
             {
-                var product = _db.Products.Include(nameof(Product.Variants)).Include("Variants.Images").SingleOrDefault(x => x.Id == id);
+                var product = _db.Products.Include(nameof(Product.Variants)).Include("Variants.Images").Include(x => x.Reviews).SingleOrDefault(x => x.Id == id);
                 if (product == null)
                     throw new Exception($"Product with id {id} is not found");
 
@@ -97,6 +175,7 @@ namespace CenterOfCeramic.Services
         }
         public Product EditProduct(int id, ProductDTO productDTO)
         {
+
             try
             {
                 var product = _db.Products.Include(nameof(Product.Variants)).Include("Variants.Images").SingleOrDefault(x => x.Id == id);
@@ -106,7 +185,7 @@ namespace CenterOfCeramic.Services
                 int oldId = product.Id;
                 IEnumerable<ColorVariant> oldColorVariants = new List<ColorVariant>(product.Variants);
 
-                mapper.Map<ProductDTO, Product>(productDTO, product);
+                mapperEdit.Map<ProductDTO, Product>(productDTO, product);
                 product.Id = oldId;
 
                 //edit old variants
@@ -124,11 +203,11 @@ namespace CenterOfCeramic.Services
                         if (thisPhotoDTO.IsDeleted)
                         {
                             var tmpPhoto = product.Variants.ElementAt(i).Images.ElementAt(j);
-                            if(tmpPhoto != null)
+                            if (tmpPhoto != null)
                                 product.Variants.ElementAt(i).Images.Remove(tmpPhoto);
                             _db.SaveChanges();
                         }
-                        else if(thisPhotoDTO.Base64Str != String.Empty)
+                        else if (thisPhotoDTO.Base64Str != String.Empty)
                         {
                             var bytes = Convert.FromBase64String(thisPhotoDTO.Base64Str);
 
@@ -209,5 +288,7 @@ namespace CenterOfCeramic.Services
                 throw new Exception($"Error with edit product. Try again");
             }
         }
+
+
     }
 }

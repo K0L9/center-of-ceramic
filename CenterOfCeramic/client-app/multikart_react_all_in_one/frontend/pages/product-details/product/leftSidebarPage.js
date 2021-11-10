@@ -80,10 +80,10 @@ const LeftSidebarPage = ({ pathId }) => {
       setProduct(product);
     })
 
+    console.log("PRODUCT: ", product);
 
   }, product);
 
-  console.log("PRODUCT: ", product);
 
   const { nav1, nav2 } = state;
 
@@ -113,7 +113,7 @@ const LeftSidebarPage = ({ pathId }) => {
           <Row>
             <Col sm="3" className="collection-filter">
               <Filter />
-              <Service />
+              {/* <Service /> */}
               <NewProduct />
             </Col>
             <Col lg="9" sm="12" xs="12">
@@ -176,7 +176,7 @@ const LeftSidebarPage = ({ pathId }) => {
                   </Row>
                 )}
               </Container>
-              <ProductTab />
+              <ProductTab product={product} />
             </Col>
           </Row>
         </Container>

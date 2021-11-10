@@ -228,7 +228,7 @@ const Add_product = ({ productVariants, setVariant, removeVariant, clearVariants
 		setIsColorPicker(false);
 		setColor("#ccc");
 		setIndCurrVariant(0);
-		setVariantsStyles([]);
+		setVariantsStyles([{ background: color }]);
 		clearVariants();
 	}
 
