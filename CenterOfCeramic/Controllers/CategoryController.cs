@@ -22,7 +22,14 @@ namespace CenterOfCeramic.Controllers
         [HttpGet("get-all-categories")]
         public IActionResult GetAllCategories()
         {
-            return Ok(_service.GetAllCategories());
+            try
+            {
+                return Ok(_service.GetAllCategories());
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
         [HttpPost("add-category")]
         public IActionResult AddCategory([FromBody] SimpleCategoryDTO categoryVm)

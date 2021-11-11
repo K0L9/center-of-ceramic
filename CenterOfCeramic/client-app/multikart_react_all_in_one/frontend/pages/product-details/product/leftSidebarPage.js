@@ -79,9 +79,6 @@ const LeftSidebarPage = ({ pathId }) => {
     productService.getProductById(id).then(product => {
       setProduct(product);
     })
-
-    console.log("PRODUCT: ", product);
-
   }, product);
 
 

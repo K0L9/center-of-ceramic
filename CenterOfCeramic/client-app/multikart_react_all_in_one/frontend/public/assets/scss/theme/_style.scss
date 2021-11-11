@@ -10065,12 +10065,17 @@ footer {
             text-transform: capitalize;
           }
 
+
+
           &:last-child {
             a {
               padding-bottom: 0;
             }
           }
         }
+
+        // li .active{
+        // }
       }
 
       .collection-filter-checkbox {

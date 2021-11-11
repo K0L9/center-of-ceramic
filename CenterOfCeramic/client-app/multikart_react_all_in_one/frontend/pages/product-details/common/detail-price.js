@@ -57,6 +57,7 @@ const DetailsWithPrice = ({ item, stickyClass, changeColorVar }) => {
   return (
     <>
       <div className={`product-right ${stickyClass}`}>
+        {product.category.name} | {product.country.name}
         <h2> {product.title} </h2>
 
         {product.isSale === true &&

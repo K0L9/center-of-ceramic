@@ -1,11 +1,23 @@
-import React, { useState } from 'react';
+import { parseAndCheckHttpResponse } from '@apollo/client';
+import React, { useState, useEffect } from 'react';
 import { Collapse } from 'reactstrap';
 
+import categoryService from "../../../services/category-service"
+import productService from '../../../services/product-service';
+
 const Filter = () => {
+
+    const [categoryList, setCategoryList] = useState({})
+    useEffect(() => {
+        categoryService.getAllCategories().then(list => {
+            setCategoryList(list);
+        })
+    }, [])
+
     const backClick = () => {
         document.getElementById("filter").style.left = "-365px";
     }
-    
+
     const [isBrandOpen, setIsBrandOpen] = useState(true);
     const toggleBrand = () => setIsBrandOpen(!isBrandOpen);
 
@@ -18,17 +30,19 @@ const Filter = () => {
                 </span>
             </div>
             <div className="collection-collapse-block border-0 open">
-                <h3 className="collapse-block-title" onClick={toggleBrand}>brand</h3>
+                <h3 className="collapse-block-title" onClick={toggleBrand}>категорії</h3>
                 <Collapse isOpen={isBrandOpen}>
                     <div className="collection-collapse-block-content">
                         <div className="collection-brand-filter">
-                            <ul className="category-list">
-                                <li><a href={null}>clothing</a></li>
-                                <li><a href={null}>bags</a></li>
-                                <li><a href={null}>footwear</a></li>
-                                <li><a href={null}>watches</a></li>
-                                <li><a href={null}>accessories</a></li>
-                            </ul>
+                            {categoryList && categoryList.length > 0 ? (
+                                <ul className="category-list">
+                                    {categoryList.map((x, id) => (
+                                        <li key={id}><a href={null}>{x.name}</a></li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                "Loading"
+                            )}
                         </div>
                     </div>
                 </Collapse>
