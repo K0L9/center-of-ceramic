@@ -8,10 +8,10 @@ import Color from './color'
 import Size from './size'
 import Price from './price';
 
-const FilterPage = ({sm,sidebarView,closeSidebar}) => {
+const FilterPage = ({ sm, sidebarView, closeSidebar }) => {
     return (
         <>
-            <Col sm={sm} className="collection-filter" style={sidebarView ? {left:"0px"} : {}}>
+            <Col sm={sm} className="collection-filter" style={sidebarView ? { left: "0px" } : {}}>
                 {/* <!-- side-bar colleps block stat --> */}
                 <div className="collection-filter-block">
                     {/* <!-- brand filter start --> */}
@@ -21,9 +21,9 @@ const FilterPage = ({sm,sidebarView,closeSidebar}) => {
                         </span>
                     </div>
                     <Category />
-                    <Brand/>
-                    <Color/>
-                    <Size/>
+                    <Brand />
+                    {/* <Color/> */}
+                    {/* <Size/> */}
                     <Price />
                 </div>
                 {/* <!-- silde-bar colleps block end here -->*/}

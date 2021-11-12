@@ -38,6 +38,7 @@ namespace CenterOfCeramic.Services
             random = new Random();
         }
         public IEnumerable<Product> GetAllProducts() => _db.Products.Include(nameof(Product.Variants)).Include("Variants.Images").Include(x => x.Reviews);
+        public IEnumerable<Product> GetAllDetailsProducts() => _db.Products.Include(x => x.Category).Include(x => x.Country).Include(nameof(Product.Variants)).Include("Variants.Images").Include(x => x.Reviews);
         public Product GetProductById(int id) => _db.Products.Include(x => x.Category).Include(x => x.Country)
             .Include(nameof(Product.Variants)).Include("Variants.Images").Include(x => x.Reviews).SingleOrDefault(x => x.Id == id);
         public IEnumerable<Product> GetRelatedProducts(int id)

@@ -147,20 +147,23 @@ const NavBar = () => {
                   key={i}
                   className={` ${menuItem.megaMenu ? "mega-menu" : ""}`}
                 >
-                  <a className="nav-link" onClick={(e) => openMblNav(e)}>
-                    {" "}
-                    {t(menuItem.title)}
-                    <span className="sub-arrow"></span>
-                  </a>
+                  <Link href={menuItem.type === "link" ? menuItem.path : "#"} >
+                    <a className="nav-link" onClick={(e) => openMblNav(e)}>
+                      {" "}
+                      {t(menuItem.title)}
+                      {menuItem.type !== "link" &&
+                        <span className="sub-arrow"></span>
+                      }
+                    </a>
+                  </Link>
                   {menuItem.children && !menuItem.megaMenu ? (
                     <ul className="nav-submenu">
                       {menuItem.children.map((childrenItem, index) => {
                         return (
                           <li
                             key={index}
-                            className={`${
-                              childrenItem.children ? "sub-menu " : ""
-                            }`}
+                            className={`${childrenItem.children ? "sub-menu " : ""
+                              }`}
                           >
                             {childrenItem.type === "sub" ? (
                               <a
@@ -194,9 +197,8 @@ const NavBar = () => {
                             )}
                             {childrenItem.children ? (
                               <ul
-                                className={`nav-sub-childmenu ${
-                                  childrenItem.active ? "menu-open " : "active"
-                                }`}
+                                className={`nav-sub-childmenu ${childrenItem.active ? "menu-open " : "active"
+                                  }`}
                               >
                                 {childrenItem.children.map(
                                   (childrenSubItem, key) => (
@@ -230,9 +232,8 @@ const NavBar = () => {
                     </ul>
                   ) : (
                     <div
-                      className={`mega-menu-container  ${
-                        menuItem.megaMenu ? "" : "opensubmenu"
-                      }`}
+                      className={`${menuItem.type === "link" ? "" : "mega-menu-container"}  ${menuItem.megaMenu ? "" : "opensubmenu"
+                        }`}
                     >
                       {menuItem.megaMenu === true ? (
                         <Container>
@@ -240,15 +241,14 @@ const NavBar = () => {
                             {menuItem.children.map((megaMenuItem, i) => {
                               return (
                                 <div
-                                  className={`${
-                                    menuItem.megaMenuType == "small"
-                                      ? "col mega-box"
-                                      : menuItem.megaMenuType == "medium"
+                                  className={`${menuItem.megaMenuType == "small"
+                                    ? "col mega-box"
+                                    : menuItem.megaMenuType == "medium"
                                       ? "col-lg-3"
                                       : menuItem.megaMenuType == "large"
-                                      ? "col"
-                                      : ""
-                                  } `}
+                                        ? "col"
+                                        : ""
+                                    } `}
                                   key={i}
                                 >
                                   <div className="link-section">
@@ -261,38 +261,38 @@ const NavBar = () => {
                                       <ul>
                                         {menuItem.title === "Elements"
                                           ? megaMenuItem.children.map(
-                                              (subMegaMenuItem, i) => {
-                                                return (
-                                                  <li key={i}>
-                                                    <a
-                                                      href={
-                                                        subMegaMenuItem.path
-                                                      }
-                                                    >
-                                                      <i
-                                                        className={`icon-${subMegaMenuItem.icon}`}
-                                                      ></i>
-                                                      {subMegaMenuItem.title}
-                                                    </a>
-                                                  </li>
-                                                );
-                                              }
-                                            )
+                                            (subMegaMenuItem, i) => {
+                                              return (
+                                                <li key={i}>
+                                                  <a
+                                                    href={
+                                                      subMegaMenuItem.path
+                                                    }
+                                                  >
+                                                    <i
+                                                      className={`icon-${subMegaMenuItem.icon}`}
+                                                    ></i>
+                                                    {subMegaMenuItem.title}
+                                                  </a>
+                                                </li>
+                                              );
+                                            }
+                                          )
                                           : megaMenuItem.children.map(
-                                              (subMegaMenuItem, i) => {
-                                                return (
-                                                  <li key={i}>
-                                                    <a
-                                                      href={
-                                                        subMegaMenuItem.path
-                                                      }
-                                                    >
-                                                      {subMegaMenuItem.title}
-                                                    </a>
-                                                  </li>
-                                                );
-                                              }
-                                            )}
+                                            (subMegaMenuItem, i) => {
+                                              return (
+                                                <li key={i}>
+                                                  <a
+                                                    href={
+                                                      subMegaMenuItem.path
+                                                    }
+                                                  >
+                                                    {subMegaMenuItem.title}
+                                                  </a>
+                                                </li>
+                                              );
+                                            }
+                                          )}
                                       </ul>
                                     </div>
                                   </div>

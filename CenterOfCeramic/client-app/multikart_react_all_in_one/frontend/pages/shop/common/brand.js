@@ -28,7 +28,7 @@ const Brand = () => {
   return (
     <div className="collection-collapse-block open">
       <h3 className="collapse-block-title" onClick={toggleBrand}>
-        brand
+        країна
       </h3>
       <Collapse isOpen={isOpen}>
         <div className="collection-collapse-block-content">
@@ -36,25 +36,25 @@ const Brand = () => {
             {!data || !data.getBrands || data.getBrands.length === 0 || loading
               ? "loading"
               : data &&
-                data.getBrands.brand.map((brand, index) => (
-                  <div
-                    className="custom-control custom-checkbox collection-filter-checkbox"
-                    key={index}
-                  >
-                    <Input
-                      checked={context.selectedBrands.includes(brand)}
-                      onChange={() => {
-                        context.handleBrands(brand, isChecked);
-                      }}
-                      type="checkbox"
-                      className="custom-control-input"
-                      id={brand}
-                    />
-                    <label className="custom-control-label" htmlFor={brand}>
-                      {brand}
-                    </label>
-                  </div>
-                ))}
+              data.getBrands.brand.map((brand, index) => (
+                <div
+                  className="custom-control custom-checkbox collection-filter-checkbox"
+                  key={index}
+                >
+                  <Input
+                    checked={context.selectedBrands.includes(brand)}
+                    onChange={() => {
+                      context.handleBrands(brand, isChecked);
+                    }}
+                    type="checkbox"
+                    className="custom-control-input"
+                    id={brand}
+                  />
+                  <label className="custom-control-label" htmlFor={brand}>
+                    {brand}
+                  </label>
+                </div>
+              ))}
           </div>
         </div>
       </Collapse>

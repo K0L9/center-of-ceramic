@@ -23,8 +23,8 @@ const HeaderOne = ({
   const router = useRouter();
 
   /*=====================
-		 Pre loader
-		 ==========================*/
+     Pre loader
+     ==========================*/
   useEffect(() => {
     setTimeout(function () {
       document.querySelectorAll(".loader-wrapper").style = "display:none";

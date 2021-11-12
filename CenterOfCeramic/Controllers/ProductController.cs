@@ -25,6 +25,20 @@ namespace CenterOfCeramic.Controllers
             var result = _service.GetAllProducts();
             return Ok(result);
         }
+        [HttpGet("get-all-details-products")]
+        //This method include categories and countries
+        public IActionResult GetAllDetailtsProducts()
+        {
+            try
+            {
+                var result = _service.GetAllDetailsProducts();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpGet("get-product-by-id/{id}")]
         public IActionResult GetProductById(int id)
         {

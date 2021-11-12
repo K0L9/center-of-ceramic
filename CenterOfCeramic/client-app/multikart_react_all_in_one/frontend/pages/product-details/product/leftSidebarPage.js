@@ -11,6 +11,7 @@ import Filter from "../common/filter";
 import { Container, Row, Col, Media } from "reactstrap";
 
 import productService from "../../../services/product-service"
+import ReactContentLoaderBulletList from "react-content-loader/dist/web/presets/BulletListStyle";
 
 const GET_SINGLE_PRODUCTS = gql`
   query product($id: Int!) {
@@ -68,6 +69,7 @@ const LeftSidebarPage = ({ pathId }) => {
   };
 
   const [product, setProduct] = useState({});
+  const settingsForSlider2 = { slidesToShow: 3 };
 
   useEffect(() => {
     setState({
@@ -78,7 +80,10 @@ const LeftSidebarPage = ({ pathId }) => {
     let id = pathId.split("-")[0];
     productService.getProductById(id).then(product => {
       setProduct(product);
+      console.log("product.variants[idVarSelect].images.length:", product.variants[idVarSelect].images.length)
+      settingsForSlider2.slidesToShow = product.variants[idVarSelect].images.length < 3 ? 1 : 3;
     })
+
   }, product);
 
 
@@ -102,6 +107,8 @@ const LeftSidebarPage = ({ pathId }) => {
       slider2.current.slickGoTo(slick);
   }
   const [idVarSelect, setIdVarSelect] = useState(0);
+
+  console.log("settingsForSlider2: ", settingsForSlider2)
 
   return (
     <section className="">
@@ -148,6 +155,7 @@ const LeftSidebarPage = ({ pathId }) => {
                         {...productsnav}
                         asNavFor={nav1}
                         ref={(slider) => (slider2.current = slider)}
+                        {...settingsForSlider2}
                       >
                         {product && product.variants && product.variants[idVarSelect] && product.variants[idVarSelect].images
                           ? product.variants[idVarSelect].images.map((vari, index) => (

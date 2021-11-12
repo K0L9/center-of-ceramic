@@ -5,8 +5,11 @@ import { Collapse } from 'reactstrap';
 import categoryService from "../../../services/category-service"
 import productService from '../../../services/product-service';
 
+import { useRouter } from "next/router";
+
 const Filter = () => {
 
+    const router = useRouter();
     const [categoryList, setCategoryList] = useState({})
     useEffect(() => {
         categoryService.getAllCategories().then(list => {
@@ -20,6 +23,14 @@ const Filter = () => {
 
     const [isBrandOpen, setIsBrandOpen] = useState(true);
     const toggleBrand = () => setIsBrandOpen(!isBrandOpen);
+
+    const redirectToCategoryFind = (category) => {
+        console.log("CATEGORY: ", category)
+        // router.push({
+        //     pathname: '/shop/left_sidebar',
+        //     query: { '': category, brand: '', color: '', size: '', minPrice: '', maxPrice: '' },
+        // })
+    }
 
     return (
         <div className="collection-filter-block creative-card creative-inner">
@@ -37,7 +48,7 @@ const Filter = () => {
                             {categoryList && categoryList.length > 0 ? (
                                 <ul className="category-list">
                                     {categoryList.map((x, id) => (
-                                        <li key={id}><a href={null}>{x.name}</a></li>
+                                        <li key={id}><a href={null} onClick={() => redirectToCategoryFind(x.name)}>{x.name}</a></li>
                                     ))}
                                 </ul>
                             ) : (

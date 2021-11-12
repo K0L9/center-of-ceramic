@@ -12,6 +12,9 @@ import CartContext from "../../../helpers/cart";
 import { WishlistContext } from "../../../helpers/wishlist/WishlistContext";
 import { CompareContext } from "../../../helpers/Compare/CompareContext";
 
+import productService from "../../../services/product-service";
+import { stripIgnoredCharacters } from "graphql";
+
 const GET_PRODUCTS = gql`
   query products(
     $type: _CategoryType!
@@ -81,31 +84,50 @@ const ProductList = ({ colClass, layoutList, openSidebar, noSidebar }) => {
   const selectedPrice = filterContext.selectedPrice;
   const selectedCategory = filterContext.state;
   const selectedSize = filterContext.selectedSize;
-  const [sortBy, setSortBy] = useState("AscOrder");
+  const [sortBy, setSortBy] = useState("MostRating");
   const [isLoading, setIsLoading] = useState(false);
   const [layout, setLayout] = useState(layoutList);
   const [url, setUrl] = useState();
 
+  const [data, setData] = useState({ products: { items: [] } });
+  const [allProducts, setAllProducts] = useState([]);
+
   useEffect(() => {
     const pathname = window.location.pathname;
-    setUrl(pathname);
-    router.push(
-      `${pathname}?${filterContext.state}&brand=${selectedBrands}&color=${selectedColor}&size=${selectedSize}&minPrice=${selectedPrice.min}&maxPrice=${selectedPrice.max}`
-    );
+    // setUrl(pathname);
+    // router.push(
+    //   `${pathname}?${filterContext.state}&brand=${selectedBrands}&color=${selectedColor}&size=${selectedSize}&minPrice=${selectedPrice.min}&maxPrice=${selectedPrice.max}`
+    // );
+
+    productService.getAllDetailsProducts().then(list => {
+      setAllProducts(list);
+    })
+
+    console.log("UseEfffect")
   }, [selectedBrands, selectedColor, selectedSize, selectedPrice]);
 
-  var { loading, data, fetchMore } = useQuery(GET_PRODUCTS, {
-    variables: {
-      type: selectedCategory,
-      priceMax: selectedPrice.max,
-      priceMin: selectedPrice.min,
-      color: selectedColor,
-      brand: selectedBrands,
-      sortBy: sortBy,
-      indexFrom: 0,
-      limit: limit,
-    },
-  });
+  // var { loading, data, fetchMore } = useQuery(GET_PRODUCTS, {
+  //   variables: {
+  //     type: selectedCategory,
+  //     priceMax: selectedPrice.max,
+  //     priceMin: selectedPrice.min,
+  //     color: selectedColor,
+  //     brand: selectedBrands,
+  //     sortBy: sortBy,
+  //     indexFrom: 0,
+  //     limit: limit,
+  //   },
+  // });
+
+  // console.log("data: ", data);
+
+  if (allProducts && allProducts.length != 0) {
+    console.log("selectedprice: ", selectedCategory);
+    let tmpData = allProducts.filter(x => x.price > selectedPrice.min && x.price < selectedPrice.max);
+    if (selectedCategory !== 'all')
+      tmpData = tmpData.filter(x => x.category.name === selectedCategory);
+    data.products.items = tmpData;
+  }
 
   const handlePagination = () => {
     setIsLoading(true);
@@ -151,12 +173,42 @@ const ProductList = ({ colClass, layoutList, openSidebar, noSidebar }) => {
     filterContext.setSelectedColor("");
   };
 
+  const setSorting = (value) => {
+    setSortBy(value);
+  }
+
+  const getSortedList = () => {
+    switch (sortBy) {
+      case "AscOrder":
+        return data.products.items.sort((a, b) => localCompare(a.title, b.title));
+      case "DescOrder":
+        return data.products.items.sort((a, b) => localCompare(b.title, a.title));
+      case "LowToHigh":
+        return data.products.items.sort((a, b) => a.price - b.price);
+      case "HighToLow":
+        return data.products.items.sort((a, b) => b.price - a.price);
+      case "MostRating":
+        return data.products.items.sort((a, b) => b.rating - a.rating);
+      case "Newest":
+        return data.products.items.sort((a, b) => b.rating - a.rating);
+    }
+  }
+
+  const localCompare = (item1, item2) => {
+    if (item1 < item2)
+      return -1;
+    if (item1 > item2)
+      return 1;
+    return 0;
+  }
+
+
   return (
     <Col className="collection-content">
       <div className="page-main-content">
         <Row>
           <Col sm="12">
-            <div className="top-banner-wrapper">
+            {/* <div className="top-banner-wrapper">
               <a href={null}>
                 <Media
                   src={Menu2}
@@ -183,7 +235,7 @@ const ProductList = ({ colClass, layoutList, openSidebar, noSidebar }) => {
                   like Aldus PageMaker including versions of Lorem Ipsum.
                 </p>
               </div>
-            </div>
+            </div> */}
             <Row>
               <Col xs="12">
                 <ul className="product-filter-tags">
@@ -222,7 +274,7 @@ const ProductList = ({ colClass, layoutList, openSidebar, noSidebar }) => {
                   {
                     <li>
                       <a href={null} className="filter_tag">
-                        price: {selectedPrice.min}- {selectedPrice.max}
+                        ціна: {selectedPrice.min}- {selectedPrice.max}
                       </a>
                     </li>
                   }
@@ -254,9 +306,8 @@ const ProductList = ({ colClass, layoutList, openSidebar, noSidebar }) => {
                       <div className="search-count">
                         <h5>
                           {data
-                            ? `Showing Products 1-${data.products.items.length} of ${data.products.total}`
+                            ? `Знайдено ${data.products.items.length} товарів`
                             : "loading"}{" "}
-                          Result
                         </h5>
                       </div>
                       <div className="collection-view">
@@ -328,19 +379,19 @@ const ProductList = ({ colClass, layoutList, openSidebar, noSidebar }) => {
                         <select
                           onChange={(e) => setLimit(parseInt(e.target.value))}
                         >
-                          <option value="10">10 Products Par Page</option>
-                          <option value="15">15 Products Par Page</option>
-                          <option value="20">20 Products Par Page</option>
+                          <option value="2">2 продуктів на сторінку</option>
+                          <option value="4">4 продуктів на сторінку</option>
+                          <option value="20">20 продуктів на сторінку</option>
                         </select>
                       </div>
                       <div className="product-page-filter">
-                        <select onChange={(e) => setSortBy(e.target.value)}>
-                          <option value="AscOrder">Sorting items</option>
-                          <option value="HighToLow">High To Low</option>
-                          <option value="LowToHigh">Low To High</option>
-                          <option value="Newest">Newest</option>
-                          <option value="AscOrder">Asc Order</option>
-                          <option value="DescOrder">Desc Order</option>
+                        <select onChange={(e) => setSorting(e.target.value)}>
+                          <option value="MostRating">Найрейтинговіший</option>
+                          <option value="HighToLow">Дорогий - дешевий</option>
+                          <option value="LowToHigh">Дешевий - дорогий</option>
+                          <option value="Newest">Найновіший</option>
+                          <option value="AscOrder">За алфавітом | зростання</option>
+                          <option value="DescOrder">За алфавітом | спадання</option>
                         </select>
                       </div>
                     </div>
@@ -351,14 +402,13 @@ const ProductList = ({ colClass, layoutList, openSidebar, noSidebar }) => {
                 <Row>
                   {/* Product Box */}
                   {!data ||
-                  !data.products ||
-                  !data.products.items ||
-                  data.products.items.length === 0 ||
-                  loading ? (
-                    data &&
-                    data.products &&
-                    data.products.items &&
+                    !data.products ||
+                    !data.products.items ||
                     data.products.items.length === 0 ? (
+                    data &&
+                      data.products &&
+                      data.products.items &&
+                      data.products.items.length === 0 ? (
                       <Col xs="12">
                         <div>
                           <div className="col-sm-12 empty-cart-cls text-center">
@@ -368,9 +418,9 @@ const ProductList = ({ colClass, layoutList, openSidebar, noSidebar }) => {
                               alt=""
                             />
                             <h3>
-                              <strong>Your Cart is Empty</strong>
+                              <strong>Нічого не знайдено</strong>
                             </h3>
-                            <h4>Explore more shortlist some items.</h4>
+                            <h4>Немає товарів які відповідали б умовам пошуку</h4>
                           </div>
                         </div>
                       </Col>
@@ -392,25 +442,27 @@ const ProductList = ({ colClass, layoutList, openSidebar, noSidebar }) => {
                     )
                   ) : (
                     data &&
-                    data.products.items.map((product, i) => (
+                    getSortedList().map((product, i) => (
                       <div className={grid} key={i}>
                         <div className="product">
                           <div>
-                            <ProductItem
-                              des={true}
-                              product={product}
-                              symbol={symbol}
-                              cartClass="cart-info cart-wrap"
-                              addCompare={() =>
-                                compareContext.addToCompare(product)
-                              }
-                              addWishlist={() =>
-                                wishlistContext.addToWish(product)
-                              }
-                              addCart={() =>
-                                cartContext.addToCart(product, quantity)
-                              }
-                            />
+                            <a href={null}>
+                              <ProductItem
+                                des={true}
+                                product={product}
+                                symbol={symbol}
+                                cartClass="cart-info cart-wrap"
+                                addCompare={() =>
+                                  compareContext.addToCompare(product)
+                                }
+                                addWishlist={() =>
+                                  wishlistContext.addToWish(product)
+                                }
+                                addCart={() =>
+                                  cartContext.addToCart(product, quantity)
+                                }
+                              />
+                            </a>
                           </div>
                         </div>
                       </div>

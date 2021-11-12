@@ -188,7 +188,7 @@ const ProductSection = ({ pathId }) => {
                         </div>
                       </div>
                       <div className="product-detail">
-                        {product.rating && (
+                        {product.rating !== 0 && (
                           <div className="rating">
                             {getStarsRating(product.rating)}
                           </div>
@@ -200,6 +200,12 @@ const ProductSection = ({ pathId }) => {
                           {symbol}
                           {product.price}
                         </h4>
+                        {product.isSale === true &&
+                          <del>
+                            {currency.symbol}
+                            {(product.oldPrice * currency.value)}
+                          </del>
+                        }
                         {product.variants.length > 1 && (
                           <ul className="color-variant">
                             {product.variants.map((x, ind) => {

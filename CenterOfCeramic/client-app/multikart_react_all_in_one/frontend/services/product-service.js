@@ -1,11 +1,21 @@
 class prodService {
     URL_GET = "/api/Product/get-all-products"
+    URL_GET_DETAILS = "/api/Product/get-all-details-products"
     URL_GET_BY_ID = "/api/Product/get-product-by-id"
     URL_GET_RELATED = "/api/Product/get-related-product"
     URL_GET_NEw = "/api/Product/get-new-products"
 
     async getAllProducts() {
         let List = await fetch(this.URL_GET)
+            .then(response => response.json())
+            .then(list => {
+                return list;
+            })
+
+        return List;
+    }
+    async getAllDetailsProducts() {
+        let List = await fetch(this.URL_GET_DETAILS)
             .then(response => response.json())
             .then(list => {
                 return list;

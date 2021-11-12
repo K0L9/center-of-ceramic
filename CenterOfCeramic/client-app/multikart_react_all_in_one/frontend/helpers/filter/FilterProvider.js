@@ -13,14 +13,14 @@ const FilterProvider = (props) => {
   let sizeParam = size ? size.split(",") : null;
   let param = brand ? brand.split(",") : [];
   const [selectedCategory, setSelectedCategory] = useState(
-    category ? category : "fashion"
+    category ? category : "all"
   );
   const [selectedBrands, setSelectedBrands] = useState(param ? param : []);
   const [selectedColor, setSelectedColor] = useState(color ? color : "");
   const [selectedSize, setSelectedSize] = useState(sizeParam ? sizeParam : []);
   const [selectedPrice, setSelectedPrice] = useState({
     min: min ? min : 0,
-    max: max ? max : 500,
+    max: max ? max : 20000,
   });
   const [isChecked, setIsChecked] = useState(true);
   const [filterChecked, setFilterChecked] = useState([{}]);

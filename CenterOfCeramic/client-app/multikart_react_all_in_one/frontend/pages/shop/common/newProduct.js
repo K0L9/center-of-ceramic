@@ -46,8 +46,6 @@ const NewProduct = () => {
     return RatingStars;
   }
 
-  console.log("Products; ", data);
-
   return (
     // <!-- side-bar single product slider start -->
     <div className="theme-card">

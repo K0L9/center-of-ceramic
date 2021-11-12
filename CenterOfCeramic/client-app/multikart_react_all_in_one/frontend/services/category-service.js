@@ -4,7 +4,6 @@ class categService {
     async getAllCategories() {
         let List = await fetch(this.URL_GET)
             .then(response => {
-                console.log("RESPONSE: ", response)
                 return response.json()
             })
             .then(list => list)
