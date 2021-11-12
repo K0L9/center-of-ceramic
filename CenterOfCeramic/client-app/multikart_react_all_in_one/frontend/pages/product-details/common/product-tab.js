@@ -18,6 +18,7 @@ import ReactStars from "react-rating-stars-component";
 
 import reviewService from "../../../services/review-service"
 import { toast, ToastContainer } from "react-toastify";
+import Parser from 'html-react-parser';
 
 const ProductTab = ({ product }) => {
   const [activeTab, setActiveTab] = useState("1");
@@ -63,6 +64,8 @@ const ProductTab = ({ product }) => {
     setEmail("");
   }
 
+  console.log("product: ", product)
+
   return (
     <section className="tab-product m-0">
       <Container>
@@ -89,11 +92,9 @@ const ProductTab = ({ product }) => {
               </Nav>
               <TabContent activeTab={activeTab} className="nav-material">
                 <TabPane tabId="1">
-                  <p>
-                    {/* {RichText.render(description.description)} */}
-                    {/* <option dangerouslySetInnerHTML={{ __html:  }}></option> */}
-                    {product.descripion}
-                  </p>
+                  {product.description && (
+                    <div>{Parser(product.description)}</div>
+                  )}
                 </TabPane>
 
                 <TabPane tabId="4">

@@ -484,7 +484,7 @@ const Edit_product = ({ CurrentProduct }) => {
                                                                     />
                                                                     Завантажити</button>
 
-                                                                <button className="iconOverBtn" onClick={DeletePhoto}>Видалити</button>
+                                                                <button type="button" className="iconOverBtn" onClick={DeletePhoto}>Видалити</button>
                                                             </div>
                                                         </div>
                                                     </Col>

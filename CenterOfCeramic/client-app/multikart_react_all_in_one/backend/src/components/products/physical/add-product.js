@@ -374,7 +374,7 @@ const Add_product = ({ productVariants, setVariant, removeVariant, clearVariants
 																	/>
 																	Завантажити</button>
 
-																<button className="iconOverBtn" onClick={DeletePhoto}>Видалити</button>
+																<button className="iconOverBtn" type="button" onClick={DeletePhoto}>Видалити</button>
 															</div>
 														</div>
 													</Col>

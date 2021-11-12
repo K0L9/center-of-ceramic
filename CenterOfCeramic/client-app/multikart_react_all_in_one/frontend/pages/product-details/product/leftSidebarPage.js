@@ -11,7 +11,6 @@ import Filter from "../common/filter";
 import { Container, Row, Col, Media } from "reactstrap";
 
 import productService from "../../../services/product-service"
-import ReactContentLoaderBulletList from "react-content-loader/dist/web/presets/BulletListStyle";
 
 const GET_SINGLE_PRODUCTS = gql`
   query product($id: Int!) {
@@ -80,7 +79,6 @@ const LeftSidebarPage = ({ pathId }) => {
     let id = pathId.split("-")[0];
     productService.getProductById(id).then(product => {
       setProduct(product);
-      console.log("product.variants[idVarSelect].images.length:", product.variants[idVarSelect].images.length)
       settingsForSlider2.slidesToShow = product.variants[idVarSelect].images.length < 3 ? 1 : 3;
     })
 

@@ -168,11 +168,12 @@ const SpecialProducts = ({
       list.map((x, counter) => {
         if (x.isSale)
           tmpSalesProduct.products.items.push(x);
-        if (counter < 8)
+        if (x.isNew)
           tmpNewProduct.products.items.push(x);
-        if (counter > 8 && counter < 16)
+        if (x.rating === 5)
           tmpBestProduct.products.items.push(x);
       })
+
 
       setNewProducts(tmpNewProduct);
       setBestProducts(tmpBestProduct);

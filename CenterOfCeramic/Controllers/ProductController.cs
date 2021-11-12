@@ -55,7 +55,6 @@ namespace CenterOfCeramic.Controllers
                 return BadRequest();
             }
         }
-
         [HttpGet("get-related-product/{id}")]
         public IActionResult GetRelatedProduct(int id)
         {

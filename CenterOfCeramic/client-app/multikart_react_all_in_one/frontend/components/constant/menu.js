@@ -1,6 +1,6 @@
 export const MENUITEMS = [
    {
-      title: 'Home', type: 'sub', children: [
+      title: 'головна', type: 'sub', children: [
          {
             title: "New Demos", type: "sub", tag: 'new', children: [
                { path: '/layouts/Tools', title: 'Tools', type: 'link' },
@@ -64,51 +64,51 @@ export const MENUITEMS = [
       //    { path: '/shop/list_view', title: 'List View', type: 'link' }
       // ],
    },
+   // {
+   //    title: 'Products', type: 'sub', children: [
+   //       {
+   //          title: 'Sidebar', type: 'sub', children: [
+   //             { path: '/product-details/1', title: 'Left Sidebar', type: 'link' },
+   //             { path: '/product-details/right_sidebar', title: 'Right Sidebar', type: 'link' },
+   //             { path: '/product-details/no-sidebar', title: 'No Sidebar', type: 'link' },
+   //          ]
+   //       },
+   //       {
+   //          title: "Thumbnail Image", type: "sub", children: [
+   //             { path: '/product-details/thumbnail_left', title: 'Left Image', type: 'link' },
+   //             { path: '/product-details/thumbnail_right', title: 'Right Image', type: 'link' },
+   //             { path: '/product-details/thumbnail_outside', title: 'Image Outside', type: 'link' }
+   //          ]
+   //       },
+   //       {
+   //          title: "3-Column", type: "sub", children: [
+   //             { path: '/product-details/3_col_left', title: 'Thumbnail Left', type: 'link' },
+   //             { path: '/product-details/3_col_right', title: 'Thumbnail Right', type: 'link' },
+   //             { path: '/product-details/3_col_bottom', title: 'Thumbnail Bottom', type: 'link' }
+   //          ]
+   //       },
+   //       {
+   //          path: '/product-details/4_image', title: '4 Image', type: 'link', tag: 'New'
+   //       },
+   //       {
+   //          path: '/product-details/bundle_product', title: 'Bundle Product', type: 'link', tag: 'New'
+   //       },
+   //       {
+   //          path: '/product-details/sticky', title: 'Sticky', type: 'link'
+   //       },
+   //       {
+   //          path: '/product-details/accordian', title: 'Accordian', type: 'link'
+   //       },
+   //       {
+   //          path: '/product-details/image_swatch', title: 'Image Swatch', type: 'link', tag: 'New'
+   //       },
+   //       {
+   //          path: '/product-details/vertical_tab', title: 'Vertical Tab', type: 'link'
+   //       },
+   //    ]
+   // },
    {
-      title: 'Products', type: 'sub', children: [
-         {
-            title: 'Sidebar', type: 'sub', children: [
-               { path: '/product-details/1', title: 'Left Sidebar', type: 'link' },
-               { path: '/product-details/right_sidebar', title: 'Right Sidebar', type: 'link' },
-               { path: '/product-details/no-sidebar', title: 'No Sidebar', type: 'link' },
-            ]
-         },
-         {
-            title: "Thumbnail Image", type: "sub", children: [
-               { path: '/product-details/thumbnail_left', title: 'Left Image', type: 'link' },
-               { path: '/product-details/thumbnail_right', title: 'Right Image', type: 'link' },
-               { path: '/product-details/thumbnail_outside', title: 'Image Outside', type: 'link' }
-            ]
-         },
-         {
-            title: "3-Column", type: "sub", children: [
-               { path: '/product-details/3_col_left', title: 'Thumbnail Left', type: 'link' },
-               { path: '/product-details/3_col_right', title: 'Thumbnail Right', type: 'link' },
-               { path: '/product-details/3_col_bottom', title: 'Thumbnail Bottom', type: 'link' }
-            ]
-         },
-         {
-            path: '/product-details/4_image', title: '4 Image', type: 'link', tag: 'New'
-         },
-         {
-            path: '/product-details/bundle_product', title: 'Bundle Product', type: 'link', tag: 'New'
-         },
-         {
-            path: '/product-details/sticky', title: 'Sticky', type: 'link'
-         },
-         {
-            path: '/product-details/accordian', title: 'Accordian', type: 'link'
-         },
-         {
-            path: '/product-details/image_swatch', title: 'Image Swatch', type: 'link', tag: 'New'
-         },
-         {
-            path: '/product-details/vertical_tab', title: 'Vertical Tab', type: 'link'
-         },
-      ]
-   },
-   {
-      title: 'features', megaMenu: true, megaMenuType: 'small', type: 'sub', children: [
+      title: 'ПРО НАС', megaMenu: true, megaMenuType: 'small', type: 'sub', children: [
          {
             title: 'Portfolio', type: 'sub', children: [
                { path: '/portfolio/grid-2', title: 'Portfolio Grid 2', type: 'link', icon: 'alert' },
@@ -159,7 +159,7 @@ export const MENUITEMS = [
       ]
    },
    {
-      title: 'Pages', type: 'sub', children: [
+      title: 'акції', type: 'sub', children: [
          {
             title: 'vendor', type: 'sub', tag: 'new', children: [
                { path: '/page/vendor/vendor-dashboard', title: 'Vendor Dashboard', type: 'link' },
@@ -200,13 +200,13 @@ export const MENUITEMS = [
          { path: '/page/faq', title: 'faq', type: 'link' },
       ]
    },
-   {
-      title: 'Blogs', type: 'sub', children: [
-         { path: '/blogs/blog_left_sidebar', title: 'blog left sidebar', type: 'link' },
-         { path: '/blogs/blog_right_sidebar', title: 'blog right sidebar', type: 'link' },
-         { path: '/blogs/no_sidebar', title: 'no sidebar', type: 'link' },
-         { path: '/blogs/blog_detail', title: 'blog detail', type: 'link' },
-      ]
-   },
+   // {
+   //    title: 'Blogs', type: 'sub', children: [
+   //       { path: '/blogs/blog_left_sidebar', title: 'blog left sidebar', type: 'link' },
+   //       { path: '/blogs/blog_right_sidebar', title: 'blog right sidebar', type: 'link' },
+   //       { path: '/blogs/no_sidebar', title: 'no sidebar', type: 'link' },
+   //       { path: '/blogs/blog_detail', title: 'blog detail', type: 'link' },
+   //    ]
+   // },
 ]
 

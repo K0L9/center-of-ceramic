@@ -103,7 +103,6 @@ const ProductList = ({ colClass, layoutList, openSidebar, noSidebar }) => {
       setAllProducts(list);
     })
 
-    console.log("UseEfffect")
   }, [selectedBrands, selectedColor, selectedSize, selectedPrice]);
 
   // var { loading, data, fetchMore } = useQuery(GET_PRODUCTS, {
@@ -122,7 +121,6 @@ const ProductList = ({ colClass, layoutList, openSidebar, noSidebar }) => {
   // console.log("data: ", data);
 
   if (allProducts && allProducts.length != 0) {
-    console.log("selectedprice: ", selectedCategory);
     let tmpData = allProducts.filter(x => x.price > selectedPrice.min && x.price < selectedPrice.max);
     if (selectedCategory !== 'all')
       tmpData = tmpData.filter(x => x.category.name === selectedCategory);

@@ -28,10 +28,10 @@ const DetailsWithPrice = ({ item, stickyClass, changeColorVar }) => {
   };
 
   const minusQuantity = (e) => {
-    setQty(e.target.value > 1 ? e.target.value - 1 : e.target.value)
+    setQty(qty > 1 ? qty - 1 : qty)
   }
   const plusQuantity = (e) => {
-    setQty(e.target.value + 1);
+    setQty(qty + 1);
   }
 
   function removeTags(str) {

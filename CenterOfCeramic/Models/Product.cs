@@ -20,10 +20,9 @@ namespace CenterOfCeramic.Models
         public bool IsSale { get; set; }
         public int? OldPrice { get; set; }
 
-        //Foreign key
-        public int CategoryId { get; set; }
-        public int CountryId { get; set; }
+        public DateTime? DateAdded { get; set; }
 
+        //Not mapped props
         [NotMapped]
         public int Rating
         {
@@ -34,6 +33,22 @@ namespace CenterOfCeramic.Models
                 return (int)Math.Round(Reviews.Select(x => x.Rating).Average(), 0);
             }
         }
+        [NotMapped]
+        public bool IsNew
+        {
+            get
+            {
+                if (DateAdded == null)
+                    return false;
+                else
+                    return (DateTime.Now - (DateTime)DateAdded).TotalDays < ENV.DaysNewProduct;
+            }
+        }
+
+
+        //Foreign key
+        public int CategoryId { get; set; }
+        public int CountryId { get; set; }
 
         //Navigation props
         public virtual ICollection<ColorVariant> Variants { get; set; }

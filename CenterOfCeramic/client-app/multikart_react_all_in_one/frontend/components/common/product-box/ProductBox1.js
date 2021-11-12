@@ -69,7 +69,7 @@ const ProductItem = ({
     <div className="product-box product-wrap">
       <div className="img-wrapper">
         <div className="lable-block">
-          {product.new === true ? <span className="lable3">new</span> : ""}
+          {product.isNew === true ? <span className="lable3">new</span> : ""}
           {product.isSale === true ? <span className="lable4">on sale</span> : ""}
         </div>
         <div className="front" onClick={clickProductDetail}>

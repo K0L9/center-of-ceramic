@@ -61,7 +61,7 @@ const NewProduct = () => {
               {data &&
                 data.newProducts.slice(0, 3).map((product, index) => (
                   <div className="media" key={index}>
-                    <a href="">
+                    <a href={`/product-details/${product.id}` + "-" + `${product.title.split(" ").join("")}`}>
                       <Media
                         className="img-fluid blur-up lazyload"
                         src={product.variants[0].images[0].url}

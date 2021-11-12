@@ -99,9 +99,18 @@ namespace CenterOfCeramic.Services
             try
             {
                 const int countNewProduct = 5;
-                var result = _db.Products.Include(x => x.Category).Include(x => x.Country)
-                                        .Include(nameof(Product.Variants)).Include("Variants.Images").Include(x => x.Reviews).Take(countNewProduct);
-                return result;
+
+                var resultsFromDb = _db.Products
+                    .Include(x => x.Category)
+                    .Include(x => x.Country)
+                    .Include(nameof(Product.Variants))
+                    .Include("Variants.Images")
+                    .Include(x => x.Reviews).ToList();
+
+                var finalResult = new List<Product>(resultsFromDb.Where(x => x.IsNew));
+
+                return finalResult;
+
             }
             catch (Exception)
             {
@@ -114,6 +123,7 @@ namespace CenterOfCeramic.Services
             try
             {
                 var product = mapper.Map<Product>(productDTO);
+                product.DateAdded = DateTime.Now;
                 int counter = 0;
 
                 foreach (var colorVariant in productDTO.Variants)
